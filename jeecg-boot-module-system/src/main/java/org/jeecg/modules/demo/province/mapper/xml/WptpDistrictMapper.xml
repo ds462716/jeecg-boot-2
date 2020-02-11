@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.demo.province.mapper.WptpDistrictMapper">
+
+    <select id="listByDisNameAndCityId" resultType="org.jeecg.modules.demo.province.entity.WptpDistrict" parameterType="org.jeecg.modules.demo.province.entity.WptpDistrict">
+SELECT  *
+FROM wptp_district
+WHERE  DIS_NAME
+like CONCAT('%',#{wptpDistrict.disName},'%')
+and CITY_ID=#{wptpDistrict.cityId}
+    </select>
+</mapper>
