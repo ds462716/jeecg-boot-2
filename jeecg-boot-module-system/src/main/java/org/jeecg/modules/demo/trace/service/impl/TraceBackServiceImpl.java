@@ -12,6 +12,7 @@ import org.jeecg.modules.demo.medicinebsale.vo.WptpMedicineSaleVO;
 import org.jeecg.modules.demo.plantinfo.vo.WptpPlantInfoVO;
 import org.jeecg.modules.demo.processinfo.entity.WptpProcessFile;
 import org.jeecg.modules.demo.processinfo.entity.WptpProcessMaterial;
+import org.jeecg.modules.demo.processinfo.service.IWptpProcessMaterial;
 import org.jeecg.modules.demo.processinfo.vo.WptpProcessInfoVO;
 import org.jeecg.modules.demo.sale.entity.WptpSale;
 import org.jeecg.modules.demo.trace.service.ConvertEntityToVOService;
@@ -43,6 +44,8 @@ public class TraceBackServiceImpl implements TraceBackService {
      private TraceBaseDataService traceBaseDataService;
      @Autowired
      private ConvertEntityToVOService convertEntityToVOService;
+     @Autowired
+     private IWptpProcessMaterial wptpProcessMaterial;
      @Override
      public synchronized Result<TraceVO> plantTraceLink01(String traceCode) {
          WptpSale sale = traceBaseDataService.getSale(traceCode);
@@ -108,6 +111,7 @@ public class TraceBackServiceImpl implements TraceBackService {
          plantTraceVO.setWptpProcessInfoVO(processInfoVO);
          plantTraceVO.setWptpProcessFileList(wptpProcessFiles);
          plantTraceVO.setWptpProcessMaterialList(wptpProcessMaterials);
+         handleCsInfoList(wptpCsInfoVOList);//采收批次集合需要包含加工的原料相关数据
          plantTraceVO.setWptpCsInfoList(wptpCsInfoVOList);
          traceVO.setPlantTraceVO(plantTraceVO);
          return new Result<TraceVO>(true,"操作成功",200,traceVO,new Date().getTime());
@@ -336,5 +340,16 @@ public class TraceBackServiceImpl implements TraceBackService {
     }
 
 
-
+    /**
+     * 处理采收批次
+     */
+    private void handleCsInfoList(List<WptpCsInfoVO> wptpCsInfoVOList){
+        if (!wptpCsInfoVOList.isEmpty()){
+            for (WptpCsInfoVO w:
+                    wptpCsInfoVOList) {
+                List<WptpProcessMaterial> listByCsNo = wptpProcessMaterial.listByCsNo(w.getCsNo());
+                w.setProcessMaterialList(listByCsNo);
+            }
+        }
+    }
 }

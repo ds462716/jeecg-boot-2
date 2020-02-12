@@ -13,7 +13,6 @@ public class JeecgOneGUI {
 	/** 详细使用手册： http://jeecg-boot.mydoc.io/?t=338140 */
     public static void main(String[] args) {
     	new CodeWindow().pack();
-		System.out.println("弄好了，司马git");
 	}
 
 }

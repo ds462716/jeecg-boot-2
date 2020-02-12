@@ -135,7 +135,7 @@ public class GuildUpload {
         if (oConvertUtils.isEmpty(token)) throw new Exception("toke不能为空！");*/
         UploadParam uploadParam = handleUploadParam(traceVOResult, traceCode, operaterFlag);
         String uploadParamJsonStr = JSON.toJSONString(uploadParam);//json格式参数字符串
-
+        System.out.println(uploadParamJsonStr);
         String uploadResult = HttpUtils.doPost(LINK_URL, uploadParamJsonStr);//上传至行业协会;
         log.info("json格式字符串:"+uploadParamJsonStr);
         log.info("参数:"+uploadParam);
@@ -696,7 +696,7 @@ public class GuildUpload {
         purchaseOrderDetails.setProductInfoId(ypCode);
         purchaseOrderDetails.setMedicinalOrigin(medicinalOrigin);
         purchaseOrderDetails.setPackingSpecification(packGuige);
-        purchaseOrderDetails.setProviderInfoName(manufacturer);
+        purchaseOrderDetails.setProviderInfoName(getEntName(wptpYpbInstock.getEntId()));
         purchaseOrderDetails.setProductNum(num);
         purchaseOrderDetails.setUnit(unit);
         purchaseOrderDetails.setManufacturingEnterprise(manufacturer);
@@ -795,7 +795,8 @@ public class GuildUpload {
         Double num = wptpYpInstock.getNum();
         String categoryCode = wptpYpInstock.getCategoryCode();
         String manufacturer = wptpYpInstock.getManufacturer();
-        String entId=getEntIdByHostCode(wptpYpInstock.getHostCode());
+        /*String entId=getEntIdByHostCode(wptpYpInstock.getHostCode());*/
+        String entId=wptpYpInstock.getEntId();
         String storeCode = wptpYpInstock.getStoreCode();
         String method = wptpYpInstock.getMethod();
         String materialOrigin = wptpYpInstock.getMaterialOrigin();
@@ -877,7 +878,7 @@ public class GuildUpload {
         qualitySelfTest.setQualitySelfTestId(wptpYpInstockVO.getCheckNo());
         qualitySelfTest.setSourceMoudel("1");
         qualitySelfTest.setProductInfoId(wptpYpInstockVO.getCategoryCode());
-        qualitySelfTest.setDetectionProductBatchCode(wptpYpInstockVO.getInstockNo());
+        qualitySelfTest.setDetectionProductBatchCode(wptpYpInstockVO.getMaterialBatch());
         String checkTime = wptpYpInstockVO.getCheckTime();
         if (!oConvertUtils.isEmpty(checkTime))qualitySelfTest.setCheckDate(DateUtils.StringToDate(checkTime));
         qualitySelfTest.setPurpose(wptpYpInstockVO.getCheckPurpose());
@@ -894,6 +895,7 @@ public class GuildUpload {
         StringBuilder sb = new StringBuilder();
         for (WptpYpInstockFile w:
                 wptpYpInstockFiles ) {
+            if (!"0".equals(w.getFileType()))continue;
             sb.append("|");
             sb.append(IMG_URL_PREIX+w.getPath());
         }
@@ -912,7 +914,7 @@ public class GuildUpload {
         qualitySelfTest.setQualitySelfTestId(wptpYpProcessVO.getQualCheckNum());
         qualitySelfTest.setSourceMoudel("2");
         qualitySelfTest.setProductInfoId(wptpYpProcessVO.getYpCode());
-        qualitySelfTest.setDetectionProductBatchCode(wptpYpProcessVO.getProductBatch());
+        qualitySelfTest.setDetectionProductBatchCode(wptpYpProcessVO.getInstockNumber());
         if (!oConvertUtils.isEmpty(checkTime)) qualitySelfTest.setCheckDate(DateUtils.StringToDate(checkTime));
         qualitySelfTest.setPurpose(wptpYpProcessVO.getCheckPurpose());
         qualitySelfTest.setTestSummary(wptpYpProcessVO.getCheckResult());
@@ -928,6 +930,7 @@ public class GuildUpload {
         StringBuilder sb = new StringBuilder();
         for (WptpYpProcessFile w:
                 wptpYpProcessFiles) {
+            if (!"0".equals(w.getFileType()))continue;
             sb.append("|");
             sb.append(IMG_URL_PREIX+w.getPath());
         }
@@ -967,7 +970,8 @@ public class GuildUpload {
         String productBatch = wptpMedicineInstockVO.getProductBatch();
         String categoryCode = wptpMedicineInstockVO.getCategoryCode();
         String manufacturer = wptpMedicineInstockVO.getManufacturer();
-        String entId=getEntIdByHostCode(wptpMedicineInstockVO.getHostCode());
+       /* String entId=getEntIdByHostCode(wptpMedicineInstockVO.getHostCode());*/
+        String entId = wptpMedicineInstockVO.getEntId();
         String storeCode = wptpMedicineInstockVO.getStoreCode();
         String method = wptpMedicineInstockVO.getMethod();
         String purchaseLeader = wptpMedicineInstockVO.getPurchaseLeader();
@@ -1093,6 +1097,7 @@ public class GuildUpload {
         StringBuilder sb = new StringBuilder();
         for (WptpMedicineInstockFile w:
                 wptpMedicineInstockFileList) {
+            if (!"0".equals(w.getFileType()))continue;
             sb.append("|");
             sb.append(IMG_URL_PREIX+w.getPath());
         }
@@ -1111,7 +1116,7 @@ public class GuildUpload {
         orderShipment.setInvoiceNumCode(wptpSale.getSaleNo());
        if (!oConvertUtils.isEmpty(saleTime))orderShipment.setDeliveryTime(DateUtils.StringToDate(saleTime));
         orderShipment.setDeliveryNumber(wptpSale.getNum());
-        orderShipment.setUnit(wptpSale.getGuige());
+        orderShipment.setUnit(wptpSale.getUnit());
         orderShipment.setTranPerson(wptpSale.getResponsible());
         orderShipment.setFlowEnterName(getEntName(wptpSale.getEntId()));
         orderShipment.setProductId(wptpSale.getMedicinalCode());
@@ -1158,6 +1163,7 @@ public class GuildUpload {
         StringBuilder sb = new StringBuilder();
         for (WptpProcessFile w:
                 wptpProcessFileList ) {
+            if (!"0".equals(w.getFileType()))continue;
             sb.append("|");
             sb.append(IMG_URL_PREIX+w.getPath());
         }
@@ -1169,6 +1175,8 @@ public class GuildUpload {
          * 加工原料
          */
         QueryWrapper<WptpProcessMaterial> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("process_no",wptpProcessInfo.getProcessNo());
         List<WptpProcessMaterial> wptpProcessMaterialList = iWptpProcessMaterial.getBaseMapper().selectList(queryWrapper);
         List<ProcessMaterial> processMaterialList = new ArrayList<>();
         for (WptpProcessMaterial w:
@@ -1233,16 +1241,16 @@ public class GuildUpload {
                 if ("0".equals(wptpPlantFile.getFileType())){
                     sb.append("|");
                     sb.append(IMG_URL_PREIX+wptpPlantFile.getPath());
-                }else if ("1".equals(wptpPlantFile.getFileType())){
+                }/*else if ("1".equals(wptpPlantFile.getFileType())){
                     sb.append("|");
                     sb.append(IMG_URL_PREIX+wptpPlantFile.getPath());
-                }
+                }*/
             }
             String imgUrlArray = sb.toString();
             if (!oConvertUtils.isEmpty(imgUrlArray)) harvestBatch.setImage(imgUrlArray.substring(1,imgUrlArray.length()));//去除第一个竖线"|"
 
-            String videoStr = video.toString();
-            if (!oConvertUtils.isEmpty(videoStr)) harvestBatch.setFile(videoStr.substring(1,videoStr.length()));//去除第一个竖线"|"
+          /*  String videoStr = video.toString();
+            if (!oConvertUtils.isEmpty(videoStr)) harvestBatch.setFile(videoStr.substring(1,videoStr.length()));//去除第一个竖线"|"*/
 
             harvestBatchList.add(harvestBatch);
         }
@@ -1286,16 +1294,16 @@ public class GuildUpload {
                 if ("0".equals(w.getFileType())){
                     sb.append("|");
                     sb.append(IMG_URL_PREIX+w.getPath());
-                }else if ("1".equals(w.getFileType())){
+                }/*else if ("1".equals(w.getFileType())){
                     video.append("|");
                     video.append(IMG_URL_PREIX+w.getPath());
-                }
+                }*/
             }
             String imgUrlArray = sb.toString();
             if (!oConvertUtils.isEmpty(imgUrlArray)) farmScheme.setImage(imgUrlArray.substring(1,imgUrlArray.length()));
 
-            String videoStr = video.toString();
-            if (!oConvertUtils.isEmpty(videoStr)) farmScheme.setFile(videoStr.substring(1,videoStr.length()));//去除第一个竖线"|"
+          /*  String videoStr = video.toString();
+            if (!oConvertUtils.isEmpty(videoStr)) farmScheme.setFile(videoStr.substring(1,videoStr.length()));*///去除第一个竖线"|"
             farmSchemes.add(farmScheme);
         }
 
@@ -1356,16 +1364,16 @@ public class GuildUpload {
             if ("0".equals(w.getType())){
                 sb.append("|");
                 sb.append(IMG_URL_PREIX+w.getPath());
-            }else if ("1".equals(w.getType())){
+            }/*else if ("1".equals(w.getType())){
                 report.append("|");
                 report.append(IMG_URL_PREIX+w.getPath());
-            }
+            }*/
         }
         String imgUrlArray = sb.toString();
         if (!oConvertUtils.isEmpty(imgUrlArray)) base.setImage(imgUrlArray.substring(1,imgUrlArray.length()));
 
-        String reportStr = report.toString();
-        if (!oConvertUtils.isEmpty(reportStr)) base.setFile(reportStr.substring(1,reportStr.length()));//去除第一个竖线"|"
+       /* String reportStr = report.toString();
+        if (!oConvertUtils.isEmpty(reportStr)) base.setFile(reportStr.substring(1,reportStr.length()));*///去除第一个竖线"|"
 
         return base;
     }

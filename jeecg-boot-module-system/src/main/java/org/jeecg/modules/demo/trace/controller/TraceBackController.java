@@ -6,12 +6,15 @@ import io.swagger.annotations.ApiOperation;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.api.webservice.guild.upload.GuildUpload;
+import org.jeecg.modules.demo.csinfo.vo.WptpCsInfoVO;
 import org.jeecg.modules.demo.index.vo.MedicinalVO;
 import org.jeecg.modules.demo.medicinalinfo.entity.WptpMedicinal;
 import org.jeecg.modules.demo.medicinalinfo.entity.WptpMedicineFile;
 import org.jeecg.modules.demo.medicinalinfo.service.IWptpMedicinalService;
 import org.jeecg.modules.demo.medicinalinfo.service.IWptpMedicineFileService;
 import org.jeecg.modules.demo.medicinebsale.vo.WptpMedicineSaleVO;
+import org.jeecg.modules.demo.processinfo.entity.WptpProcessMaterial;
+import org.jeecg.modules.demo.processinfo.service.IWptpProcessMaterial;
 import org.jeecg.modules.demo.sale.vo.WptpSaleVO;
 import org.jeecg.modules.demo.scanner.entity.WptpScannerTime;
 import org.jeecg.modules.demo.scanner.service.IWptpScannerTimeService;
@@ -47,6 +50,7 @@ public class TraceBackController {
     private IWptpScannerTimeService scannerTimeService;
     @Autowired
     private GuildUpload guildUpload;
+
     @GetMapping(value = "/traceByCode")
     @ApiOperation(value = "追溯结果", notes = "追溯结果")
     public Result<TraceVO> traceByCode(@RequestParam(name="traceCode",required=true)  @NotNull String traceCode,String scannerFlag) {
@@ -186,4 +190,6 @@ public class TraceBackController {
         if (upload)return  new  Result<>().success("上传成功");
         return new  Result<>().error500("上传失败");
     }
+
+
 }

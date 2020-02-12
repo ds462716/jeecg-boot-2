@@ -180,4 +180,7 @@ public class WptpYpInstock implements Serializable {
 	/**批准文号*/
 	@ApiModelProperty(value = "批准文号")
 	private String approvalNumber;
+	/**单位*/
+	@ApiModelProperty(value = "单位")
+	private String unit;
 }

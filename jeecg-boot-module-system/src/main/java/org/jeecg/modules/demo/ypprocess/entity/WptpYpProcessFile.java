@@ -81,4 +81,5 @@ public class WptpYpProcessFile implements Serializable {
 		this.deleted=deleted;
 		this.createBy=createBy;
 	}
+
 }

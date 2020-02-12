@@ -4,8 +4,11 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.jeecg.modules.demo.csinfo.entity.WptpCsInfo;
+import org.jeecg.modules.demo.processinfo.entity.WptpProcessMaterial;
 
 import java.io.Serializable;
+import java.util.List;
+
 @Data
 @ApiModel(value="种植环节采收批次结果集", description="种植环节采收批次结果集")
 public class WptpCsInfoVO extends WptpCsInfo implements Serializable {
@@ -42,4 +45,6 @@ public class WptpCsInfoVO extends WptpCsInfo implements Serializable {
     /**基地名称*/
     @ApiModelProperty(value = "基地名称")
     private java.lang.String baseName;
+    @ApiModelProperty(value = "加工原料相关")
+    private List<WptpProcessMaterial> processMaterialList;
 }
