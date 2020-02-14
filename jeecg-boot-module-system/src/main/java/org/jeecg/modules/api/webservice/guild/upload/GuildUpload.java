@@ -45,6 +45,7 @@ import org.jeecg.modules.demo.sale.vo.WptpSaleVO;
 import org.jeecg.modules.demo.trace.service.TraceBackService;
 import org.jeecg.modules.demo.trace.service.TraceBaseDataService;
 import org.jeecg.modules.demo.trace.vo.*;
+import org.jeecg.modules.demo.xhUploadRecord.XhUploadRecord;
 import org.jeecg.modules.demo.xhUploadRecord.XhUploadRecordService;
 import org.jeecg.modules.demo.ypbinstock.vo.WptpYpbInstockVO;
 import org.jeecg.modules.demo.ypbsale.entity.WptpYpbSale;
@@ -120,6 +121,7 @@ public class GuildUpload {
     private IWptpYpbSaleService iWptpYpbSaleService;
     @Autowired
     private IWptpSaleService iWptpSaleService;
+
     /**
      * @param traceCode 追溯码
      * @param linkCode 药材：11，种植：04，饮片加工：23，饮片经营：31
@@ -140,6 +142,8 @@ public class GuildUpload {
         log.info("json格式字符串:"+uploadParamJsonStr);
         log.info("参数:"+uploadParam);
         log.info("结果:"+uploadResult);
+        XhUploadRecord uploadRecord = new XhUploadRecord(new Date(), "成功", uploadResult, traceCode, uploadParamJsonStr);
+        xhUploadRecordService.getBaseMapper().insert(uploadRecord);
         return true;
     }
 
@@ -736,6 +740,7 @@ public class GuildUpload {
         orderShipment.setProductId(wptpYpSaleVO.getYpCode());
         orderShipment.setProductBatch(wptpYpSaleVO.getBatchNo());
         orderShipment.setSourceMoudel("5");
+        orderShipment.setPackSpec(wptpYpSaleVO.getPackGuige());
         List<OrderShipment> orderShipments = new ArrayList<>();
         orderShipments.add(orderShipment);
         return orderShipments;
@@ -753,6 +758,7 @@ public class GuildUpload {
         String punit = wptpYpProcessVO.getPunit();
         String producedDate = wptpYpProcessVO.getProducedDate();
         String processResponsible = wptpYpProcessVO.getProcessResponsible();
+        String instockNumber = wptpYpProcessVO.getInstockNumber();
         String instockNo = wptpYpProcessVO.getInstockNo();
         Double materialNum = wptpYpProcessVO.getMaterialNum();
         String unit = wptpYpProcessVO.getUnit();
@@ -770,7 +776,7 @@ public class GuildUpload {
         List<ProcessMaterial> processMaterialList = new ArrayList<>();
         processMaterial.setProcessMaterialId(instockNo);
         processMaterial.setProductInfoId(categoryCode);
-        processMaterial.setProductBatchCode(instockNo);
+        processMaterial.setProductBatchCode(instockNumber);
         processMaterial.setProcessNum(materialNum);
         processMaterial.setUnit(unit);
         processMaterialList.add(processMaterial);
@@ -801,6 +807,7 @@ public class GuildUpload {
         String method = wptpYpInstock.getMethod();
         String materialOrigin = wptpYpInstock.getMaterialOrigin();
         String guige = wptpYpInstock.getGuige();
+        String unit = wptpYpInstock.getUnit();
         /**
          * 仓库信息
          */
@@ -830,6 +837,7 @@ public class GuildUpload {
         storageDetails.setProductInfoName(categoryName);
         storageDetails.setProductBatchCode(productBatch);
         storageDetails.setProductNum(num);
+        storageDetails.setUnit(unit);
         storageDetailsList.add(storageDetails);
         storageInfo.setStorageDetailsList(storageDetailsList);
         storageInfoList.add(storageInfo);
@@ -854,6 +862,7 @@ public class GuildUpload {
         purchaseOrderDetails.setProduceBatchCode(productBatch);
         purchaseOrderDetails.setMedicinalOrigin(materialOrigin);
         purchaseOrderDetails.setRawGauge(guige);
+        purchaseOrderDetails.setUnit(unit);
         purchaseOrdersList.add(purchaseOrderDetails);
         purchaseOrderInfo.setPurchaseOrderDetailsList(purchaseOrdersList);
 
@@ -914,7 +923,7 @@ public class GuildUpload {
         qualitySelfTest.setQualitySelfTestId(wptpYpProcessVO.getQualCheckNum());
         qualitySelfTest.setSourceMoudel("2");
         qualitySelfTest.setProductInfoId(wptpYpProcessVO.getYpCode());
-        qualitySelfTest.setDetectionProductBatchCode(wptpYpProcessVO.getInstockNumber());
+        qualitySelfTest.setDetectionProductBatchCode(wptpYpProcessVO.getProductBatch());
         if (!oConvertUtils.isEmpty(checkTime)) qualitySelfTest.setCheckDate(DateUtils.StringToDate(checkTime));
         qualitySelfTest.setPurpose(wptpYpProcessVO.getCheckPurpose());
         qualitySelfTest.setTestSummary(wptpYpProcessVO.getCheckResult());
@@ -1148,9 +1157,9 @@ public class GuildUpload {
 
         processingInfo.setProcessName(processGy);
         processingInfo.setProcessMedthod(processMethod);
-        processingInfo.setUnit(unit);
+        /*processingInfo.setUnit(unit);*/
         processingInfo.setTotalWeight(num);
-        processingInfo.setOutUnitName(guige);
+        processingInfo.setOutUnitName(unit);
         if(!oConvertUtils.isEmpty(startTime)) processingInfo.setProcessStartTime(DateUtils.StringToDate(startTime));
         if(!oConvertUtils.isEmpty(endTime)) processingInfo.setProcessStartTime(DateUtils.StringToDate(endTime));
         processingInfo.setResponsibleUser(responsible);

@@ -120,7 +120,7 @@ public class WptpMedicinalController {
 			/**
 			 * 上传到行业协会
 			 */
-			XhUploadRecord xhUploadRecord = new XhUploadRecord(new Date(),"",wptpMedicinalService.uploadXh(wptpMedicinal),"成品或者原药");
+			XhUploadRecord xhUploadRecord = new XhUploadRecord(new Date(),"",wptpMedicinalService.uploadXh(wptpMedicinal),"成品或者原药","");
 			xhUploadRecordService.getBaseMapper().insert(xhUploadRecord);
 
 			result.success("添加成功！");
@@ -144,7 +144,7 @@ public class WptpMedicinalController {
 		if (!oConvertUtils.isEmpty(wptpMedicinal))
 		{
 			String result = wptpMedicinalService.uploadXh(wptpMedicinal);
-			XhUploadRecord xhUploadRecord = new XhUploadRecord(new Date(),"",result,"成品或者原药");
+			XhUploadRecord xhUploadRecord = new XhUploadRecord(new Date(),"",result,"成品或者原药","");
 			xhUploadRecordService.getBaseMapper().insert(xhUploadRecord);
 			return new  Result<>().success("上传成功");
 		}

@@ -391,7 +391,7 @@ public class PlantServiceImpl implements PlantService {
             guildUpload.upload(wptpSale.getTraceCode(),"0");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            XhUploadRecord xhUploadRecord = new XhUploadRecord(new Date(),"失败",e.getMessage(),wptpSale.getTraceCode());
+            XhUploadRecord xhUploadRecord = new XhUploadRecord(new Date(),"失败",e.getMessage(),wptpSale.getTraceCode(),"");
             xhUploadRecordService.getBaseMapper().insert(xhUploadRecord);
         }
         return  JSONArray.toJSON(new Result(true, "操作成功", 200, new Date().getTime())).toString();

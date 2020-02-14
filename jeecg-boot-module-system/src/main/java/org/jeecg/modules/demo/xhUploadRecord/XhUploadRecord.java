@@ -14,11 +14,12 @@ public class XhUploadRecord {
     private String result;//结果
     private String resultDesc;//结果描述
     private String traceCode;//追溯码
-
-    public XhUploadRecord(Date uploadTime, String result, String resultDesc, String traceCode) {
+    private String param;
+    public XhUploadRecord(Date uploadTime, String result, String resultDesc, String traceCode,String param) {
         this.uploadTime = uploadTime;
         this.result = result;
         this.resultDesc = resultDesc;
         this.traceCode = traceCode;
+        this.param=param;
     }
 }

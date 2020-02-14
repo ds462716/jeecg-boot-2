@@ -128,7 +128,7 @@ public class WptpEntInfoController {
 			for (WptpEntFile w:
 				 wptpEntFileList) {
 				if (oConvertUtils.isEmpty(w.getPath()))continue;
-				w.setMainId(oConvertUtils.getString(anInt+1));
+				w.setMainId(wptpEntInfo.getEntId());
 				w.setCreateBy(username);
 				w.setCreateTime(new Date());
 				w.setDeleted("0");

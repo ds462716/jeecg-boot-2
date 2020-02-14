@@ -277,7 +277,7 @@ public class YpServiceImpl implements  YpService{
             guildUpload.upload(wptpYpSale.getTraceCode(),"0");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            XhUploadRecord xhUploadRecord = new XhUploadRecord(new Date(),"失败",e.getMessage(),wptpYpSale.getTraceCode());
+            XhUploadRecord xhUploadRecord = new XhUploadRecord(new Date(),"失败",e.getMessage(),wptpYpSale.getTraceCode(),"");
             xhUploadRecordService.getBaseMapper().insert(xhUploadRecord);
         }
         return JSONArray.toJSON(new Result(true, "操作成功", 200, new Date().getTime())).toString();
@@ -373,7 +373,7 @@ public class YpServiceImpl implements  YpService{
             guildUpload.upload(wptpYpbSale.getTraceCode(),"0");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            XhUploadRecord xhUploadRecord = new XhUploadRecord(new Date(),"失败",e.getMessage(),wptpYpbSale.getTraceCode());
+            XhUploadRecord xhUploadRecord = new XhUploadRecord(new Date(),"失败",e.getMessage(),wptpYpbSale.getTraceCode(),"");
             xhUploadRecordService.getBaseMapper().insert(xhUploadRecord);
         }
         return JSONArray.toJSON(new Result(true, "操作成功", 200,new Date().getTime())).toString();
