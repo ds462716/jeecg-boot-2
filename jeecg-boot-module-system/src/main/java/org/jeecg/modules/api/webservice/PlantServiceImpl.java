@@ -29,8 +29,8 @@ import org.jeecg.modules.demo.processinfo.vo.WptpProcessInfoVO;
 import org.jeecg.modules.demo.province.service.IWptpProvinceService;
 import org.jeecg.modules.demo.sale.entity.WptpSale;
 import org.jeecg.modules.demo.sale.service.IWptpSaleService;
-import org.jeecg.modules.demo.xhUploadRecord.XhUploadRecord;
-import org.jeecg.modules.demo.xhUploadRecord.XhUploadRecordService;
+import org.jeecg.modules.demo.uploadxh.service.IWptpUploadRecordService;
+import org.jeecg.modules.demo.uploadxh.entity.WptpUploadRecord;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -51,7 +51,7 @@ public class PlantServiceImpl implements PlantService {
     @Autowired
     private GuildUpload guildUpload;
     @Autowired
-    private XhUploadRecordService xhUploadRecordService;
+    private IWptpUploadRecordService xhUploadRecordService;
     @Autowired
     private IWptpEntInfoService iWptpEntInfoService;
     @Autowired
@@ -391,8 +391,8 @@ public class PlantServiceImpl implements PlantService {
             guildUpload.upload(wptpSale.getTraceCode(),"0");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            XhUploadRecord xhUploadRecord = new XhUploadRecord(new Date(),"失败",e.getMessage(),wptpSale.getTraceCode(),"");
-            xhUploadRecordService.getBaseMapper().insert(xhUploadRecord);
+            WptpUploadRecord xhUploadRecord = new WptpUploadRecord(new Date(),"失败",e.getMessage(),wptpSale.getTraceCode(),"");
+            xhUploadRecordService.addWptpUploadRecord(xhUploadRecord);
         }
         return  JSONArray.toJSON(new Result(true, "操作成功", 200, new Date().getTime())).toString();
     }

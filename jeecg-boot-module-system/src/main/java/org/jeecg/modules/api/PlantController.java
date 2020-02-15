@@ -28,8 +28,8 @@ import org.jeecg.modules.demo.processinfo.vo.WptpProcessInfoVO;
 import org.jeecg.modules.demo.province.service.IWptpProvinceService;
 import org.jeecg.modules.demo.sale.entity.WptpSale;
 import org.jeecg.modules.demo.sale.service.IWptpSaleService;
-import org.jeecg.modules.demo.xhUploadRecord.XhUploadRecord;
-import org.jeecg.modules.demo.xhUploadRecord.XhUploadRecordService;
+import org.jeecg.modules.demo.uploadxh.service.IWptpUploadRecordService;
+import org.jeecg.modules.demo.uploadxh.entity.WptpUploadRecord;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -72,7 +72,7 @@ public class PlantController {
     @Autowired
     private GuildUpload guildUpload;
     @Autowired
-    private XhUploadRecordService xhUploadRecordService;
+    private IWptpUploadRecordService xhUploadRecordService;
 
     /**
      * 种植-企业/供应商信息
@@ -421,8 +421,8 @@ public class PlantController {
             boolean upload = guildUpload.upload(wptpSale.getTraceCode(), "0");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            XhUploadRecord xhUploadRecord = new XhUploadRecord(new Date(),"失败",e.getMessage(),wptpSale.getTraceCode(),"");
-            xhUploadRecordService.getBaseMapper().insert(xhUploadRecord);
+            WptpUploadRecord xhUploadRecord = new WptpUploadRecord(new Date(),"失败",e.getMessage(),wptpSale.getTraceCode(),"");
+            xhUploadRecordService.addWptpUploadRecord(xhUploadRecord);
         }
         return new Result(true, "操作成功", 200, new Date().getTime());
 

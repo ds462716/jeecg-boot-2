@@ -16,8 +16,9 @@ import org.jeecg.modules.demo.medicinalinfo.entity.WptpMedicineFile;
 import org.jeecg.modules.demo.medicinalinfo.service.IWptpMedicinalService;
 import org.jeecg.modules.demo.medicinalinfo.service.IWptpMedicineFileService;
 import org.jeecg.modules.demo.medicinalinfo.vo.WptpMedicinalPage;
-import org.jeecg.modules.demo.xhUploadRecord.XhUploadRecord;
-import org.jeecg.modules.demo.xhUploadRecord.XhUploadRecordService;
+import org.jeecg.modules.demo.uploadxh.service.IWptpUploadRecordService;
+import org.jeecg.modules.demo.uploadxh.service.IWptpUploadRecordService;
+import org.jeecg.modules.demo.uploadxh.entity.WptpUploadRecord;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -52,7 +53,7 @@ public class WptpMedicinalController {
 	@Autowired
 	private IWptpMedicineFileService wptpMedicineFileService;
 	@Autowired
-	private XhUploadRecordService xhUploadRecordService;
+	private IWptpUploadRecordService xhUploadRecordService;
 
 	/**
 	  * 分页列表查询
@@ -120,8 +121,8 @@ public class WptpMedicinalController {
 			/**
 			 * 上传到行业协会
 			 */
-			XhUploadRecord xhUploadRecord = new XhUploadRecord(new Date(),"",wptpMedicinalService.uploadXh(wptpMedicinal),"成品或者原药","");
-			xhUploadRecordService.getBaseMapper().insert(xhUploadRecord);
+			WptpUploadRecord xhUploadRecord = new WptpUploadRecord(new Date(),"",wptpMedicinalService.uploadXh(wptpMedicinal),"成品或者原药","");
+			xhUploadRecordService.addWptpUploadRecord(xhUploadRecord);
 
 			result.success("添加成功！");
 		} catch (Exception e) {
@@ -144,7 +145,7 @@ public class WptpMedicinalController {
 		if (!oConvertUtils.isEmpty(wptpMedicinal))
 		{
 			String result = wptpMedicinalService.uploadXh(wptpMedicinal);
-			XhUploadRecord xhUploadRecord = new XhUploadRecord(new Date(),"",result,"成品或者原药","");
+			WptpUploadRecord xhUploadRecord = new WptpUploadRecord(new Date(),"",result,"成品或者原药","");
 			xhUploadRecordService.getBaseMapper().insert(xhUploadRecord);
 			return new  Result<>().success("上传成功");
 		}

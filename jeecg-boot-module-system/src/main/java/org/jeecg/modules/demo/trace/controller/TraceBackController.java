@@ -20,6 +20,8 @@ import org.jeecg.modules.demo.scanner.entity.WptpScannerTime;
 import org.jeecg.modules.demo.scanner.service.IWptpScannerTimeService;
 import org.jeecg.modules.demo.trace.service.TraceBackService;
 import org.jeecg.modules.demo.trace.vo.*;
+import org.jeecg.modules.demo.uploadxh.service.IWptpUploadRecordService;
+import org.jeecg.modules.demo.uploadxh.entity.WptpUploadRecord;
 import org.jeecg.modules.demo.ypbsale.vo.WptpYpbSaleVO;
 import org.jeecg.modules.demo.ypprocesssale.vo.WptpYpSaleVO;
 import org.springframework.beans.BeanUtils;
@@ -50,6 +52,8 @@ public class TraceBackController {
     private IWptpScannerTimeService scannerTimeService;
     @Autowired
     private GuildUpload guildUpload;
+    @Autowired
+    private IWptpUploadRecordService xhUploadRecordService;
 
     @GetMapping(value = "/traceByCode")
     @ApiOperation(value = "追溯结果", notes = "追溯结果")

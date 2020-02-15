@@ -45,8 +45,9 @@ import org.jeecg.modules.demo.sale.vo.WptpSaleVO;
 import org.jeecg.modules.demo.trace.service.TraceBackService;
 import org.jeecg.modules.demo.trace.service.TraceBaseDataService;
 import org.jeecg.modules.demo.trace.vo.*;
-import org.jeecg.modules.demo.xhUploadRecord.XhUploadRecord;
-import org.jeecg.modules.demo.xhUploadRecord.XhUploadRecordService;
+import org.jeecg.modules.demo.uploadxh.entity.WptpUploadRecord;
+import org.jeecg.modules.demo.uploadxh.service.IWptpUploadRecordService;
+import org.jeecg.modules.demo.uploadxh.entity.WptpUploadRecord;
 import org.jeecg.modules.demo.ypbinstock.vo.WptpYpbInstockVO;
 import org.jeecg.modules.demo.ypbsale.entity.WptpYpbSale;
 import org.jeecg.modules.demo.ypbsale.service.IWptpYpbSaleService;
@@ -84,7 +85,7 @@ public class GuildUpload {
     private static final String LINK_URL="http://indu.sdrhny.com/mq_service/linkDataProducer/send/traceAndResumeData";//节点履历
     private static final String IMG_URL_PREIX="http://180.168.130.217:9010/img";//图片路径前缀
     @Autowired
-    private XhUploadRecordService xhUploadRecordService;
+    private IWptpUploadRecordService xhUploadRecordService;
     @Autowired
     private IWptpEntInfoService iWptpEntInfoService;
 /*    @Autowired
@@ -142,8 +143,8 @@ public class GuildUpload {
         log.info("json格式字符串:"+uploadParamJsonStr);
         log.info("参数:"+uploadParam);
         log.info("结果:"+uploadResult);
-        XhUploadRecord uploadRecord = new XhUploadRecord(new Date(), "成功", uploadResult, traceCode, uploadParamJsonStr);
-        xhUploadRecordService.getBaseMapper().insert(uploadRecord);
+        WptpUploadRecord uploadRecord = new WptpUploadRecord(new Date(), "成功", uploadResult, traceCode, uploadParamJsonStr);
+        xhUploadRecordService.addWptpUploadRecord(uploadRecord);
         return true;
     }
 

@@ -14,8 +14,8 @@ import org.jeecg.modules.demo.entinfo.entity.WptpEntInfo;
 import org.jeecg.modules.demo.entinfo.service.IWptpEntInfoService;
 import org.jeecg.modules.demo.hostcode.entity.WptpHostcode;
 import org.jeecg.modules.demo.hostcode.service.IWptpHostcodeService;
-import org.jeecg.modules.demo.xhUploadRecord.XhUploadRecord;
-import org.jeecg.modules.demo.xhUploadRecord.XhUploadRecordService;
+import org.jeecg.modules.demo.uploadxh.service.IWptpUploadRecordService;
+import org.jeecg.modules.demo.uploadxh.entity.WptpUploadRecord;
 import org.jeecg.modules.demo.ypbinstock.entity.WptpYpbInstock;
 import org.jeecg.modules.demo.ypbinstock.service.IWptpYpbInstockService;
 import org.jeecg.modules.demo.ypbsale.entity.WptpYpbSale;
@@ -46,7 +46,7 @@ public class YpServiceImpl implements  YpService{
     @Autowired
     private GuildUpload guildUpload;
     @Autowired
-    private XhUploadRecordService xhUploadRecordService;
+    private IWptpUploadRecordService xhUploadRecordService;
     @Autowired
     private IWptpYpSaleService wptpYpSaleService;
     @Autowired
@@ -277,8 +277,8 @@ public class YpServiceImpl implements  YpService{
             guildUpload.upload(wptpYpSale.getTraceCode(),"0");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            XhUploadRecord xhUploadRecord = new XhUploadRecord(new Date(),"失败",e.getMessage(),wptpYpSale.getTraceCode(),"");
-            xhUploadRecordService.getBaseMapper().insert(xhUploadRecord);
+            WptpUploadRecord xhUploadRecord = new WptpUploadRecord(new Date(),"失败",e.getMessage(),wptpYpSale.getTraceCode(),"");
+            xhUploadRecordService.addWptpUploadRecord(xhUploadRecord);
         }
         return JSONArray.toJSON(new Result(true, "操作成功", 200, new Date().getTime())).toString();
     }
@@ -373,8 +373,8 @@ public class YpServiceImpl implements  YpService{
             guildUpload.upload(wptpYpbSale.getTraceCode(),"0");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            XhUploadRecord xhUploadRecord = new XhUploadRecord(new Date(),"失败",e.getMessage(),wptpYpbSale.getTraceCode(),"");
-            xhUploadRecordService.getBaseMapper().insert(xhUploadRecord);
+            WptpUploadRecord xhUploadRecord = new WptpUploadRecord(new Date(),"失败",e.getMessage(),wptpYpbSale.getTraceCode(),"");
+            xhUploadRecordService.addWptpUploadRecord(xhUploadRecord);
         }
         return JSONArray.toJSON(new Result(true, "操作成功", 200,new Date().getTime())).toString();
     }
