@@ -143,12 +143,31 @@ public class GuildUpload {
         log.info("json格式字符串:"+uploadParamJsonStr);
         log.info("参数:"+uploadParam);
         log.info("结果:"+uploadResult);
-        WptpUploadRecord uploadRecord = new WptpUploadRecord(new Date(), "成功", uploadResult, traceCode, uploadParamJsonStr);
+        WptpUploadRecord uploadRecord = new WptpUploadRecord(new Date(), "", uploadResult, traceCode, uploadParamJsonStr,getLinkByTraceCode(traceCode));
         xhUploadRecordService.addWptpUploadRecord(uploadRecord);
         return true;
     }
 
-
+    /**
+     * 根据追溯码获得环节
+     */
+    private String getLinkByTraceCode(String TraceCode){
+        String link="";
+        switch (TraceCode){
+            case "04" :
+                link="种植";
+                break;
+            case "11":
+                link="药材经营";
+                break;
+            case "23":
+                link="饮片加工";
+                break;
+            case "31":
+                link="饮片经营";
+        }
+        return link;
+    }
 
     /**
      * 组装上传参数类uploadParam
@@ -834,7 +853,7 @@ public class GuildUpload {
 
         List<StorageDetails> storageDetailsList = new ArrayList<>();
         StorageDetails storageDetails = new StorageDetails();
-        storageDetails.setStorageDetailsId(instockNumber);
+        storageDetails.setStorageDetailsId(instockNo);
         storageDetails.setProductInfoName(categoryName);
         storageDetails.setProductBatchCode(productBatch);
         storageDetails.setProductNum(num);

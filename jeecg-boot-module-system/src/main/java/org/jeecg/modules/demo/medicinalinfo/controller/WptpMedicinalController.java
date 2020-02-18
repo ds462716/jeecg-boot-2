@@ -1,5 +1,6 @@
 package org.jeecg.modules.demo.medicinalinfo.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -121,7 +122,7 @@ public class WptpMedicinalController {
 			/**
 			 * 上传到行业协会
 			 */
-			WptpUploadRecord xhUploadRecord = new WptpUploadRecord(new Date(),"",wptpMedicinalService.uploadXh(wptpMedicinal),"成品或者原药","");
+			WptpUploadRecord xhUploadRecord = new WptpUploadRecord(new Date(),"",wptpMedicinalService.uploadXh(wptpMedicinal),"",JSON.toJSONString(wptpMedicinal),"成品或者原药");
 			xhUploadRecordService.addWptpUploadRecord(xhUploadRecord);
 
 			result.success("添加成功！");
@@ -145,7 +146,7 @@ public class WptpMedicinalController {
 		if (!oConvertUtils.isEmpty(wptpMedicinal))
 		{
 			String result = wptpMedicinalService.uploadXh(wptpMedicinal);
-			WptpUploadRecord xhUploadRecord = new WptpUploadRecord(new Date(),"",result,"成品或者原药","");
+			WptpUploadRecord xhUploadRecord = new WptpUploadRecord(new Date(),"",result,"",JSON.toJSONString(wptpMedicinal),"成品或者原药");
 			xhUploadRecordService.getBaseMapper().insert(xhUploadRecord);
 			return new  Result<>().success("上传成功");
 		}

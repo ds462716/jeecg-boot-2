@@ -121,7 +121,7 @@ public class MedicinalController {
             guildUpload.upload(wptpMedicineSale.getTraceCode(),"0");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            WptpUploadRecord xhUploadRecord = new WptpUploadRecord(new Date(),"失败",e.getMessage(),wptpMedicineSale.getTraceCode(),"");
+            WptpUploadRecord xhUploadRecord = new WptpUploadRecord(new Date(),"失败",e.getMessage(),wptpMedicineSale.getTraceCode(),"","药材经营");
             xhUploadRecordService.addWptpUploadRecord(xhUploadRecord);
         }
         return JSONArray.toJSON(new Result(true, "操作成功", 200, new Date().getTime())).toString();

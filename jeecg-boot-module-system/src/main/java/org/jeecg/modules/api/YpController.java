@@ -283,7 +283,7 @@ public class YpController {
             guildUpload.upload(wptpYpSale.getTraceCode(),"0");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            WptpUploadRecord xhUploadRecord = new WptpUploadRecord(new Date(),"失败",e.getMessage(),wptpYpSale.getTraceCode(),"");
+            WptpUploadRecord xhUploadRecord = new WptpUploadRecord(new Date(),"失败",e.getMessage(),wptpYpSale.getTraceCode(),"","饮片加工");
             xhUploadRecordService.getBaseMapper().insert(xhUploadRecord);
         }
         return JSONArray.toJSON(new Result(true, "操作成功", 200, new Date().getTime())).toString();
@@ -379,7 +379,7 @@ public class YpController {
             guildUpload.upload(wptpYpbSale.getTraceCode(),"0");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            WptpUploadRecord xhUploadRecord = new WptpUploadRecord(new Date(),"失败",e.getMessage(),wptpYpbSale.getTraceCode(),"");
+            WptpUploadRecord xhUploadRecord = new WptpUploadRecord(new Date(),"失败",e.getMessage(),wptpYpbSale.getTraceCode(),"","饮片经营");
             xhUploadRecordService.addWptpUploadRecord(xhUploadRecord);
         }
         return JSONArray.toJSON(new Result(true, "操作成功", 200,new Date().getTime())).toString();

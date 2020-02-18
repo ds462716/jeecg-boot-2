@@ -49,12 +49,16 @@ public class WptpUploadRecord implements Serializable {
 	@Excel(name = "参数内容", width = 15)
 	@ApiModelProperty(value = "参数内容")
 	private java.lang.String param;
-
-	public WptpUploadRecord(Date uploadTime, String result, String resultDesc, String traceCode, String param) {
+	/**环节*/
+	@Excel(name = "环节", width = 15)
+	@ApiModelProperty(value = "环节")
+	private java.lang.String link;
+	public WptpUploadRecord(Date uploadTime, String result, String resultDesc, String traceCode, String param,String link) {
 		this.uploadTime = uploadTime;
 		this.result = result;
 		this.resultDesc = resultDesc;
 		this.traceCode = traceCode;
 		this.param = param;
+		this.link=link;
 	}
 }

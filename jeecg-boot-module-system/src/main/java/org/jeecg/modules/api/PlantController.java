@@ -421,7 +421,7 @@ public class PlantController {
             boolean upload = guildUpload.upload(wptpSale.getTraceCode(), "0");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            WptpUploadRecord xhUploadRecord = new WptpUploadRecord(new Date(),"失败",e.getMessage(),wptpSale.getTraceCode(),"");
+            WptpUploadRecord xhUploadRecord = new WptpUploadRecord(new Date(),"失败",e.getMessage(),wptpSale.getTraceCode(),"","种植");
             xhUploadRecordService.addWptpUploadRecord(xhUploadRecord);
         }
         return new Result(true, "操作成功", 200, new Date().getTime());

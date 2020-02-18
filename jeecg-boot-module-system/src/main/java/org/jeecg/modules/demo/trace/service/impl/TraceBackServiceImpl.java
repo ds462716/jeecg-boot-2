@@ -111,7 +111,7 @@ public class TraceBackServiceImpl implements TraceBackService {
          plantTraceVO.setWptpProcessInfoVO(processInfoVO);
          plantTraceVO.setWptpProcessFileList(wptpProcessFiles);
          plantTraceVO.setWptpProcessMaterialList(wptpProcessMaterials);
-         handleCsInfoList(wptpCsInfoVOList);//采收批次集合需要包含加工的原料相关数据
+         if (!oConvertUtils.isEmpty(wptpCsInfoVOList))handleCsInfoList(wptpCsInfoVOList);//采收批次集合需要包含加工的原料相关数据
          plantTraceVO.setWptpCsInfoList(wptpCsInfoVOList);
          traceVO.setPlantTraceVO(plantTraceVO);
          return new Result<TraceVO>(true,"操作成功",200,traceVO,new Date().getTime());
@@ -347,6 +347,7 @@ public class TraceBackServiceImpl implements TraceBackService {
         if (!wptpCsInfoVOList.isEmpty()){
             for (WptpCsInfoVO w:
                     wptpCsInfoVOList) {
+                if (null==w)continue;
                 List<WptpProcessMaterial> listByCsNo = wptpProcessMaterial.listByCsNo(w.getCsNo());
                 w.setProcessMaterialList(listByCsNo);
             }

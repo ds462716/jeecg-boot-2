@@ -3,7 +3,7 @@
 <mapper namespace="org.jeecg.modules.demo.uploadxh.mapper.WptpUploadRecordMapper">
 
     <insert id="addWptpUploadRecord" parameterType="org.jeecg.modules.demo.uploadxh.entity.WptpUploadRecord">
-        insert into wptp_upload_record(upload_time,result,result_desc,trace_code,param)
-        values (#{uploadRecord.uploadTime,jdbcType=DATE},#{uploadRecord.result},#{uploadRecord.resultDesc},#{uploadRecord.traceCode},#{uploadRecord.param})
+        insert into wptp_upload_record(upload_time,result,result_desc,trace_code,param,link)
+        values (#{uploadRecord.uploadTime,jdbcType=TIMESTAMP},#{uploadRecord.result},#{uploadRecord.resultDesc},#{uploadRecord.traceCode},#{uploadRecord.param},#{uploadRecord.link})
     </insert>
 </mapper>
