@@ -71,25 +71,26 @@ import java.util.*;
 
 /**
  * 上传相关数据到行业协会
+ *
  * @author laowang
  */
 @Component
 @Slf4j
 public class GuildUpload {
-    private static final String APP_KEY="be6gntvg";
-    private static final String APP_SECRET="f6c7ef91417e8ac0";
-    private static final String MEDICINAL_PRODUCING_AREA="3001002007";//库存类型：药材产区库存
-    private static final String YP_MATERIALS ="3001002002";//库存类型：饮片原料库存
-    private static final String YP_PRODUCTS="3001002003";//库存类型：饮片成品库存
-    private static final String TOKEN_URL="http://indu.sdrhny.com/mq_service/token/getTokenInfo";//获取token
-    private static final String LINK_URL="http://indu.sdrhny.com/mq_service/linkDataProducer/send/traceAndResumeData";//节点履历
-    private static final String IMG_URL_PREIX="http://180.168.130.217:9010/img";//图片路径前缀
+    private static final String APP_KEY = "be6gntvg";
+    private static final String APP_SECRET = "f6c7ef91417e8ac0";
+    private static final String MEDICINAL_PRODUCING_AREA = "3001002007";//库存类型：药材产区库存
+    private static final String YP_MATERIALS = "3001002002";//库存类型：饮片原料库存
+    private static final String YP_PRODUCTS = "3001002003";//库存类型：饮片成品库存
+    private static final String TOKEN_URL = "http://citypt.yunyc.cn/mq_service/token/getTokenInfo";//获取token
+    private static final String LINK_URL = "http://citypt.yunyc.cn/mq_service/linkDataProducer/send/traceAndResumeData";//节点履历
+    private static final String IMG_URL_PREIX = "http://180.168.130.217:9010/img";//图片路径前缀
     @Autowired
     private IWptpUploadRecordService xhUploadRecordService;
     @Autowired
     private IWptpEntInfoService iWptpEntInfoService;
-/*    @Autowired
-    private IWptpYpbInstockFileService iWptpYpbInstockFileService;*/
+    /*    @Autowired
+        private IWptpYpbInstockFileService iWptpYpbInstockFileService;*/
     @Autowired
     private IWptpYpProcessFileService iWptpYpProcessFileService;
     @Autowired
@@ -125,25 +126,25 @@ public class GuildUpload {
 
     /**
      * @param traceCode 追溯码
-     * @param linkCode 药材：11，种植：04，饮片加工：23，饮片经营：31
+     * @param linkCode  药材：11，种植：04，饮片加工：23，饮片经营：31
      * @return
      */
     @Transactional
-    public  boolean upload(String traceCode,String operaterFlag) throws Exception{
+    public boolean upload(String traceCode, String operaterFlag) throws Exception {
         Map<String, String> param = new HashMap<>();
-        param.put("traceCode",traceCode);
+        param.put("traceCode", traceCode);
         Result<TraceVO> traceVOResult = traceByCode(traceCode);
-        if (traceVOResult.getCode().equals("500"))return false;
+        if (traceVOResult.getCode().equals("500")) return false;
        /* String token = getToken();
         if (oConvertUtils.isEmpty(token)) throw new Exception("toke不能为空！");*/
         UploadParam uploadParam = handleUploadParam(traceVOResult, traceCode, operaterFlag);
         String uploadParamJsonStr = JSON.toJSONString(uploadParam);//json格式参数字符串
         System.out.println(uploadParamJsonStr);
         String uploadResult = HttpUtils.doPost(LINK_URL, uploadParamJsonStr);//上传至行业协会;
-        log.info("json格式字符串:"+uploadParamJsonStr);
-        log.info("参数:"+uploadParam);
-        log.info("结果:"+uploadResult);
-        WptpUploadRecord uploadRecord = new WptpUploadRecord(new Date(), "", uploadResult, traceCode, uploadParamJsonStr,getLinkByTraceCode(traceCode));
+        log.info("json格式字符串:" + uploadParamJsonStr);
+        log.info("参数:" + uploadParam);
+        log.info("结果:" + uploadResult);
+        WptpUploadRecord uploadRecord = new WptpUploadRecord(new Date(), "成功", uploadResult, traceCode, uploadParamJsonStr, getLinkByTraceCode(traceCode));
         xhUploadRecordService.addWptpUploadRecord(uploadRecord);
         return true;
     }
@@ -151,313 +152,324 @@ public class GuildUpload {
     /**
      * 根据追溯码获得环节
      */
-    private String getLinkByTraceCode(String TraceCode){
-        String link="";
-        switch (TraceCode){
-            case "04" :
-                link="种植";
+    private String getLinkByTraceCode(String traceCode) {
+        String link = "";
+        switch (traceCode.substring(1, 3)) {
+            case "04":
+                link = "种植";
                 break;
             case "11":
-                link="药材经营";
+                link = "药材经营";
                 break;
             case "23":
-                link="饮片加工";
+                link = "饮片加工";
                 break;
             case "31":
-                link="饮片经营";
+                link = "饮片经营";
         }
         return link;
     }
 
     /**
      * 组装上传参数类uploadParam
+     *
      * @param result
      * @param traceCode
      * @return
      */
-    private UploadParam handleUploadParam(Result<TraceVO> result,String traceCode ,String operaterFlag) throws Exception{
+    private UploadParam handleUploadParam(Result<TraceVO> result, String traceCode, String operaterFlag) throws Exception {
         UploadParam uploadParam = new UploadParam();
-        if (oConvertUtils.isEmpty(result.getResult()))return null;
-        String currentTraceCode="";//当前环节追溯码
-        String lastTraceCode="";//上游环节追溯码
-        String xhCode="";//当前环节的xhCode
-        String lastXhCode="";//上游环节协会code
+        if (oConvertUtils.isEmpty(result.getResult())) return null;
+        String currentTraceCode = "";//当前环节追溯码
+        String lastTraceCode = "";//上游环节追溯码
+        String xhCode = "";//当前环节的xhCode
+        String lastXhCode = "";//上游环节协会code
         /**
          * 判断追溯码的第二、三位属于哪个环节
          * 药材：11，种植：04，饮片加工：23，饮片经营：31
          */
-        switch (traceCode.substring(1,3)){
+        switch (traceCode.substring(1, 3)) {
             case "04":
-                    PlantTraceVO plantTraceVO = result.getResult().getPlantTraceVO();
-                    if (!oConvertUtils.isEmpty( plantTraceVO)){
-                        WptpSaleVO wptpSale = plantTraceVO.getWptpSale();
-                        String medicinalCode = wptpSale.getMedicinalCode();
-                        String saleTime = wptpSale.getSaleTime();
-                        WptpProcessInfoVO wptpProcessInfoVO = plantTraceVO.getWptpProcessInfoVO();
-                        List<WptpCsInfoVO> wptpCsInfoList = plantTraceVO.getWptpCsInfoList();
-                        if (!oConvertUtils.isEmpty(wptpSale)){
-                            List<OrderShipment> orderShipments = handlePlantSale(wptpSale);//销售
-                            String entId = getEntIdByEntName(wptpSale.getHostCode());
-                            currentTraceCode=wptpSale.getTraceCode();
-                            xhCode = getEntXhCode(entId);
-                            EnterpriseInfo enterpriseInfo = new EnterpriseInfo();
-                            enterpriseInfo.setEnterpriseId(xhCode);
-                            enterpriseInfo.setEnterpriseCode(entId);
-                            String medicinalName = getMedicinalName(wptpSale.getMedicinalCode());
-                            uploadParam.setCommodityName(medicinalName);
-                            uploadParam.setEnterpriseInfo(enterpriseInfo);
-                            uploadParam.setOrderShipment(orderShipments);
+                PlantTraceVO plantTraceVO = result.getResult().getPlantTraceVO();
+                if (!oConvertUtils.isEmpty(plantTraceVO)) {
+                    WptpSaleVO wptpSale = plantTraceVO.getWptpSale();
+                    String medicinalCode = wptpSale.getMedicinalCode();
+                    String saleTime = wptpSale.getSaleTime();
+                    WptpProcessInfoVO wptpProcessInfoVO = plantTraceVO.getWptpProcessInfoVO();
+                    List<WptpCsInfoVO> wptpCsInfoList = plantTraceVO.getWptpCsInfoList();
+                    if (!oConvertUtils.isEmpty(wptpSale)) {
+                        List<OrderShipment> orderShipments = handlePlantSale(wptpSale);//销售
+                        String entId = getEntIdByEntName(wptpSale.getHostCode());
+                        currentTraceCode = wptpSale.getTraceCode();
+                        xhCode = getEntXhCode(entId);
+                        EnterpriseInfo enterpriseInfo = new EnterpriseInfo();
+                        enterpriseInfo.setEnterpriseId(xhCode);
+                        enterpriseInfo.setEnterpriseCode(entId);
+                        String medicinalName = getMedicinalName(wptpSale.getMedicinalCode());
+                        uploadParam.setCommodityName(medicinalName);
+                        uploadParam.setEnterpriseInfo(enterpriseInfo);
+                        uploadParam.setOrderShipment(orderShipments);
 
-                            if (!oConvertUtils.isEmpty(saleTime)) uploadParam.setNodeDate(DateUtils.StringToDate(saleTime));
-                        }
+                        if (!oConvertUtils.isEmpty(saleTime)) uploadParam.setNodeDate(DateUtils.StringToDate(saleTime));
+                    }
+                    if (!oConvertUtils.isEmpty(wptpCsInfoList)) {
+                        Map map = handlePlantCs(wptpCsInfoList);//采收
+                        uploadParam.setHarvestBatch((List<HarvestBatch>) map.get("harvestBatchList"));
+                        uploadParam.setPlantingBatch((List<PlantingBatch>) map.get("plantingBatchList"));
+                    }
+                    if (!oConvertUtils.isEmpty(wptpProcessInfoVO)) {
                         if (!oConvertUtils.isEmpty(wptpCsInfoList)) {
-                            Map map = handlePlantCs(wptpCsInfoList);//采收
-                            uploadParam.setHarvestBatch((List<HarvestBatch>)map.get("harvestBatchList"));
-                            uploadParam.setPlantingBatch((List<PlantingBatch>)map.get("plantingBatchList"));
-                        }
-                        if (!oConvertUtils.isEmpty(wptpProcessInfoVO)){
-                            if (!oConvertUtils.isEmpty(wptpCsInfoList)) {
-                                ProcessingInfo processingInfo = handlePlantProcess(wptpProcessInfoVO,wptpCsInfoList.get(0).getMedicinalCode());//初加工
+                            ProcessingInfo processingInfo = handlePlantProcess(wptpProcessInfoVO, wptpCsInfoList.get(0).getMedicinalCode());//初加工
                             processingInfo.setProcessProductName(medicinalCode);
                             List<ProcessingInfo> processingInfos = new ArrayList<>();
                             processingInfos.add(processingInfo);
                             uploadParam.setProcessingInfo(processingInfos);
                         }
-                        }
-                        uploadParam.setTraceStage("6");//种植：6 药材/饮片经营：3 饮片加工：1
-                        WptpSale byId = iWptpSaleService.getById(wptpSale.getId());
-                        byId.setXhTraceCode(xhCode+"-"+currentTraceCode);
-                        byId.setUpdateBy(byId.getHostCode());
-                        byId.setUpdateTime(new Date());
-                        iWptpSaleService.getBaseMapper().updateById(byId);
-
                     }
+                    uploadParam.setTraceStage("6");//种植：6 药材/饮片经营：3 饮片加工：1
+                    WptpSale byId = iWptpSaleService.getById(wptpSale.getId());
+                    byId.setXhTraceCode(xhCode + "-" + currentTraceCode);
+                    byId.setUpdateBy(byId.getHostCode());
+                    byId.setUpdateTime(new Date());
+                    iWptpSaleService.getBaseMapper().updateById(byId);
+
+                }
                 break;
             case "11":
-                MedicineTraceVO medicineVO= result.getResult().getMedicineVO();
-                if (!oConvertUtils.isEmpty(medicineVO)){
+                MedicineTraceVO medicineVO = result.getResult().getMedicineVO();
+                if (!oConvertUtils.isEmpty(medicineVO)) {
                     WptpMedicineSaleVO wptpMedicineSaleVO = medicineVO.getWptpMedicineSaleVO();
                     String entId = getEntIdByEntName(wptpMedicineSaleVO.getHostCode());
 
                     WptpMedicineInstockVO wptpMedicineInstockVO = medicineVO.getWptpMedicineInstockVO();
                     String outTime = wptpMedicineSaleVO.getOutTime();
-                    List<QualitySelfTest> qualitySelfTestList= new ArrayList<>();//检测报告
+                    List<QualitySelfTest> qualitySelfTestList = new ArrayList<>();//检测报告
                     /**
                      * 销售
                      */
-                    if (!oConvertUtils.isEmpty(wptpMedicineSaleVO)){
+                    if (!oConvertUtils.isEmpty(wptpMedicineSaleVO)) {
                         List<OrderShipment> orderShipment = handleMedicineSale(wptpMedicineSaleVO);
                         uploadParam.setOrderShipment(orderShipment);
                         xhCode = getEntXhCode(entId);
-                        currentTraceCode=wptpMedicineSaleVO.getTraceCode();
+                        currentTraceCode = wptpMedicineSaleVO.getTraceCode();
                         EnterpriseInfo enterpriseInfo = new EnterpriseInfo();
                         enterpriseInfo.setEnterpriseId(xhCode);
                         enterpriseInfo.setEnterpriseCode(entId);
                         uploadParam.setEnterpriseInfo(enterpriseInfo);
                         String medicinalName = getMedicinalName(wptpMedicineSaleVO.getCategoryCode());
                         uploadParam.setCommodityName(medicinalName);
-                        if (!oConvertUtils.isEmpty(outTime))uploadParam.setNodeDate(DateUtils.StringToDate(outTime));
+                        if (!oConvertUtils.isEmpty(outTime)) uploadParam.setNodeDate(DateUtils.StringToDate(outTime));
                     }
                     /**
                      * 入库
                      */
-                    if (!oConvertUtils.isEmpty(wptpMedicineInstockVO)){
+                    if (!oConvertUtils.isEmpty(wptpMedicineInstockVO)) {
                         Map<String, Object> resultMap = handleMedicineInstock(wptpMedicineInstockVO);
-                        PurchaseOrderInfo purchaseOrderInfo =(PurchaseOrderInfo) resultMap.get("purchaseOrderInfo");
-                        WarehouseInfo warehouseInfo = (WarehouseInfo)resultMap.get("warehouseInfo");
-                      /*  EnterpriseInfo enterpriseInfo=(EnterpriseInfo)resultMap.get("enterpriseInfo");*/
+                        PurchaseOrderInfo purchaseOrderInfo = (PurchaseOrderInfo) resultMap.get("purchaseOrderInfo");
+                        WarehouseInfo warehouseInfo = (WarehouseInfo) resultMap.get("warehouseInfo");
+                        /*  EnterpriseInfo enterpriseInfo=(EnterpriseInfo)resultMap.get("enterpriseInfo");*/
                         List<WarehouseInfo> warehouseInfoList = new ArrayList<>();
                         List<PurchaseOrderInfo> purchaseOrderInfoList = new ArrayList<>();
                         purchaseOrderInfoList.add(purchaseOrderInfo);
                         warehouseInfoList.add(warehouseInfo);
                         uploadParam.setPurchaseOrderInfo(purchaseOrderInfoList);
                         uploadParam.setWarehouseInfo(warehouseInfoList);
-                  /*      uploadParam.setEnterpriseInfo(enterpriseInfo);*/
+                        /*      uploadParam.setEnterpriseInfo(enterpriseInfo);*/
                         QualitySelfTest qualitySelfTest = handleMedicineSaleQualitySelfTest(wptpMedicineInstockVO);
                         qualitySelfTestList.add(qualitySelfTest);
-                        lastTraceCode=wptpMedicineInstockVO.getTraceCode();
+                        lastTraceCode = wptpMedicineInstockVO.getTraceCode();
 
-                     /*   lastXhCode = getEntXhCode(wptpMedicineInstockVO.getEntId());*/
+                        /*   lastXhCode = getEntXhCode(wptpMedicineInstockVO.getEntId());*/
                         lastXhCode = chooseLink(lastTraceCode);
                     }
                     uploadParam.setQualitySelfTest(qualitySelfTestList);
                     uploadParam.setTraceStage("3");//种植：6 药材/饮片经营：3 饮片加工：1
                     WptpMedicineSale byId = iWptpMedicineSaleService.getById(wptpMedicineSaleVO.getId());
-                    byId.setXhTraceCode(xhCode+"-"+currentTraceCode);
+                    byId.setXhTraceCode(xhCode + "-" + currentTraceCode);
                     byId.setUpdateBy(byId.getHostCode());
                     byId.setUpdateTime(new Date());
                     iWptpMedicineSaleService.getBaseMapper().updateById(byId);
-                    }
+                }
                 break;
             case "23":
-                    YpProcessTraceVO ypProcessVO = result.getResult().getYpProcessVO();
-                        if (!oConvertUtils.isEmpty(ypProcessVO)){
-                            WptpYpSaleVO wptpYpSaleVO = ypProcessVO.getWptpYpSaleVO();
-                            WptpYpInstockVO wptpYpInstockVO = ypProcessVO.getWptpYpInstockVO();
-                            WptpYpProcessVO wptpYpProcessVO = ypProcessVO.getWptpYpProcessVO();
-                            WptpYpPackVO wptpYpPackVO = ypProcessVO.getWptpYpPackVO();
-                            List<QualitySelfTest> qualitySelfTestList= new ArrayList<>();//检测报告
-                            String entId = getEntIdByEntName(wptpYpSaleVO.getHostCode());
-                            EnterpriseInfo enterpriseInfo = new EnterpriseInfo();
-                            enterpriseInfo.setEnterpriseId(getEntXhCode(entId));
-                            enterpriseInfo.setEnterpriseCode(entId);
-                            uploadParam.setEnterpriseInfo(enterpriseInfo);
-                            String saleTime = wptpYpSaleVO.getSaleTime();
-                            /**
-                             * 销售
-                             */
-                            if (!oConvertUtils.isEmpty(wptpYpSaleVO)){
-                                List<OrderShipment> orderShipment = handleYpProcessSale(wptpYpSaleVO);
-                                xhCode = getEntXhCode(entId);
-                                currentTraceCode=wptpYpSaleVO.getTraceCode();
-                                String medicinalName = getMedicinalName(wptpYpSaleVO.getYpCode());
-                                uploadParam.setCommodityName(medicinalName);
-                                uploadParam.setOrderShipment(orderShipment);
-                                if (!oConvertUtils.isEmpty(saleTime))uploadParam.setNodeDate(DateUtils.StringToDate(saleTime));
-                            }
-                            /**
-                             * 入库
-                             */
-                            if (!oConvertUtils.isEmpty(wptpYpInstockVO)){
-                                Map<String, Object> resultMap = handleYpProcessInstock(wptpYpInstockVO);
-                                PurchaseOrderInfo purchaseOrderInfo =(PurchaseOrderInfo) resultMap.get("purchaseOrderInfo");
-                                WarehouseInfo warehouseInfo = (WarehouseInfo)resultMap.get("warehouseInfo");
-                              /*  EnterpriseInfo enterpriseInfo=(EnterpriseInfo)resultMap.get("enterpriseInfo");*/
-                                List<WarehouseInfo> warehouseInfoList = new ArrayList<>();
-                                List<PurchaseOrderInfo> purchaseOrderInfoList = new ArrayList<>();
-                                purchaseOrderInfoList.add(purchaseOrderInfo);
-                                warehouseInfoList.add(warehouseInfo);
-                                uploadParam.setPurchaseOrderInfo(purchaseOrderInfoList);
-                                uploadParam.setWarehouseInfo(warehouseInfoList);
-                               /* uploadParam.setEnterpriseInfo(enterpriseInfo);*/
-                                QualitySelfTest qualitySelfTest = handleYpProcessInStockQualitySelfTest(wptpYpInstockVO);
-                                qualitySelfTestList.add(qualitySelfTest);
-                                lastTraceCode=wptpYpInstockVO.getTraceCode();
-                               /* lastXhCode = getEntXhCode(wptpYpInstockVO.getEntId());*/
-                                lastXhCode = chooseLink(lastTraceCode);
-                            }
-                            uploadParam.setEnterpriseInfo(enterpriseInfo);
-                            /**
-                             * 加工
-                             */
-                            if (!oConvertUtils.isEmpty(wptpYpProcessVO)){
-                                ProcessingInfo processingInfo = handleYpProcessProcess(wptpYpProcessVO);
-                                List<ProcessingInfo> processingInfoList = new ArrayList<>();
-                                QualitySelfTest qualitySelfTest = handleYpProcessQualitySelfTest(wptpYpProcessVO);
-                                qualitySelfTestList.add(qualitySelfTest);
-                                processingInfoList.add(processingInfo);
-                                uploadParam.setProcessingInfo(processingInfoList);
-                            }
-                            /**
-                             * 包装
-                             */
-                            if (!oConvertUtils.isEmpty(wptpYpPackVO)){
-                                List<PackingInfo> packingInfo = handleYpProcessPack(wptpYpPackVO);
-                                uploadParam.setPackingInfo(packingInfo);
-                            }
-                            uploadParam.setQualitySelfTest(qualitySelfTestList);
-                            uploadParam.setTraceStage("1");//种植：6 药材/饮片经营：3 饮片加工：1
-                            WptpYpSale byId = iWptpYpSaleService.getById(wptpYpSaleVO.getId());
-                            byId.setXhTraceCode(xhCode+"-"+currentTraceCode);
-                            byId.setUpdateBy(byId.getHostCode());
-                            byId.setUpdateDate(new Date());
-                            iWptpYpSaleService.getBaseMapper().updateById(byId);
+                YpProcessTraceVO ypProcessVO = result.getResult().getYpProcessVO();
+                if (!oConvertUtils.isEmpty(ypProcessVO)) {
+                    WptpYpSaleVO wptpYpSaleVO = ypProcessVO.getWptpYpSaleVO();
+                    WptpYpInstockVO wptpYpInstockVO = ypProcessVO.getWptpYpInstockVO();
+                    WptpYpProcessVO wptpYpProcessVO = ypProcessVO.getWptpYpProcessVO();
+                    WptpYpPackVO wptpYpPackVO = ypProcessVO.getWptpYpPackVO();
+                    List<QualitySelfTest> qualitySelfTestList = new ArrayList<>();//检测报告
+                    String entId = getEntIdByEntName(wptpYpSaleVO.getHostCode());
+                    EnterpriseInfo enterpriseInfo = new EnterpriseInfo();
+                    enterpriseInfo.setEnterpriseId(getEntXhCode(entId));
+                    enterpriseInfo.setEnterpriseCode(entId);
+                    uploadParam.setEnterpriseInfo(enterpriseInfo);
+                    String saleTime = wptpYpSaleVO.getSaleTime();
+                    /**
+                     * 销售
+                     */
+                    if (!oConvertUtils.isEmpty(wptpYpSaleVO)) {
+                        List<OrderShipment> orderShipment = handleYpProcessSale(wptpYpSaleVO);
+                        xhCode = getEntXhCode(entId);
+                        currentTraceCode = wptpYpSaleVO.getTraceCode();
+                        String medicinalName = getMedicinalName(wptpYpSaleVO.getYpCode());
+                        uploadParam.setCommodityName(medicinalName);
+                        uploadParam.setOrderShipment(orderShipment);
+                        if (!oConvertUtils.isEmpty(saleTime)) uploadParam.setNodeDate(DateUtils.StringToDate(saleTime));
+                    }
+                    /**
+                     * 入库
+                     */
+                    if (!oConvertUtils.isEmpty(wptpYpInstockVO)) {
+                        Map<String, Object> resultMap = handleYpProcessInstock(wptpYpInstockVO);
+                        PurchaseOrderInfo purchaseOrderInfo = (PurchaseOrderInfo) resultMap.get("purchaseOrderInfo");
+                        WarehouseInfo warehouseInfo = (WarehouseInfo) resultMap.get("warehouseInfo");
+                        /*  EnterpriseInfo enterpriseInfo=(EnterpriseInfo)resultMap.get("enterpriseInfo");*/
+                        List<WarehouseInfo> warehouseInfoList = new ArrayList<>();
+                        List<PurchaseOrderInfo> purchaseOrderInfoList = new ArrayList<>();
+                        purchaseOrderInfoList.add(purchaseOrderInfo);
+                        warehouseInfoList.add(warehouseInfo);
+                        uploadParam.setPurchaseOrderInfo(purchaseOrderInfoList);
+                        uploadParam.setWarehouseInfo(warehouseInfoList);
+                        /* uploadParam.setEnterpriseInfo(enterpriseInfo);*/
+                        QualitySelfTest qualitySelfTest = handleYpProcessInStockQualitySelfTest(wptpYpInstockVO);
+                        qualitySelfTestList.add(qualitySelfTest);
+                        lastTraceCode = wptpYpInstockVO.getTraceCode();
+                        /* lastXhCode = getEntXhCode(wptpYpInstockVO.getEntId());*/
+                        lastXhCode = chooseLink(lastTraceCode);
+                    }
+                    uploadParam.setEnterpriseInfo(enterpriseInfo);
+                    /**
+                     * 加工
+                     */
+                    if (!oConvertUtils.isEmpty(wptpYpProcessVO)) {
+                        ProcessingInfo processingInfo = handleYpProcessProcess(wptpYpProcessVO);
+                        List<ProcessingInfo> processingInfoList = new ArrayList<>();
+                        QualitySelfTest qualitySelfTest = handleYpProcessQualitySelfTest(wptpYpProcessVO);
+                        qualitySelfTestList.add(qualitySelfTest);
+                        processingInfoList.add(processingInfo);
+                        uploadParam.setProcessingInfo(processingInfoList);
+                    }
+                    /**
+                     * 包装
+                     */
+                    if (!oConvertUtils.isEmpty(wptpYpPackVO)) {
+                        List<PackingInfo> packingInfo = handleYpProcessPack(wptpYpPackVO);
+                        uploadParam.setPackingInfo(packingInfo);
+                    }
+                    uploadParam.setQualitySelfTest(qualitySelfTestList);
+                    uploadParam.setTraceStage("1");//种植：6 药材/饮片经营：3 饮片加工：1
+                    WptpYpSale byId = iWptpYpSaleService.getById(wptpYpSaleVO.getId());
+                    byId.setXhTraceCode(xhCode + "-" + currentTraceCode);
+                    byId.setUpdateBy(byId.getHostCode());
+                    byId.setUpdateDate(new Date());
+                    iWptpYpSaleService.getBaseMapper().updateById(byId);
                 }
 
                 break;
             case "31":
-                    List<YpBusinessTraceVO> ypBusinessTraceVOList = result.getResult().getYpBusinessTraceVOList();
-                    if (!oConvertUtils.isEmpty( ypBusinessTraceVOList)){
-                        YpBusinessTraceVO ypBusinessTraceVO = ypBusinessTraceVOList.get(0);
-                        if (!oConvertUtils.isEmpty(ypBusinessTraceVO)){
-                            WptpYpbSaleVO wptpYpbSaleVO = ypBusinessTraceVO.getWptpYpbSaleVO();
-                            WptpYpbInstockVO wptpYpbInstockVO = ypBusinessTraceVO.getWptpYpbInstockVO();
-                            String saleTime = wptpYpbSaleVO.getSaleTime();
+                List<YpBusinessTraceVO> ypBusinessTraceVOList = result.getResult().getYpBusinessTraceVOList();
+                if (!oConvertUtils.isEmpty(ypBusinessTraceVOList)) {
+                    YpBusinessTraceVO ypBusinessTraceVO = ypBusinessTraceVOList.get(0);
+                    if (!oConvertUtils.isEmpty(ypBusinessTraceVO)) {
+                        WptpYpbSaleVO wptpYpbSaleVO = ypBusinessTraceVO.getWptpYpbSaleVO();
+                        WptpYpbInstockVO wptpYpbInstockVO = ypBusinessTraceVO.getWptpYpbInstockVO();
+                        String saleTime = wptpYpbSaleVO.getSaleTime();
 
-                            if (!oConvertUtils.isEmpty(wptpYpbSaleVO)){
-                                List<OrderShipment> orderShipment = handleYpBusinessSale(wptpYpbSaleVO);
-                                String entId = getEntIdByEntName(wptpYpbSaleVO.getHostCode());
-                                EnterpriseInfo enterpriseInfo = new EnterpriseInfo();
+                        if (!oConvertUtils.isEmpty(wptpYpbSaleVO)) {
+                            List<OrderShipment> orderShipment = handleYpBusinessSale(wptpYpbSaleVO);
+                            String entId = getEntIdByEntName(wptpYpbSaleVO.getHostCode());
+                            EnterpriseInfo enterpriseInfo = new EnterpriseInfo();
 
-                                uploadParam.setOrderShipment(orderShipment);
-                                xhCode = getEntXhCode(entId);
-                                currentTraceCode=wptpYpbSaleVO.getTraceCode();
-                                enterpriseInfo.setEnterpriseId(xhCode);
-                                enterpriseInfo.setEnterpriseCode(entId);
-                                uploadParam.setEnterpriseInfo(enterpriseInfo);
-                                String medicinalName = getMedicinalName(wptpYpbSaleVO.getYpCode());
-                                uploadParam.setCommodityName(medicinalName);
-                                uploadParam.setEnterpriseInfo(enterpriseInfo);
-                                if (!oConvertUtils.isEmpty(saleTime)) uploadParam.setNodeDate(DateUtils.StringToDate(saleTime));
-                            }
-                            if (!oConvertUtils.isEmpty(wptpYpbInstockVO)){
-                                Map<String, Object> resultMap = handleYpBusinessInstock(wptpYpbInstockVO);
-                                PurchaseOrderInfo purchaseOrderInfo =(PurchaseOrderInfo) resultMap.get("purchaseOrderInfo");
-                                WarehouseInfo warehouseInfo = (WarehouseInfo)resultMap.get("warehouseInfo");
-                               /* EnterpriseInfo enterpriseInfo=(EnterpriseInfo)resultMap.get("enterpriseInfo");*/
-                                List<WarehouseInfo> warehouseInfoList = new ArrayList<>();
-                                List<PurchaseOrderInfo> purchaseOrderInfoList = new ArrayList<>();
-                                purchaseOrderInfoList.add(purchaseOrderInfo);
-                                warehouseInfoList.add(warehouseInfo);
-                                uploadParam.setPurchaseOrderInfo(purchaseOrderInfoList);
-                                uploadParam.setWarehouseInfo(warehouseInfoList);
-
-                                lastTraceCode=wptpYpbInstockVO.getTraceCode();
-                               /* lastXhCode = getEntXhCode(wptpYpbInstockVO.getEntId());*/
-                                lastXhCode = chooseLink(lastTraceCode);
-                            }
-                            uploadParam.setTraceStage("3");//种植：6 药材/饮片经营：3 饮片加工：1
-                            WptpYpbSale byId = iWptpYpbSaleService.getById(wptpYpbSaleVO.getId());
-                            byId.setXhTraceCode(xhCode+"-"+currentTraceCode);
-                            byId.setUpdateBy(byId.getHostCode());
-                            byId.setUpdateDate(new Date());
-                            iWptpYpbSaleService.getBaseMapper().updateById(byId);
+                            uploadParam.setOrderShipment(orderShipment);
+                            xhCode = getEntXhCode(entId);
+                            currentTraceCode = wptpYpbSaleVO.getTraceCode();
+                            enterpriseInfo.setEnterpriseId(xhCode);
+                            enterpriseInfo.setEnterpriseCode(entId);
+                            uploadParam.setEnterpriseInfo(enterpriseInfo);
+                            String medicinalName = getMedicinalName(wptpYpbSaleVO.getYpCode());
+                            uploadParam.setCommodityName(medicinalName);
+                            uploadParam.setEnterpriseInfo(enterpriseInfo);
+                            if (!oConvertUtils.isEmpty(saleTime))
+                                uploadParam.setNodeDate(DateUtils.StringToDate(saleTime));
                         }
+                        if (!oConvertUtils.isEmpty(wptpYpbInstockVO)) {
+                            Map<String, Object> resultMap = handleYpBusinessInstock(wptpYpbInstockVO);
+                            PurchaseOrderInfo purchaseOrderInfo = (PurchaseOrderInfo) resultMap.get("purchaseOrderInfo");
+                            WarehouseInfo warehouseInfo = (WarehouseInfo) resultMap.get("warehouseInfo");
+                            /* EnterpriseInfo enterpriseInfo=(EnterpriseInfo)resultMap.get("enterpriseInfo");*/
+                            List<WarehouseInfo> warehouseInfoList = new ArrayList<>();
+                            List<PurchaseOrderInfo> purchaseOrderInfoList = new ArrayList<>();
+                            purchaseOrderInfoList.add(purchaseOrderInfo);
+                            warehouseInfoList.add(warehouseInfo);
+                            uploadParam.setPurchaseOrderInfo(purchaseOrderInfoList);
+                            uploadParam.setWarehouseInfo(warehouseInfoList);
+
+                            lastTraceCode = wptpYpbInstockVO.getTraceCode();
+                            /* lastXhCode = getEntXhCode(wptpYpbInstockVO.getEntId());*/
+                            lastXhCode = chooseLink(lastTraceCode);
+                        }
+                        uploadParam.setTraceStage("3");//种植：6 药材/饮片经营：3 饮片加工：1
+                        WptpYpbSale byId = iWptpYpbSaleService.getById(wptpYpbSaleVO.getId());
+                        byId.setXhTraceCode(xhCode + "-" + currentTraceCode);
+                        byId.setUpdateBy(byId.getHostCode());
+                        byId.setUpdateDate(new Date());
+                        iWptpYpbSaleService.getBaseMapper().updateById(byId);
+                    }
                 }
 
         }
         uploadParam.setAppKey(APP_KEY);
         uploadParam.setAppToken(getToken());
         uploadParam.setOperaterFlag(operaterFlag);
-        uploadParam.setCurrentNodeId(xhCode+"-"+currentTraceCode);
-        if (!oConvertUtils.isEmpty(lastTraceCode))uploadParam.setLastNodeId(lastXhCode+"-"+lastTraceCode);
-        uploadParam.setTraceCode(new TraceCode(xhCode+"-"+currentTraceCode,null));
-        System.out.println("当前环节:"+uploadParam.getCurrentNodeId());
-        System.out.println("上游环节:"+uploadParam.getLastNodeId());
-        System.out.println("追溯码"+uploadParam.getTraceCode());
+        uploadParam.setCurrentNodeId(xhCode + "-" + currentTraceCode);
+        if (!oConvertUtils.isEmpty(lastTraceCode)) {
+            if (!oConvertUtils.isEmpty(lastXhCode)) {
+                uploadParam.setLastNodeId(lastXhCode + "-" + lastTraceCode);
+            } else {
+                uploadParam.setLastNodeId(lastTraceCode);
+            }
+
+        }
+        uploadParam.setTraceCode(new TraceCode(xhCode + "-" + currentTraceCode, null));
+        System.out.println("当前环节:" + uploadParam.getCurrentNodeId());
+        System.out.println("上游环节:" + uploadParam.getLastNodeId());
+        System.out.println("追溯码" + uploadParam.getTraceCode());
         return uploadParam;
     }
 
     /**
      * 获得token
+     *
      * @return
      */
-   private static String getToken(){
-       Map<String, String> paramMap = new HashMap<>();
-       paramMap.put("appKey",APP_KEY);
-       paramMap.put("appSecret",APP_SECRET);
-       paramMap.put("time",new Date().getTime()+"");
-       String result = HttpUtils.sendGet(TOKEN_URL, paramMap);
-       JSONObject jsonObject = JSONObject.parseObject(result);
-       String dataStr = jsonObject.get("data").toString();
-       JSONObject dataJson = JSONObject.parseObject(dataStr);
-       String accessToken = dataJson.get("accessToken").toString();
-       if (oConvertUtils.isEmpty(accessToken))return "";
-       return accessToken;
-}
+    private static String getToken() {
+        Map<String, String> paramMap = new HashMap<>();
+        paramMap.put("appKey", APP_KEY);
+        paramMap.put("appSecret", APP_SECRET);
+        paramMap.put("time", new Date().getTime() + "");
+        String result = HttpUtils.sendGet(TOKEN_URL, paramMap);
+        JSONObject jsonObject = JSONObject.parseObject(result);
+        String dataStr = jsonObject.get("data").toString();
+        JSONObject dataJson = JSONObject.parseObject(dataStr);
+        String accessToken = dataJson.get("accessToken").toString();
+        if (oConvertUtils.isEmpty(accessToken)) return "";
+        return accessToken;
+    }
 
     /**
      * 判断去哪个上游环节取追溯码
+     *
      * @return
      */
-    private String chooseLink(String traceCode){  /**
+    private String chooseLink(String traceCode) {  /**
      * 判断追溯码的第二、三位属于哪个环节
      * 药材：11，种植：04，饮片加工：23，饮片经营：31
      */
-    String xhCode="";
-        switch (traceCode.substring(1,3)) {
+        String xhCode = "";
+        switch (traceCode.substring(1, 3)) {
             case "11":
-                 xhCode = getMedicineSaleXhCodeByTraceCode(traceCode);
+                xhCode = getMedicineSaleXhCodeByTraceCode(traceCode);
                 break;
             case "04":
                 xhCode = getPlantSaleXhCodeByTraceCode(traceCode);
@@ -468,173 +480,191 @@ public class GuildUpload {
             case "31":
                 xhCode = getYpBusinessXhCodeByTraceCode(traceCode);
         }
-       return xhCode;
-}
+        return xhCode;
+    }
+
     /**
      * 种植-根据追溯码查询xhCode
      */
-     private  String getPlantSaleXhCodeByTraceCode(String traceCode){
-         QueryWrapper<WptpSale> queryWrapper = new QueryWrapper<>();
-         queryWrapper.eq("trace_code",traceCode);
-         queryWrapper.eq("deleted","0");
-         WptpSale wptpSale = iWptpSaleService.getBaseMapper().selectOne(queryWrapper);
-         if (oConvertUtils.isEmpty(wptpSale))return null;
-         String entId="";
-         entId=getEntIdByEntName(wptpSale.getHostCode());
-         if (oConvertUtils.isEmpty(entId))entId=getEntIdByHostCode(wptpSale.getHostCode());
-         String entXhCode = getEntXhCode(entId);
-         return entXhCode;
-     }
+    private String getPlantSaleXhCodeByTraceCode(String traceCode) {
+        QueryWrapper<WptpSale> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("trace_code", traceCode);
+        queryWrapper.eq("deleted", "0");
+        WptpSale wptpSale = iWptpSaleService.getBaseMapper().selectOne(queryWrapper);
+        if (oConvertUtils.isEmpty(wptpSale)) return null;
+        String entId = "";
+        entId = getEntIdByEntName(wptpSale.getHostCode());
+        if (oConvertUtils.isEmpty(entId)) entId = getEntIdByHostCode(wptpSale.getHostCode());
+        String entXhCode = getEntXhCode(entId);
+        return entXhCode;
+    }
+
     /**
      * 药材经营-根据追溯码查询xhCode
      */
-    private  String getMedicineSaleXhCodeByTraceCode(String traceCode){
+    private String getMedicineSaleXhCodeByTraceCode(String traceCode) {
         QueryWrapper<WptpMedicineSale> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("trace_code",traceCode);
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("trace_code", traceCode);
+        queryWrapper.eq("deleted", "0");
         WptpMedicineSale wptpMedicineSale = iWptpMedicineSaleService.getBaseMapper().selectOne(queryWrapper);
-        if (oConvertUtils.isEmpty(wptpMedicineSale))return null;
+        if (oConvertUtils.isEmpty(wptpMedicineSale)) return null;
         String entIdByHostCode = getEntIdByHostCode(wptpMedicineSale.getHostCode());//主机代码
         String entXhCode = getEntXhCode(entIdByHostCode);
         return entXhCode;
     }
+
     /**
      * 饮片加工-根据追溯码查询xhCode
      */
-    private  String getYpProcessXhCodeByTraceCode(String traceCode){
+    private String getYpProcessXhCodeByTraceCode(String traceCode) {
         QueryWrapper<WptpYpSale> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("trace_code",traceCode);
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("trace_code", traceCode);
+        queryWrapper.eq("deleted", "0");
         WptpYpSale wptpYpSale = iWptpYpSaleService.getBaseMapper().selectOne(queryWrapper);
-        if (oConvertUtils.isEmpty(wptpYpSale))return null;
+        if (oConvertUtils.isEmpty(wptpYpSale)) return null;
         String entIdByHostCode = getEntIdByHostCode(wptpYpSale.getHostCode());//主机代码
         String entXhCode = getEntXhCode(entIdByHostCode);
         return entXhCode;
     }
+
     /**
      * 饮片经营-根据追溯码查询xhCode
      */
-    private  String getYpBusinessXhCodeByTraceCode(String traceCode){
+    private String getYpBusinessXhCodeByTraceCode(String traceCode) {
         QueryWrapper<WptpYpbSale> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("trace_code",traceCode);
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("trace_code", traceCode);
+        queryWrapper.eq("deleted", "0");
         WptpYpbSale wptpYpbSale = iWptpYpbSaleService.getBaseMapper().selectOne(queryWrapper);
-        if (oConvertUtils.isEmpty(wptpYpbSale))return null;
+        if (oConvertUtils.isEmpty(wptpYpbSale)) return null;
         String entIdByHostCode = getEntIdByHostCode(wptpYpbSale.getHostCode());//主机代码
         String entXhCode = getEntXhCode(entIdByHostCode);
         return entXhCode;
     }
+
     /**
      * 根据企业名称获取entID
+     *
      * @param entName
      * @return
      */
-    private String getEntIdByEntName(String entName){
-    QueryWrapper<WptpEntInfo> entInfoQueryWrapper = new QueryWrapper<>();
-    if (oConvertUtils.isEmpty(entName))return null;
-    entInfoQueryWrapper.eq("ent_name",entName.trim());
-        entInfoQueryWrapper.eq("deleted","0");
-    WptpEntInfo wptpEntInfo = iWptpEntInfoService.getBaseMapper().selectOne(entInfoQueryWrapper);
-    if (!oConvertUtils.isEmpty(wptpEntInfo))return wptpEntInfo.getEntId();
-    return null;
-}
+    private String getEntIdByEntName(String entName) {
+        QueryWrapper<WptpEntInfo> entInfoQueryWrapper = new QueryWrapper<>();
+        if (oConvertUtils.isEmpty(entName)) return null;
+        entInfoQueryWrapper.eq("ent_name", entName.trim());
+        entInfoQueryWrapper.eq("deleted", "0");
+        WptpEntInfo wptpEntInfo = iWptpEntInfoService.getBaseMapper().selectOne(entInfoQueryWrapper);
+        if (!oConvertUtils.isEmpty(wptpEntInfo)) return wptpEntInfo.getEntId();
+        return null;
+    }
 /**
  * 上传成品或者原料相关到行业协会
  */
 
     /**
      * 根据药材或者饮片编码
+     *
      * @param code
      * @return
      */
-   private String getMedicinalName(String code) throws Exception{
-       QueryWrapper<WptpMedicinal> queryWrapper = new QueryWrapper<>();
-       if (oConvertUtils.isEmpty(code))return null;
-       queryWrapper.eq("medicinal_code",code.trim());
-       queryWrapper.eq("deleted","0");
-       WptpMedicinal wptpMedicinal = iWptpMedicinalService.getBaseMapper().selectOne(queryWrapper);
-       if (!oConvertUtils.isEmpty(wptpMedicinal))return wptpMedicinal.getName();
-       return "";
-   }
+    private String getMedicinalName(String code) throws Exception {
+        QueryWrapper<WptpMedicinal> queryWrapper = new QueryWrapper<>();
+        if (oConvertUtils.isEmpty(code)) return null;
+        queryWrapper.eq("medicinal_code", code.trim());
+        queryWrapper.eq("deleted", "0");
+        WptpMedicinal wptpMedicinal = iWptpMedicinalService.getBaseMapper().selectOne(queryWrapper);
+        if (!oConvertUtils.isEmpty(wptpMedicinal)) return wptpMedicinal.getName();
+        return "";
+    }
+
     /**
      * 根据主机代码查询企业id
+     *
      * @return
      */
-    private String getEntIdByHostCode(String hostCode){
+    private String getEntIdByHostCode(String hostCode) {
         QueryWrapper<WptpHostcode> entInfoQueryWrapper = new QueryWrapper<>();
-        if (oConvertUtils.isEmpty(hostCode))return null;
-        entInfoQueryWrapper.eq("host_code",hostCode.trim());
+        if (oConvertUtils.isEmpty(hostCode)) return null;
+        entInfoQueryWrapper.eq("host_code", hostCode.trim());
         WptpHostcode wptpHostcode = iWptpHostcodeService.getBaseMapper().selectOne(entInfoQueryWrapper);
-        if (!oConvertUtils.isEmpty(wptpHostcode))return wptpHostcode.getEntId();
+        if (!oConvertUtils.isEmpty(wptpHostcode)) return wptpHostcode.getEntId();
         return null;
     }
+
     /**
      * 根据企业id查询xhCode
+     *
      * @return
      */
-    private String getEntXhCode(String entId){
+    private String getEntXhCode(String entId) {
         QueryWrapper<WptpEntInfo> entInfoQueryWrapper = new QueryWrapper<>();
-        if (oConvertUtils.isEmpty(entId))return null;
-        entInfoQueryWrapper.eq("ent_id",entId.trim());
-        entInfoQueryWrapper.eq("deleted","0");
+        if (oConvertUtils.isEmpty(entId)) return null;
+        entInfoQueryWrapper.eq("ent_id", entId.trim());
+        entInfoQueryWrapper.eq("deleted", "0");
         WptpEntInfo wptpEntInfo = iWptpEntInfoService.getBaseMapper().selectOne(entInfoQueryWrapper);
-        if (!oConvertUtils.isEmpty(wptpEntInfo))return wptpEntInfo.getXhCode();
+        if (!oConvertUtils.isEmpty(wptpEntInfo)) return wptpEntInfo.getXhCode();
         return null;
     }
+
     /**
      * 根据企业id查询name
+     *
      * @return
      */
-    private String getEntName(String entId){
+    private String getEntName(String entId) {
         QueryWrapper<WptpEntInfo> entInfoQueryWrapper = new QueryWrapper<>();
-        if (oConvertUtils.isEmpty(entId))return null;
-        entInfoQueryWrapper.eq("ent_id",entId.trim());
-        entInfoQueryWrapper.eq("deleted","0");
+        if (oConvertUtils.isEmpty(entId)) return null;
+        entInfoQueryWrapper.eq("ent_id", entId.trim());
+        entInfoQueryWrapper.eq("deleted", "0");
         WptpEntInfo wptpEntInfo = iWptpEntInfoService.getBaseMapper().selectOne(entInfoQueryWrapper);
-        if (!oConvertUtils.isEmpty(wptpEntInfo))return wptpEntInfo.getEntName();
+        if (!oConvertUtils.isEmpty(wptpEntInfo)) return wptpEntInfo.getEntName();
         return null;
     }
 
     /**
      * 根据档案id查询一个作业
+     *
      * @param blockMedicinalId
      * @return
      */
-    private WptpPlantInfoVO getPlantInfo(String blockMedicinalId,String plantType){
+    private WptpPlantInfoVO getPlantInfo(String blockMedicinalId, String plantType) {
         WptpBlockMeidicinalVO blockMeidicinalVO = traceBaseDataService.getBlockMeidicinalVO(blockMedicinalId);//档案
-        if (!oConvertUtils.isEmpty(blockMeidicinalVO)){
+        if (!oConvertUtils.isEmpty(blockMeidicinalVO)) {
             List<WptpPlantInfoVO> wptpPlantInfoVOList = traceBaseDataService.listPlantInfoVO(blockMeidicinalVO.getBlockMedicinalId());
-            if (!wptpPlantInfoVOList.isEmpty()){
-                for (WptpPlantInfoVO  w:
+            if (!wptpPlantInfoVOList.isEmpty()) {
+                for (WptpPlantInfoVO w :
                         wptpPlantInfoVOList) {
-                    if (plantType.equals(w.getPlantSatus()))return w;//如果是采收的作业
+                    if (plantType.equals(w.getPlantSatus())) return w;//如果是采收的作业
                 }
             }
         }
         return null;
     }
+
     /**
      * 按照行业协会的接口，处理企业信息参数
+     *
      * @param entId
      * @param xhCode
      * @return
      */
-    private EnterpriseInfo handleEnterpriseInfo(String entId,String xhCode){
+    private EnterpriseInfo handleEnterpriseInfo(String entId, String xhCode) {
         EnterpriseInfo enterpriseInfo = new EnterpriseInfo();
         enterpriseInfo.setEnterpriseCode(entId);
         enterpriseInfo.setEnterpriseId(xhCode);
         return enterpriseInfo;
     }
+
     /**
      * 按照行业协会的接口，处理饮片经营的销售环节参数
+     *
      * @return
      */
-    private List<OrderShipment> handleYpBusinessSale(WptpYpbSaleVO wptpYpbSaleVO){
+    private List<OrderShipment> handleYpBusinessSale(WptpYpbSaleVO wptpYpbSaleVO) {
         OrderShipment orderShipment = new OrderShipment();
         String saleTime = wptpYpbSaleVO.getSaleTime();
         orderShipment.setOrderShipmentId(wptpYpbSaleVO.getSaleNumber());
         orderShipment.setInvoiceNumCode(wptpYpbSaleVO.getSaleNo());
-        if (!oConvertUtils.isEmpty(saleTime))orderShipment.setDeliveryTime(DateUtils.StringToDate(saleTime));
+        if (!oConvertUtils.isEmpty(saleTime)) orderShipment.setDeliveryTime(DateUtils.StringToDate(saleTime));
         orderShipment.setDeliveryNumber(wptpYpbSaleVO.getNum());
         orderShipment.setUnit(wptpYpbSaleVO.getUnit());
         orderShipment.setPackSpec(wptpYpbSaleVO.getYpGuige());
@@ -650,9 +680,10 @@ public class GuildUpload {
 
     /**
      * 按照行业协会的接口，处理饮片经营的入库环节参数
+     *
      * @return
      */
-    private Map<String,Object> handleYpBusinessInstock(WptpYpbInstockVO wptpYpbInstock){
+    private Map<String, Object> handleYpBusinessInstock(WptpYpbInstockVO wptpYpbInstock) {
 
         /**
          * 需要把饮片经营-饮片入库的字段，插入到行业协会的仓库表、入库信息表，采购信息表中
@@ -674,13 +705,13 @@ public class GuildUpload {
          * 仓库信息
          */
         WarehouseInfo warehouseInfo = new WarehouseInfo();
-            warehouseInfo.setWarehouseName(wptpYpbInstock.getStoreCode());
-            warehouseInfo.setInventoryType(YP_PRODUCTS);
-            List<Curing> curings = new ArrayList<>();
-            Curing curing = new Curing();//仓库养护
-            curing.setCuringId(instockNumber);
-            curing.setProcessingMethod(wptpYpbInstock.getMethod());
-            curings.add(curing);
+        warehouseInfo.setWarehouseName(wptpYpbInstock.getStoreCode());
+        warehouseInfo.setInventoryType(YP_PRODUCTS);
+        List<Curing> curings = new ArrayList<>();
+        Curing curing = new Curing();//仓库养护
+        curing.setCuringId(instockNumber);
+        curing.setProcessingMethod(wptpYpbInstock.getMethod());
+        curings.add(curing);
         warehouseInfo.setCuringList(curings);
         /**
          * 入库信息
@@ -691,7 +722,7 @@ public class GuildUpload {
         storageInfo.setStorageType(1);
         storageInfo.setBatchCode(instockNo);
         storageInfo.setResponsibleUser(purchaseResponsible);
-        if (!oConvertUtils.isEmpty(arrivalTime))storageInfo.setStorageTime(DateUtils.StringToDate(arrivalTime));
+        if (!oConvertUtils.isEmpty(arrivalTime)) storageInfo.setStorageTime(DateUtils.StringToDate(arrivalTime));
 
         List<StorageDetails> storageDetailsList = new ArrayList<>();
         StorageDetails storageDetails = new StorageDetails();
@@ -733,21 +764,23 @@ public class GuildUpload {
          * 企业信息
          */
         /*String entId = wptpYpbInstock.getEntId();*/
-        String entId=getEntIdByHostCode(wptpYpbInstock.getHostCode());
+        String entId = getEntIdByHostCode(wptpYpbInstock.getHostCode());
         String entXhCode = getEntXhCode(entId);
         EnterpriseInfo enterpriseInfo = handleEnterpriseInfo(entId, entXhCode);
 
         Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("purchaseOrderInfo",purchaseOrderInfo);
-        resultMap.put("warehouseInfo",warehouseInfo);
-        resultMap.put("enterpriseInfo",enterpriseInfo);
+        resultMap.put("purchaseOrderInfo", purchaseOrderInfo);
+        resultMap.put("warehouseInfo", warehouseInfo);
+        resultMap.put("enterpriseInfo", enterpriseInfo);
         return resultMap;
     }
+
     /**
      * 按照行业协会的接口，处理饮片加工的销售环节参数
+     *
      * @return
      */
-    private List<OrderShipment> handleYpProcessSale(WptpYpSaleVO wptpYpSaleVO){
+    private List<OrderShipment> handleYpProcessSale(WptpYpSaleVO wptpYpSaleVO) {
         OrderShipment orderShipment = new OrderShipment();
         orderShipment.setOrderShipmentId(wptpYpSaleVO.getSaleNumber());
         orderShipment.setInvoiceNumCode(wptpYpSaleVO.getSaleNo());
@@ -765,11 +798,13 @@ public class GuildUpload {
         orderShipments.add(orderShipment);
         return orderShipments;
     }
+
     /**
      * 按照行业协会的接口，处理饮片加工的加工环节参数
+     *
      * @return
      */
-    private ProcessingInfo handleYpProcessProcess(WptpYpProcessVO wptpYpProcessVO){
+    private ProcessingInfo handleYpProcessProcess(WptpYpProcessVO wptpYpProcessVO) {
         ProcessingInfo processingInfo = new ProcessingInfo();
 
         String processNo = wptpYpProcessVO.getProcessNo();
@@ -789,7 +824,8 @@ public class GuildUpload {
         processingInfo.setProcessName(process);
         processingInfo.setTotalWeight(productNum);
         processingInfo.setOutUnitName(punit);
-        if (!oConvertUtils.isEmpty(producedDate))processingInfo.setProcessStartTime(DateUtils.StringToDate(producedDate));
+        if (!oConvertUtils.isEmpty(producedDate))
+            processingInfo.setProcessStartTime(DateUtils.StringToDate(producedDate));
         processingInfo.setResponsibleUser(processResponsible);
 
         ProcessMaterial processMaterial = new ProcessMaterial();
@@ -803,11 +839,13 @@ public class GuildUpload {
         processingInfo.setProcessMaterialList(processMaterialList);
         return processingInfo;
     }
+
     /**
      * 按照行业协会的接口，处理饮片加工的入库环节参数
+     *
      * @return
      */
-    private Map<String,Object> handleYpProcessInstock(WptpYpInstockVO wptpYpInstock){
+    private Map<String, Object> handleYpProcessInstock(WptpYpInstockVO wptpYpInstock) {
 
         /**
          * 需要把饮片加工-饮片入库的字段，插入到行业协会的仓库表、入库信息表，采购信息表中
@@ -822,12 +860,13 @@ public class GuildUpload {
         String categoryCode = wptpYpInstock.getCategoryCode();
         String manufacturer = wptpYpInstock.getManufacturer();
         /*String entId=getEntIdByHostCode(wptpYpInstock.getHostCode());*/
-        String entId=wptpYpInstock.getEntId();
+        String entId = wptpYpInstock.getEntId();
         String storeCode = wptpYpInstock.getStoreCode();
         String method = wptpYpInstock.getMethod();
         String materialOrigin = wptpYpInstock.getMaterialOrigin();
         String guige = wptpYpInstock.getGuige();
         String unit = wptpYpInstock.getUnit();
+        String materialBatch = wptpYpInstock.getMaterialBatch();
         /**
          * 仓库信息
          */
@@ -849,13 +888,13 @@ public class GuildUpload {
         storageInfo.setStorageType(1);
         storageInfo.setBatchCode(instockNo);
         storageInfo.setResponsibleUser(responsible);
-       if (!oConvertUtils.isEmpty(arrivalTime))storageInfo.setStorageTime(DateUtils.StringToDate(arrivalTime));
+        if (!oConvertUtils.isEmpty(arrivalTime)) storageInfo.setStorageTime(DateUtils.StringToDate(arrivalTime));
 
         List<StorageDetails> storageDetailsList = new ArrayList<>();
         StorageDetails storageDetails = new StorageDetails();
         storageDetails.setStorageDetailsId(instockNo);
         storageDetails.setProductInfoName(categoryName);
-        storageDetails.setProductBatchCode(productBatch);
+        storageDetails.setProductBatchCode(materialBatch);
         storageDetails.setProductNum(num);
         storageDetails.setUnit(unit);
         storageDetailsList.add(storageDetails);
@@ -870,7 +909,7 @@ public class GuildUpload {
         purchaseOrderInfo.setSourceMoudel("2");
         purchaseOrderInfo.setBatchCode(instockNo);
         purchaseOrderInfo.setContactUser(responsible);
-        if (!oConvertUtils.isEmpty(arrivalTime))purchaseOrderInfo.setArrivalTime(DateUtils.StringToDate(arrivalTime));
+        if (!oConvertUtils.isEmpty(arrivalTime)) purchaseOrderInfo.setArrivalTime(DateUtils.StringToDate(arrivalTime));
 
         List<PurchaseOrderDetails> purchaseOrdersList = new ArrayList<>();
         PurchaseOrderDetails purchaseOrderDetails = new PurchaseOrderDetails();
@@ -879,7 +918,7 @@ public class GuildUpload {
         purchaseOrderDetails.setProviderInfoName(getEntName(entId));
         purchaseOrderDetails.setProductNum(num);
         purchaseOrderDetails.setManufacturingEnterprise(manufacturer);
-        purchaseOrderDetails.setProduceBatchCode(productBatch);
+        purchaseOrderDetails.setProduceBatchCode(materialBatch);
         purchaseOrderDetails.setMedicinalOrigin(materialOrigin);
         purchaseOrderDetails.setRawGauge(guige);
         purchaseOrderDetails.setUnit(unit);
@@ -893,23 +932,25 @@ public class GuildUpload {
         EnterpriseInfo enterpriseInfo = handleEnterpriseInfo(entId, entXhCode);*/
 
         Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("purchaseOrderInfo",purchaseOrderInfo);
-        resultMap.put("warehouseInfo",warehouseInfo);
+        resultMap.put("purchaseOrderInfo", purchaseOrderInfo);
+        resultMap.put("warehouseInfo", warehouseInfo);
         /*resultMap.put("enterpriseInfo",enterpriseInfo);*/
         return resultMap;
     }
+
     /**
      * 按照行业协会的接口，处理饮片加工-饮片入库的检测记录相关参数（来源1：饮片加工-饮片入库，2：饮片加工-饮片加工）
+     *
      * @return
      */
-    private QualitySelfTest handleYpProcessInStockQualitySelfTest(WptpYpInstockVO wptpYpInstockVO){
+    private QualitySelfTest handleYpProcessInStockQualitySelfTest(WptpYpInstockVO wptpYpInstockVO) {
         QualitySelfTest qualitySelfTest = new QualitySelfTest();
         qualitySelfTest.setQualitySelfTestId(wptpYpInstockVO.getCheckNo());
         qualitySelfTest.setSourceMoudel("1");
         qualitySelfTest.setProductInfoId(wptpYpInstockVO.getCategoryCode());
         qualitySelfTest.setDetectionProductBatchCode(wptpYpInstockVO.getMaterialBatch());
         String checkTime = wptpYpInstockVO.getCheckTime();
-        if (!oConvertUtils.isEmpty(checkTime))qualitySelfTest.setCheckDate(DateUtils.StringToDate(checkTime));
+        if (!oConvertUtils.isEmpty(checkTime)) qualitySelfTest.setCheckDate(DateUtils.StringToDate(checkTime));
         qualitySelfTest.setPurpose(wptpYpInstockVO.getCheckPurpose());
         qualitySelfTest.setTestSummary(wptpYpInstockVO.getCheckResult());
         qualitySelfTest.setReviewName(wptpYpInstockVO.getCheckResponsible());
@@ -918,26 +959,29 @@ public class GuildUpload {
          * 入库文件
          */
         QueryWrapper<WptpYpInstockFile> ypInstockFileQueryWrapper = new QueryWrapper<>();
-        ypInstockFileQueryWrapper.eq("deleted","0");
-        ypInstockFileQueryWrapper.eq("main_id",wptpYpInstockVO.getInstockNumber());
+        ypInstockFileQueryWrapper.eq("deleted", "0");
+        ypInstockFileQueryWrapper.eq("main_id", wptpYpInstockVO.getInstockNumber());
         List<WptpYpInstockFile> wptpYpInstockFiles = iWptpYpInstockFileService.getBaseMapper().selectList(ypInstockFileQueryWrapper);
         StringBuilder sb = new StringBuilder();
-        for (WptpYpInstockFile w:
-                wptpYpInstockFiles ) {
-            if (!"0".equals(w.getFileType()))continue;
+        for (WptpYpInstockFile w :
+                wptpYpInstockFiles) {
+            if (!"0".equals(w.getFileType())) continue;
             sb.append("|");
-            sb.append(IMG_URL_PREIX+w.getPath());
+            sb.append(IMG_URL_PREIX + w.getPath());
         }
         String imgUrlArray = sb.toString();
-        if (!oConvertUtils.isEmpty(imgUrlArray)) qualitySelfTest.setImage(imgUrlArray.substring(1,imgUrlArray.length()));//
+        if (!oConvertUtils.isEmpty(imgUrlArray))
+            qualitySelfTest.setImage(imgUrlArray.substring(1, imgUrlArray.length()));//
         return qualitySelfTest;
     }
+
     /**
      * 按照行业协会的接口，处理饮片加工-饮片加工的检测记录相关参数（来源1：饮片加工-饮片入库，2：饮片加工-饮片加工）
-     * @return
+     *
      * @param wptpYpProcessVO
+     * @return
      */
-    private QualitySelfTest handleYpProcessQualitySelfTest(WptpYpProcessVO wptpYpProcessVO){
+    private QualitySelfTest handleYpProcessQualitySelfTest(WptpYpProcessVO wptpYpProcessVO) {
         QualitySelfTest qualitySelfTest = new QualitySelfTest();
         String checkTime = wptpYpProcessVO.getCheckTime();
         qualitySelfTest.setQualitySelfTestId(wptpYpProcessVO.getQualCheckNum());
@@ -953,25 +997,28 @@ public class GuildUpload {
          * 加工文件
          */
         QueryWrapper<WptpYpProcessFile> ypProcessFileQueryWrapper = new QueryWrapper<>();
-        ypProcessFileQueryWrapper.eq("deleted","0");
-        ypProcessFileQueryWrapper.eq("main_id",wptpYpProcessVO.getProcessNo());
+        ypProcessFileQueryWrapper.eq("deleted", "0");
+        ypProcessFileQueryWrapper.eq("main_id", wptpYpProcessVO.getProcessNo());
         List<WptpYpProcessFile> wptpYpProcessFiles = iWptpYpProcessFileService.getBaseMapper().selectList(ypProcessFileQueryWrapper);
         StringBuilder sb = new StringBuilder();
-        for (WptpYpProcessFile w:
+        for (WptpYpProcessFile w :
                 wptpYpProcessFiles) {
-            if (!"0".equals(w.getFileType()))continue;
+            if (!"0".equals(w.getFileType())) continue;
             sb.append("|");
-            sb.append(IMG_URL_PREIX+w.getPath());
+            sb.append(IMG_URL_PREIX + w.getPath());
         }
         String imgUrlArray = sb.toString();
-        if (!oConvertUtils.isEmpty(imgUrlArray)) qualitySelfTest.setImage(imgUrlArray.substring(1,imgUrlArray.length()));//去除第一个竖线"|"
+        if (!oConvertUtils.isEmpty(imgUrlArray))
+            qualitySelfTest.setImage(imgUrlArray.substring(1, imgUrlArray.length()));//去除第一个竖线"|"
         return qualitySelfTest;
     }
+
     /**
      * 按照行业协会的接口，处理饮片加工的包装环节参数
+     *
      * @return
      */
-    private List<PackingInfo> handleYpProcessPack(WptpYpPackVO wptpYpPackVO){
+    private List<PackingInfo> handleYpProcessPack(WptpYpPackVO wptpYpPackVO) {
         PackingInfo packingInfo = new PackingInfo();
         packingInfo.setSourceMoudel("1");
         packingInfo.setPackingBatchCode(wptpYpPackVO.getPackNo());
@@ -984,11 +1031,13 @@ public class GuildUpload {
         packingInfoList.add(packingInfo);
         return packingInfoList;
     }
+
     /**
      * 按照行业协会的接口，处理药材经营的入库环节参数
+     *
      * @return
      */
-    private Map<String,Object> handleMedicineInstock(WptpMedicineInstockVO wptpMedicineInstockVO){
+    private Map<String, Object> handleMedicineInstock(WptpMedicineInstockVO wptpMedicineInstockVO) {
 
         /**
          * 需要把药材经营-药材入库的字段，插入到行业协会的仓库表、入库信息表，采购信息表中
@@ -999,7 +1048,7 @@ public class GuildUpload {
         String productBatch = wptpMedicineInstockVO.getProductBatch();
         String categoryCode = wptpMedicineInstockVO.getCategoryCode();
         String manufacturer = wptpMedicineInstockVO.getManufacturer();
-       /* String entId=getEntIdByHostCode(wptpMedicineInstockVO.getHostCode());*/
+        /* String entId=getEntIdByHostCode(wptpMedicineInstockVO.getHostCode());*/
         String entId = wptpMedicineInstockVO.getEntId();
         String storeCode = wptpMedicineInstockVO.getStoreCode();
         String method = wptpMedicineInstockVO.getMethod();
@@ -1030,7 +1079,7 @@ public class GuildUpload {
         storageInfo.setStorageType(1);
         storageInfo.setBatchCode(instockNo);
         storageInfo.setResponsibleUser(purchaseLeader);
-        if (!oConvertUtils.isEmpty(arriveTime))storageInfo.setStorageTime(DateUtils.StringToDate(arriveTime));
+        if (!oConvertUtils.isEmpty(arriveTime)) storageInfo.setStorageTime(DateUtils.StringToDate(arriveTime));
 
         List<StorageDetails> storageDetailsList = new ArrayList<>();
         StorageDetails storageDetails = new StorageDetails();
@@ -1074,21 +1123,23 @@ public class GuildUpload {
         EnterpriseInfo enterpriseInfo = handleEnterpriseInfo(entId, entXhCode);*/
 
         Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("purchaseOrderInfo",purchaseOrderInfo);
-        resultMap.put("warehouseInfo",warehouseInfo);
+        resultMap.put("purchaseOrderInfo", purchaseOrderInfo);
+        resultMap.put("warehouseInfo", warehouseInfo);
         /*resultMap.put("enterpriseInfo",enterpriseInfo);*/
         return resultMap;
     }
+
     /**
      * 按照行业协会的接口，处理药材经营的销售环节参数
+     *
      * @return
      */
-    private List<OrderShipment> handleMedicineSale(WptpMedicineSale wptpMedicineSale){
+    private List<OrderShipment> handleMedicineSale(WptpMedicineSale wptpMedicineSale) {
         OrderShipment orderShipment = new OrderShipment();
         orderShipment.setOrderShipmentId(wptpMedicineSale.getSaleNumber());
         orderShipment.setInvoiceNumCode(wptpMedicineSale.getSaleNo());
-         String outTime = wptpMedicineSale.getOutTime();
-        if (!oConvertUtils.isEmpty(outTime))orderShipment.setDeliveryTime(DateUtils.StringToDate(outTime));
+        String outTime = wptpMedicineSale.getOutTime();
+        if (!oConvertUtils.isEmpty(outTime)) orderShipment.setDeliveryTime(DateUtils.StringToDate(outTime));
         orderShipment.setDeliveryNumber(wptpMedicineSale.getNum());
         orderShipment.setUnit(wptpMedicineSale.getUnit());
         orderShipment.setTranPerson(wptpMedicineSale.getResponsible());
@@ -1099,19 +1150,21 @@ public class GuildUpload {
         orderShipments.add(orderShipment);
         return orderShipments;
     }
+
     /**
      * 按照行业协会的接口，处理药材经营-药材入库的检测记录相关参数
-     * @return
+     *
      * @param wptpYpProcessVO
+     * @return
      */
-    private QualitySelfTest handleMedicineSaleQualitySelfTest(WptpMedicineInstockVO wptpMedicineInstockVO){
+    private QualitySelfTest handleMedicineSaleQualitySelfTest(WptpMedicineInstockVO wptpMedicineInstockVO) {
         QualitySelfTest qualitySelfTest = new QualitySelfTest();
         String checkTime = wptpMedicineInstockVO.getCheckTime();
         qualitySelfTest.setQualitySelfTestId(wptpMedicineInstockVO.getCheckNo());
         qualitySelfTest.setSourceMoudel("4");
         qualitySelfTest.setProductInfoId(wptpMedicineInstockVO.getCategoryCode());
         qualitySelfTest.setDetectionProductBatchCode(wptpMedicineInstockVO.getInstockNo());
-        if (!oConvertUtils.isEmpty(checkTime))qualitySelfTest.setCheckDate(DateUtils.StringToDate(checkTime));
+        if (!oConvertUtils.isEmpty(checkTime)) qualitySelfTest.setCheckDate(DateUtils.StringToDate(checkTime));
         qualitySelfTest.setPurpose(wptpMedicineInstockVO.getCheckPurpose());
         qualitySelfTest.setTestSummary(wptpMedicineInstockVO.getCheckResult());
         qualitySelfTest.setReviewName(wptpMedicineInstockVO.getCheckResponsible());
@@ -1120,30 +1173,33 @@ public class GuildUpload {
          * 加工文件
          */
         QueryWrapper<WptpMedicineInstockFile> medicineInstockFileQueryWrapper = new QueryWrapper<>();
-        medicineInstockFileQueryWrapper.eq("deleted","0");
-        medicineInstockFileQueryWrapper.eq("main_id",wptpMedicineInstockVO.getInstockNumber());
+        medicineInstockFileQueryWrapper.eq("deleted", "0");
+        medicineInstockFileQueryWrapper.eq("main_id", wptpMedicineInstockVO.getInstockNumber());
         List<WptpMedicineInstockFile> wptpMedicineInstockFileList = iWptpMedicineInstockFileService.getBaseMapper().selectList(medicineInstockFileQueryWrapper);
         StringBuilder sb = new StringBuilder();
-        for (WptpMedicineInstockFile w:
+        for (WptpMedicineInstockFile w :
                 wptpMedicineInstockFileList) {
-            if (!"0".equals(w.getFileType()))continue;
+            if (!"0".equals(w.getFileType())) continue;
             sb.append("|");
-            sb.append(IMG_URL_PREIX+w.getPath());
+            sb.append(IMG_URL_PREIX + w.getPath());
         }
         String imgUrlArray = sb.toString();
-        if (!oConvertUtils.isEmpty(imgUrlArray)) qualitySelfTest.setImage(imgUrlArray.substring(1,imgUrlArray.length()));//去除第一个竖线"|"
+        if (!oConvertUtils.isEmpty(imgUrlArray))
+            qualitySelfTest.setImage(imgUrlArray.substring(1, imgUrlArray.length()));//去除第一个竖线"|"
         return qualitySelfTest;
     }
+
     /**
      * 按照行业协会的接口，处理种植的销售环节参数
+     *
      * @return
      */
-    private List<OrderShipment> handlePlantSale(WptpSaleVO wptpSale){
+    private List<OrderShipment> handlePlantSale(WptpSaleVO wptpSale) {
         OrderShipment orderShipment = new OrderShipment();
         String saleTime = wptpSale.getSaleTime();
         orderShipment.setOrderShipmentId(wptpSale.getSaleNumber());
         orderShipment.setInvoiceNumCode(wptpSale.getSaleNo());
-       if (!oConvertUtils.isEmpty(saleTime))orderShipment.setDeliveryTime(DateUtils.StringToDate(saleTime));
+        if (!oConvertUtils.isEmpty(saleTime)) orderShipment.setDeliveryTime(DateUtils.StringToDate(saleTime));
         orderShipment.setDeliveryNumber(wptpSale.getNum());
         orderShipment.setUnit(wptpSale.getUnit());
         orderShipment.setTranPerson(wptpSale.getResponsible());
@@ -1154,11 +1210,13 @@ public class GuildUpload {
         orderShipments.add(orderShipment);
         return orderShipments;
     }
+
     /**
      * 按照行业协会的接口，处理种植环节的初加工环节参数
+     *
      * @return
      */
-    private ProcessingInfo handlePlantProcess(WptpProcessInfo wptpProcessInfo,String medicineCode){
+    private ProcessingInfo handlePlantProcess(WptpProcessInfo wptpProcessInfo, String medicineCode) {
         ProcessingInfo processingInfo = new ProcessingInfo();
 
         String processNo = wptpProcessInfo.getProcessNo();
@@ -1178,63 +1236,66 @@ public class GuildUpload {
         processingInfo.setProcessName(processGy);
         processingInfo.setProcessMedthod(processMethod);
         /*processingInfo.setUnit(unit);*/
-        processingInfo.setTotalWeight(num);
+        /* processingInfo.setTotalWeight(num);*/
         processingInfo.setOutUnitName(unit);
-        if(!oConvertUtils.isEmpty(startTime)) processingInfo.setProcessStartTime(DateUtils.StringToDate(startTime));
-        if(!oConvertUtils.isEmpty(endTime)) processingInfo.setProcessStartTime(DateUtils.StringToDate(endTime));
+        if (!oConvertUtils.isEmpty(startTime)) processingInfo.setProcessStartTime(DateUtils.StringToDate(startTime));
+        if (!oConvertUtils.isEmpty(endTime)) processingInfo.setProcessStartTime(DateUtils.StringToDate(endTime));
         processingInfo.setResponsibleUser(responsible);
         processingInfo.setProcessEquipment(device);
 
         QueryWrapper<WptpProcessFile> processFileQueryWrapper = new QueryWrapper<>();
-        processFileQueryWrapper.eq("deleted","0");
-        processFileQueryWrapper.eq("main_id",wptpProcessInfo.getProcessNo());
+        processFileQueryWrapper.eq("deleted", "0");
+        processFileQueryWrapper.eq("main_id", wptpProcessInfo.getProcessNo());
         List<WptpProcessFile> wptpProcessFileList = iWptpProcessFileService.getBaseMapper().selectList(processFileQueryWrapper);
         StringBuilder sb = new StringBuilder();
-        for (WptpProcessFile w:
-                wptpProcessFileList ) {
-            if (!"0".equals(w.getFileType()))continue;
+        for (WptpProcessFile w :
+                wptpProcessFileList) {
+            if (!"0".equals(w.getFileType())) continue;
             sb.append("|");
-            sb.append(IMG_URL_PREIX+w.getPath());
+            sb.append(IMG_URL_PREIX + w.getPath());
         }
         String imgUrlArray = sb.toString();
-        if (!oConvertUtils.isEmpty(imgUrlArray)) processingInfo.setImage(imgUrlArray.substring(1,imgUrlArray.length()));
+        if (!oConvertUtils.isEmpty(imgUrlArray))
+            processingInfo.setImage(imgUrlArray.substring(1, imgUrlArray.length()));
 
 
         /**
          * 加工原料
          */
         QueryWrapper<WptpProcessMaterial> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("deleted","0");
-        queryWrapper.eq("process_no",wptpProcessInfo.getProcessNo());
+        queryWrapper.eq("deleted", "0");
+        queryWrapper.eq("process_no", wptpProcessInfo.getProcessNo());
         List<WptpProcessMaterial> wptpProcessMaterialList = iWptpProcessMaterial.getBaseMapper().selectList(queryWrapper);
         List<ProcessMaterial> processMaterialList = new ArrayList<>();
-        for (WptpProcessMaterial w:
-        wptpProcessMaterialList) {
+        for (WptpProcessMaterial w :
+                wptpProcessMaterialList) {
             ProcessMaterial processMaterial = new ProcessMaterial();
-            processMaterial.setProcessMaterialId(w.getCsBatch());
+            /* processMaterial.setProcessMaterialId(w.getCsBatch());*/
             processMaterial.setProductInfoId(medicineCode);
-            processMaterial.setProductBatchCode(w.getCsBatch());
-            processMaterial.setProcessNum(w.getMaterialNum());
+            /* processMaterial.setProductBatchCode(w.getCsBatch());*/
+            /*processMaterial.setProcessNum(w.getMaterialNum());*/
             processMaterial.setUnit(w.getUnit());
             processMaterialList.add(processMaterial);
         }
         processingInfo.setProcessMaterialList(processMaterialList);
         return processingInfo;
     }
+
     /**
      * 按照行业协会的接口，处理种植环节的采收批次环节参数
+     *
      * @return
      */
-    private Map handlePlantCs(List<WptpCsInfoVO> wptpCsInfoList){
+    private Map handlePlantCs(List<WptpCsInfoVO> wptpCsInfoList) {
         Map<String, Object> resultMap = new HashMap<>();
         List<HarvestBatch> harvestBatchList = new ArrayList<>();
         List<PlantingBatch> plantingBatchList = new ArrayList<>();
-        for (WptpCsInfoVO  w:
-                 wptpCsInfoList) {
-            WptpPlantInfoVO plantInfo = getPlantInfo(w.getBlockMedicinalId(),"采收");//采收对应的作业
-            if (oConvertUtils.isEmpty(plantInfo))continue;
+        for (WptpCsInfoVO w :
+                wptpCsInfoList) {
+            WptpPlantInfoVO plantInfo = getPlantInfo(w.getBlockMedicinalId(), "采收");//采收对应的作业
+            if (oConvertUtils.isEmpty(plantInfo)) continue;
             PlantingBatch plantingBatch = handlePlantingBatch(traceBaseDataService.getBlockMeidicinalVO(w.getBlockMedicinalId()));
-            if (!oConvertUtils.isEmpty(plantingBatch))plantingBatchList.add(plantingBatch);
+            if (!oConvertUtils.isEmpty(plantingBatch)) plantingBatchList.add(plantingBatch);
             String csNo = w.getCsNo();
 
             String csPart = plantInfo.getCsPart();
@@ -1244,14 +1305,15 @@ public class GuildUpload {
             String responsible = plantInfo.getResponsible();
 
 
-            if (number.contains("KG")||number.contains("kg"))number=number.substring(0,number.length()-2);
+            if (number.contains("KG") || number.contains("kg")) number = number.substring(0, number.length() - 2);
             HarvestBatch harvestBatch = new HarvestBatch();
             harvestBatch.setHarvestBatchId(csNo);
             harvestBatch.setBatchCode(csNo);
             harvestBatch.setHarvestPosition(csPart);
             harvestBatch.setHarvestVolume(number);
             harvestBatch.setHarvestType(plantType);
-            if(!oConvertUtils.isEmpty(operateTime)) harvestBatch.setEndOperateTime(DateUtils.StringToDate(operateTime));
+            if (!oConvertUtils.isEmpty(operateTime))
+                harvestBatch.setEndOperateTime(DateUtils.StringToDate(operateTime));
             harvestBatch.setOperateName(responsible);
             harvestBatch.setHarvestProductName(w.getMedicinalCode());
             harvestBatch.setHarvestUnitName(w.getUnit());
@@ -1260,41 +1322,44 @@ public class GuildUpload {
              * 作业对应的图片和视频
              */
             QueryWrapper<WptpPlantFile> plantFileQueryWrapper = new QueryWrapper<>();
-            plantFileQueryWrapper.eq("deleted","0");
-            plantFileQueryWrapper.eq("main_id",plantInfo.getPlantId());
+            plantFileQueryWrapper.eq("deleted", "0");
+            plantFileQueryWrapper.eq("main_id", plantInfo.getPlantId());
             List<WptpPlantFile> wptpPlantFileList = iWptpPlantFileService.getBaseMapper().selectList(plantFileQueryWrapper);
             StringBuilder sb = new StringBuilder();//图片
             StringBuilder video = new StringBuilder();//视频
-            for (WptpPlantFile wptpPlantFile:
+            for (WptpPlantFile wptpPlantFile :
                     wptpPlantFileList) {
-                if ("0".equals(wptpPlantFile.getFileType())){
+                if ("0".equals(wptpPlantFile.getFileType())) {
                     sb.append("|");
-                    sb.append(IMG_URL_PREIX+wptpPlantFile.getPath());
+                    sb.append(IMG_URL_PREIX + wptpPlantFile.getPath());
                 }/*else if ("1".equals(wptpPlantFile.getFileType())){
                     sb.append("|");
                     sb.append(IMG_URL_PREIX+wptpPlantFile.getPath());
                 }*/
             }
             String imgUrlArray = sb.toString();
-            if (!oConvertUtils.isEmpty(imgUrlArray)) harvestBatch.setImage(imgUrlArray.substring(1,imgUrlArray.length()));//去除第一个竖线"|"
+            if (!oConvertUtils.isEmpty(imgUrlArray))
+                harvestBatch.setImage(imgUrlArray.substring(1, imgUrlArray.length()));//去除第一个竖线"|"
 
           /*  String videoStr = video.toString();
             if (!oConvertUtils.isEmpty(videoStr)) harvestBatch.setFile(videoStr.substring(1,videoStr.length()));//去除第一个竖线"|"*/
 
             harvestBatchList.add(harvestBatch);
         }
-        resultMap.put("harvestBatchList",harvestBatchList);
-        resultMap.put("plantingBatchList",plantingBatchList);
+        resultMap.put("harvestBatchList", harvestBatchList);
+        resultMap.put("plantingBatchList", plantingBatchList);
         return resultMap;
     }
+
     /**
      * 按照行业协会的接口，处理种植环节的作业环节参数
+     *
      * @return
      */
-    private List<FarmScheme> handlePlantBlockMeidicinal( List<WptpPlantInfoVO> wptpPlantInfoVOList){
+    private List<FarmScheme> handlePlantBlockMeidicinal(List<WptpPlantInfoVO> wptpPlantInfoVOList) {
         List<FarmScheme> farmSchemes = new ArrayList<>();
-        for (WptpPlantInfoVO wptpPlantInfo:
-                wptpPlantInfoVOList ) {
+        for (WptpPlantInfoVO wptpPlantInfo :
+                wptpPlantInfoVOList) {
             FarmScheme farmScheme = new FarmScheme();
 
             String plantId = wptpPlantInfo.getPlantId();
@@ -1304,7 +1369,7 @@ public class GuildUpload {
             String inputInto = wptpPlantInfo.getInputInto();
 
             farmScheme.setFarmSchemeId(plantId);
-            if(!oConvertUtils.isEmpty(operateTime)) farmScheme.setOperateTime(DateUtils.StringToDate(operateTime));
+            if (!oConvertUtils.isEmpty(operateTime)) farmScheme.setOperateTime(DateUtils.StringToDate(operateTime));
             farmScheme.setFarmOperationTypeName(plantSatus);
             farmScheme.setInputsProduct(inputInto);
             farmScheme.setResponsiblePerson(responsible);
@@ -1312,24 +1377,25 @@ public class GuildUpload {
              * 图片和视频
              */
             QueryWrapper<WptpPlantFile> plantFileQueryWrapper = new QueryWrapper<>();
-            plantFileQueryWrapper.eq("main_id",wptpPlantInfo.getPlantId());
-            plantFileQueryWrapper.eq("deleted","0");
+            plantFileQueryWrapper.eq("main_id", wptpPlantInfo.getPlantId());
+            plantFileQueryWrapper.eq("deleted", "0");
             List<WptpPlantFile> wptpPlantFileList = iWptpPlantFileService.getBaseMapper().selectList(plantFileQueryWrapper);
 
             StringBuilder sb = new StringBuilder();//图片
             StringBuilder video = new StringBuilder();//视频
-            for (WptpPlantFile w:
-                    wptpPlantFileList ) {
-                if ("0".equals(w.getFileType())){
+            for (WptpPlantFile w :
+                    wptpPlantFileList) {
+                if ("0".equals(w.getFileType())) {
                     sb.append("|");
-                    sb.append(IMG_URL_PREIX+w.getPath());
+                    sb.append(IMG_URL_PREIX + w.getPath());
                 }/*else if ("1".equals(w.getFileType())){
                     video.append("|");
                     video.append(IMG_URL_PREIX+w.getPath());
                 }*/
             }
             String imgUrlArray = sb.toString();
-            if (!oConvertUtils.isEmpty(imgUrlArray)) farmScheme.setImage(imgUrlArray.substring(1,imgUrlArray.length()));
+            if (!oConvertUtils.isEmpty(imgUrlArray))
+                farmScheme.setImage(imgUrlArray.substring(1, imgUrlArray.length()));
 
           /*  String videoStr = video.toString();
             if (!oConvertUtils.isEmpty(videoStr)) farmScheme.setFile(videoStr.substring(1,videoStr.length()));*///去除第一个竖线"|"
@@ -1337,18 +1403,18 @@ public class GuildUpload {
         }
 
 
-
         return farmSchemes;
     }
 
     /**
      * 按照行业协会的接口，处理种植环节的基地环节参数
+     *
      * @return
      */
-    private Base handlePlantBase(WptpBase wptpBase){
+    private Base handlePlantBase(WptpBase wptpBase) {
         Base base = new Base();
         String baseCode = wptpBase.getBaseCode();
-         String baseName = wptpBase.getBaseName();
+        String baseName = wptpBase.getBaseName();
         String baseAddress = wptpBase.getBaseAddress();
         String gpsLatitude = wptpBase.getGpsLatitude();
         String gpsLongitude = wptpBase.getGpsLongitude();
@@ -1383,39 +1449,41 @@ public class GuildUpload {
          * 图片和报告
          */
         QueryWrapper<WptpBaseFile> baseFileQueryWrapper = new QueryWrapper<>();
-        baseFileQueryWrapper.eq("main_id",wptpBase.getBaseCode());
-        baseFileQueryWrapper.eq("deleted","0");
+        baseFileQueryWrapper.eq("main_id", wptpBase.getBaseCode());
+        baseFileQueryWrapper.eq("deleted", "0");
         List<WptpBaseFile> wptpBaseFileList = iWptpBaseFileService.getBaseMapper().selectList(baseFileQueryWrapper);
         StringBuilder sb = new StringBuilder();//图片
         StringBuilder report = new StringBuilder();//视频
-        for (WptpBaseFile w:
-                wptpBaseFileList ) {
-            if ("0".equals(w.getType())){
+        for (WptpBaseFile w :
+                wptpBaseFileList) {
+            if ("0".equals(w.getType())) {
                 sb.append("|");
-                sb.append(IMG_URL_PREIX+w.getPath());
+                sb.append(IMG_URL_PREIX + w.getPath());
             }/*else if ("1".equals(w.getType())){
                 report.append("|");
                 report.append(IMG_URL_PREIX+w.getPath());
             }*/
         }
         String imgUrlArray = sb.toString();
-        if (!oConvertUtils.isEmpty(imgUrlArray)) base.setImage(imgUrlArray.substring(1,imgUrlArray.length()));
+        if (!oConvertUtils.isEmpty(imgUrlArray)) base.setImage(imgUrlArray.substring(1, imgUrlArray.length()));
 
        /* String reportStr = report.toString();
         if (!oConvertUtils.isEmpty(reportStr)) base.setFile(reportStr.substring(1,reportStr.length()));*///去除第一个竖线"|"
 
         return base;
     }
+
     /**
      * 按照行业协会的接口，处理种植环节的档案环节参数
+     *
      * @return
      */
-    private PlantingBatch handlePlantingBatch(WptpBlockMeidicinal wptpBlockMeidicinal){
-      /*  WptpPlantInfoVO plantInfo = getPlantInfo(wptpBlockMeidicinal.getBlockMedicinalId(),"采收");*///采收对应的作业
+    private PlantingBatch handlePlantingBatch(WptpBlockMeidicinal wptpBlockMeidicinal) {
+        /*  WptpPlantInfoVO plantInfo = getPlantInfo(wptpBlockMeidicinal.getBlockMedicinalId(),"采收");*///采收对应的作业
         /**
          * 查找档案底下对应的作业集合
          */
-            List<WptpPlantInfoVO> wptpPlantInfoVOList = traceBaseDataService.listPlantInfoVO(wptpBlockMeidicinal.getBlockMedicinalId());
+        List<WptpPlantInfoVO> wptpPlantInfoVOList = traceBaseDataService.listPlantInfoVO(wptpBlockMeidicinal.getBlockMedicinalId());
         List<FarmScheme> farmSchemeList = handlePlantBlockMeidicinal(wptpPlantInfoVOList);//处理作业参数
         WptpBaseVO wptpBaseVO = traceBaseDataService.getWptpBaseVO(wptpBlockMeidicinal.getBaseCode());
         Base base = handlePlantBase(wptpBaseVO);
@@ -1426,38 +1494,39 @@ public class GuildUpload {
         String blockMedicinalId = wptpBlockMeidicinal.getBlockMedicinalId();
         String baseAdmin = wptpBlockMeidicinal.getBaseAdmin();
         String fileTime = wptpBlockMeidicinal.getFileTime();
-        if (!oConvertUtils.isEmpty(fileTime))plantingBatch.setPlantSatartTime(DateUtils.StringToDate(fileTime));
+        if (!oConvertUtils.isEmpty(fileTime)) plantingBatch.setPlantSatartTime(DateUtils.StringToDate(fileTime));
         plantingBatch.setPlantingBatchId(blockMedicinalId);
         plantingBatch.setProductId(medicinalCode);
         plantingBatch.setResponsibleUser(baseAdmin);
-        WptpPlantInfoVO plantSource = getPlantInfo(wptpBlockMeidicinal.getBlockMedicinalId(),"种原");//种原对应的作业
-        if (!oConvertUtils.isEmpty(plantSource)){
+        WptpPlantInfoVO plantSource = getPlantInfo(wptpBlockMeidicinal.getBlockMedicinalId(), "种原");//种原对应的作业
+        if (!oConvertUtils.isEmpty(plantSource)) {
             plantingBatch.setReproductiveSources(plantSource.getSource());
         }
         /**
          * 从地块表中取种植面积
          */
         QueryWrapper<WptpBlockInfo> wptpBlockInfoQueryWrapper = new QueryWrapper<>();
-        wptpBlockInfoQueryWrapper.eq("deleted","0");
-        wptpBlockInfoQueryWrapper.eq("block_code",wptpBlockMeidicinal.getBlockCode());
+        wptpBlockInfoQueryWrapper.eq("deleted", "0");
+        wptpBlockInfoQueryWrapper.eq("block_code", wptpBlockMeidicinal.getBlockCode());
         WptpBlockInfo wptpBlockInfo = iWptpBlockInfoService.getBaseMapper().selectOne(wptpBlockInfoQueryWrapper);
-        if (!oConvertUtils.isEmpty(wptpBlockInfo)){
+        if (!oConvertUtils.isEmpty(wptpBlockInfo)) {
             plantingBatch.setCropArea(wptpBlockInfo.getBaseArea());
         }
         return plantingBatch;
     }
+
     /**
      * 拿到追溯结果
      */
     public Result<TraceVO> traceByCode(String traceCode) {
-        Result<TraceVO> result=null;
+        Result<TraceVO> result = null;
         /**
          * 判断追溯码的第二、三位属于哪个环节
          * 药材：11，种植：04，饮片加工：23，饮片经营：31
          */
-        switch (traceCode.substring(1,3)){
+        switch (traceCode.substring(1, 3)) {
             case "11":
-                result=traceBackService.medicinalTrace(traceCode);
+                result = traceBackService.medicinalTrace(traceCode);
 
                 break;
             case "04":
@@ -1465,10 +1534,10 @@ public class GuildUpload {
 
                 break;
             case "23":
-                result=traceBackService.ypProcessTrace(traceCode);
+                result = traceBackService.ypProcessTrace(traceCode);
                 break;
             case "31":
-                result=traceBackService.ypBusinessTrace(traceCode);
+                result = traceBackService.ypBusinessTrace(traceCode);
         }
         return result;
     }

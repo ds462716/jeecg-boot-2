@@ -10,7 +10,7 @@ public class PurchaseOrderDetails {
     private String packingSpecification;//包装规格
     private String produceBatchCode;//产出批号
     private String productInfoId;//产品id
-    private double  productNum;//数量
+    private double productNum;//数量
     private String providerInfoName;//供应商名称
     private String purchaseOrderDetailsId;//采收(购)订单详情id
     private String remarks;//备注信息

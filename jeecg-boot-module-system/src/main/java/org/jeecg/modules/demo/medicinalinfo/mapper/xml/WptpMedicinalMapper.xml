@@ -3,6 +3,6 @@
 <mapper namespace="org.jeecg.modules.demo.medicinalinfo.mapper.WptpMedicinalMapper">
 
     <select id="getDescMedicineCode" resultType="String">
-        SELECT medicinal_code FROM `wptp_medicinal`  ORDER BY medicinal_code Desc LIMIT 0,1
+        SELECT medicinal_code FROM `wptp_medicinal` ORDER BY medicinal_code Desc LIMIT 0,1
     </select>
 </mapper>

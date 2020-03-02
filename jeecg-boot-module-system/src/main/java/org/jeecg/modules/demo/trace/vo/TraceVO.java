@@ -15,7 +15,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ApiModel(value="追溯结果集", description="追溯结果集")
+@ApiModel(value = "追溯结果集", description = "追溯结果集")
 public class TraceVO {
     /**
      * 种植环节

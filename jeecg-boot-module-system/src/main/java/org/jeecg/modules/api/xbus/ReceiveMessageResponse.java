@@ -10,9 +10,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>anonymous complex type�� Java �ࡣ
- * 
+ *
  * <p>����ģʽƬ��ָ�������ڴ����е�Ԥ�����ݡ�
- * 
+ *
  * <pre>
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
@@ -24,12 +24,10 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "defaultWebServiceResponse"
+        "defaultWebServiceResponse"
 })
 @XmlRootElement(name = "receiveMessageResponse")
 public class ReceiveMessageResponse {
@@ -39,11 +37,9 @@ public class ReceiveMessageResponse {
 
     /**
      * ��ȡdefaultWebServiceResponse���Ե�ֵ��
-     * 
-     * @return
-     *     possible object is
-     *     {@link DefaultWebServiceResponse }
-     *     
+     *
+     * @return possible object is
+     * {@link DefaultWebServiceResponse }
      */
     public DefaultWebServiceResponse getDefaultWebServiceResponse() {
         return defaultWebServiceResponse;
@@ -51,11 +47,9 @@ public class ReceiveMessageResponse {
 
     /**
      * ����defaultWebServiceResponse���Ե�ֵ��
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link DefaultWebServiceResponse }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link DefaultWebServiceResponse }
      */
     public void setDefaultWebServiceResponse(DefaultWebServiceResponse value) {
         this.defaultWebServiceResponse = value;

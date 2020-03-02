@@ -20,51 +20,50 @@ public class CxfConfig {
     public ServletRegistrationBean disServlet() {
         return new ServletRegistrationBean(new CXFServlet(), "/ws/*");
     }
+
     @Bean(name = Bus.DEFAULT_BUS_ID)
-    public SpringBus springBus()
-    {
-        return  new SpringBus();
+    public SpringBus springBus() {
+        return new SpringBus();
     }
 
     @Bean
-    public FileAndReportService fileAndReportService()
-    {
-        return  new FileAndReportServiceImpl();
-    }
-    @Bean
-    public YpService ypService()
-    {
-        return  new YpServiceImpl();
-    }
-    @Bean
-    public MedicinalService medicinalService()
-    {
-        return  new MedicinalServiceImpl();
-    }
-    @Bean
-    public PlantService plantService()
-    {
-        return  new PlantServiceImpl();
-    }
-    @Bean
-    public ToVoidService toVoidService()
-    {
-        return  new ToVoidServiceImpl();
-    }
-    @Bean
-    public DataDisseminationService dataDisseminationService()
-    {
-        return  new DataDisseminationServiceImpl();
+    public FileAndReportService fileAndReportService() {
+        return new FileAndReportServiceImpl();
     }
 
     @Bean
-    public ReceiveMessage getReceiveMessage()
-    {
-        return  new ReceiveMessagePortImpl();
+    public YpService ypService() {
+        return new YpServiceImpl();
+    }
+
+    @Bean
+    public MedicinalService medicinalService() {
+        return new MedicinalServiceImpl();
+    }
+
+    @Bean
+    public PlantService plantService() {
+        return new PlantServiceImpl();
+    }
+
+    @Bean
+    public ToVoidService toVoidService() {
+        return new ToVoidServiceImpl();
+    }
+
+    @Bean
+    public DataDisseminationService dataDisseminationService() {
+        return new DataDisseminationServiceImpl();
+    }
+
+    @Bean
+    public ReceiveMessage getReceiveMessage() {
+        return new ReceiveMessagePortImpl();
     }
 
     /**
      * 饮片
+     *
      * @return
      */
     @Bean
@@ -76,6 +75,7 @@ public class CxfConfig {
 
     /**
      * 药材
+     *
      * @return
      */
     @Bean
@@ -87,6 +87,7 @@ public class CxfConfig {
 
     /**
      * 种植
+     *
      * @return
      */
     @Bean
@@ -95,8 +96,10 @@ public class CxfConfig {
         endpoint.publish("/plant");
         return endpoint;
     }
+
     /**
      * 文件
+     *
      * @return
      */
     @Bean
@@ -105,8 +108,10 @@ public class CxfConfig {
         endpoint.publish("/file");
         return endpoint;
     }
+
     /**
      * 逆向作废
+     *
      * @return
      */
     @Bean
@@ -115,8 +120,10 @@ public class CxfConfig {
         endpoint.publish("/toVoid");
         return endpoint;
     }
+
     /**
      * 数据下发
+     *
      * @return
      */
     @Bean
@@ -125,9 +132,10 @@ public class CxfConfig {
         endpoint.publish("/dataDissemination");
         return endpoint;
     }
-/**
-    *
+
+    /**
      * 饮片-XBUS
+     *
      * @return
      */
     @Bean
@@ -136,9 +144,10 @@ public class CxfConfig {
         endpoint.publish("/ypXBus");
         return endpoint;
     }
-/**
-    *
+
+    /**
      * 药材-XBUS
+     *
      * @return
      */
     @Bean
@@ -147,9 +156,10 @@ public class CxfConfig {
         endpoint.publish("/medicinalXBus");
         return endpoint;
     }
-/**
-    *
+
+    /**
      * 种植-XBUS
+     *
      * @return
      */
     @Bean
@@ -158,8 +168,10 @@ public class CxfConfig {
         endpoint.publish("/plantXBus");
         return endpoint;
     }
-  /**  *
+
+    /**
      * 文件-XBUS
+     *
      * @return
      */
     @Bean
@@ -168,8 +180,10 @@ public class CxfConfig {
         endpoint.publish("/fileXBus");
         return endpoint;
     }
- /**   *
+
+    /**
      * 逆向作废-XBUS
+     *
      * @return
      */
     @Bean
@@ -178,8 +192,10 @@ public class CxfConfig {
         endpoint.publish("/toVoidXBus");
         return endpoint;
     }
-  /**  *
+
+    /**
      * 数据下发-XBUS
+     *
      * @return
      */
     @Bean

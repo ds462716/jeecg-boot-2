@@ -6,6 +6,7 @@ import javax.validation.constraints.NotBlank;
 
 /**
  * 请求上游环节
+ *
  * @author laowang
  */
 @Service

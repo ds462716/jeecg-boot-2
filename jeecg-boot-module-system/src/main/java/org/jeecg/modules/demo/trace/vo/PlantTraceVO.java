@@ -19,7 +19,7 @@ import java.util.List;
  * 种植追溯VO
  */
 @Data
-@ApiModel(value="种植追溯结果集", description="种植追溯结果集")
+@ApiModel(value = "种植追溯结果集", description = "种植追溯结果集")
 public class PlantTraceVO {
     @ApiModelProperty(value = "采收批次")
     private List<WptpCsInfoVO> wptpCsInfoList;

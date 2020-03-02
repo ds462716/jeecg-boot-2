@@ -24,6 +24,6 @@ public class PurchaseOrderInfo {
     private String purchaseOrderId;//采收(购)订单id
     private String remarks;//备注信息
     private String sourceMoudel;//来源模块 1药材采购 2饮片原料药材采购 3成药原料采购 4商品采购
-    private long  purchaseTime;//采购时间
+    private long purchaseTime;//采购时间
 
 }

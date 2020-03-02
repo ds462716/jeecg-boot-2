@@ -15,14 +15,16 @@ import org.springframework.stereotype.Component;
 public class MailHealthIndicator implements HealthIndicator {
 
 
-    @Override public Health health() {
+    @Override
+    public Health health() {
         int errorCode = check();
         if (errorCode != 0) {
-            return Health.down().withDetail("Error Code", errorCode) .build();
+            return Health.down().withDetail("Error Code", errorCode).build();
         }
         return Health.up().build();
     }
-    int check(){
+
+    int check() {
         //可以实现自定义的数据库检测逻辑
         return 0;
     }

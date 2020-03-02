@@ -42,11 +42,12 @@ import java.util.List;
 
 /**
  * 种植相关webservice接口
+ *
  * @author laowang
  */
 @Component
 @Slf4j
-@WebService(name = "plantService",targetNamespace="http://webservice.api.modules.jeecg.org/",endpointInterface = "org.jeecg.modules.api.webservice.PlantService")
+@WebService(name = "plantService", targetNamespace = "http://webservice.api.modules.jeecg.org/", endpointInterface = "org.jeecg.modules.api.webservice.PlantService")
 public class PlantServiceImpl implements PlantService {
     @Autowired
     private GuildUpload guildUpload;
@@ -74,11 +75,12 @@ public class PlantServiceImpl implements PlantService {
     private IWptpCsInfoService iWptpCsInfoService;
     @Autowired
     private IWptpProcessMaterial iWptpProcessMaterial;
+
     @Override
     public synchronized String addEntInfo(@NotBlank String jsonStr) {
         String trim = jsonStr.trim();
         WptpEntInfo wptpEntInfo = new WptpEntInfo();
-        BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpEntInfo.class),wptpEntInfo);
+        BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpEntInfo.class), wptpEntInfo);
         Result result = ValidField.checkField(wptpEntInfo);
         if (!result.isSuccess()) return JSONArray.toJSON(result).toString();
         /**
@@ -89,21 +91,21 @@ public class PlantServiceImpl implements PlantService {
 
         if (!districtCode.isSuccess()) return JSONArray.toJSON(districtCode).toString();
         //校验主机代码
-         String hostCode = wptpEntInfo.getHostCode();
+        String hostCode = wptpEntInfo.getHostCode();
         Result hostCodeResult = hostCodeCheck.checkHostCode(hostCode);
 
         if (!hostCodeResult.isSuccess()) return JSONArray.toJSON(hostCodeResult).toString();
         String entId = iWptpEntInfoService.getEntId((String) districtCode.getResult());
-        if (oConvertUtils.isEmpty(entId))entId=(String) districtCode.getResult()+"000";
+        if (oConvertUtils.isEmpty(entId)) entId = (String) districtCode.getResult() + "000";
         int anInt = oConvertUtils.getInt(entId);
         wptpEntInfo.setCreateTime(new Date());
-        wptpEntInfo.setEntId(oConvertUtils.getString(anInt+1));
+        wptpEntInfo.setEntId(oConvertUtils.getString(anInt + 1));
         wptpEntInfo.setProvince((String) districtCode.getResultList().get(0));//保存省份编码
         wptpEntInfo.setCity((String) districtCode.getResultList().get(1));//保存市编码
         wptpEntInfo.setArea((String) districtCode.getResultList().get(2));//保存县地区编码
         QueryWrapper<WptpEntInfo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("ent_id",wptpEntInfo.getEntId());//判断是否有该流水号的记录
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("ent_id", wptpEntInfo.getEntId());//判断是否有该流水号的记录
+        queryWrapper.eq("deleted", "0");
         WptpEntInfo wptpEntInfoInDB = iWptpEntInfoService.getBaseMapper().selectOne(queryWrapper);
         if (!oConvertUtils.isEmpty(wptpEntInfoInDB)) {
             wptpEntInfoInDB.setDeleted("1");
@@ -115,16 +117,17 @@ public class PlantServiceImpl implements PlantService {
         wptpEntInfo.setCreateTime(new Date());
         wptpEntInfo.setCreateBy(hostCode);
         iWptpEntInfoService.saveMain(wptpEntInfo, null);
-        return  JSONArray.toJSON(new Result(true, "操作成功", 200, anInt+1,new Date().getTime())).toString();
+        return JSONArray.toJSON(new Result(true, "操作成功", 200, anInt + 1, new Date().getTime())).toString();
     }
+
     @Override
     public synchronized String addBaseInfo(@NotBlank String jsonStr) {
-      /*  try{*/
+        /*  try{*/
         String trim = jsonStr.trim();
-            WptpBase wptpBase = new WptpBase();
-            BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpBase.class),wptpBase);
-            Result result = ValidField.checkField(wptpBase);
-            if (!result.isSuccess()) return JSONArray.toJSON(result).toString();
+        WptpBase wptpBase = new WptpBase();
+        BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpBase.class), wptpBase);
+        Result result = ValidField.checkField(wptpBase);
+        if (!result.isSuccess()) return JSONArray.toJSON(result).toString();
         /**
          * 去除属性首尾空格
          */
@@ -132,40 +135,41 @@ public class PlantServiceImpl implements PlantService {
         /*        String baseCode = iWptpBaseService.getBaseCode(wptpBase.getEntId());
         if (oConvertUtils.isEmpty(baseCode))baseCode=wptpBase.getEntId()+"001";
         int anInt = oConvertUtils.getInt(baseCode);*/
-            /*wptpBase.setBaseCode(oConvertUtils.getString(anInt+1));*/
+        /*wptpBase.setBaseCode(oConvertUtils.getString(anInt+1));*/
         /**
          * 把省市区名替换成id
          */
         Result districtCode = iWptpProvinceService.getDistrictCode(wptpBase.getProvince(), wptpBase.getCity(), wptpBase.getArea());
 
         if (!districtCode.isSuccess()) return JSONArray.toJSON(districtCode).toString();
-            //校验主机代码
-         String hostCode = wptpBase.getHostCode();
+        //校验主机代码
+        String hostCode = wptpBase.getHostCode();
         Result hostCodeResult = hostCodeCheck.checkHostCode(hostCode);
 
         if (!hostCodeResult.isSuccess()) return JSONArray.toJSON(hostCodeResult).toString();
         /**
          * 校验企业id
          */
-        if (iWptpEntInfoService.getEntByEntId(wptpBase.getEntId()))return new Result().error500("根据企业id查不到企业信息").toString();
+        if (iWptpEntInfoService.getEntByEntId(wptpBase.getEntId()))
+            return new Result().error500("根据企业id查不到企业信息").toString();
         wptpBase.setProvince((String) districtCode.getResultList().get(0));//保存省份编码
         wptpBase.setCity((String) districtCode.getResultList().get(1));//保存市编码
         wptpBase.setArea((String) districtCode.getResultList().get(2));//保存县地区编码
-            QueryWrapper<WptpBase> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("base_code",wptpBase.getBaseCode());//判断是否有该流水号的记录
-            queryWrapper.eq("deleted","0");
-            WptpBase wptpBaseInDB = iWptpBaseService.getBaseMapper().selectOne(queryWrapper);
-            if (!oConvertUtils.isEmpty(wptpBaseInDB)) {
-                wptpBaseInDB.setDeleted("1");
-                wptpBaseInDB.setUpdateTime(new Date());
-                wptpBaseInDB.setUpdateBy(hostCode);
-                iWptpBaseService.getBaseMapper().updateById(wptpBaseInDB);
-            }
-            wptpBase.setDeleted("0");
-            wptpBase.setCreateTime(new Date());
-            wptpBase.setCreateBy(hostCode);
-            iWptpBaseService.saveMain(wptpBase, null);
-            return  JSONArray.toJSON(new Result(true, "操作成功", 200, new Date().getTime())).toString();
+        QueryWrapper<WptpBase> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("base_code", wptpBase.getBaseCode());//判断是否有该流水号的记录
+        queryWrapper.eq("deleted", "0");
+        WptpBase wptpBaseInDB = iWptpBaseService.getBaseMapper().selectOne(queryWrapper);
+        if (!oConvertUtils.isEmpty(wptpBaseInDB)) {
+            wptpBaseInDB.setDeleted("1");
+            wptpBaseInDB.setUpdateTime(new Date());
+            wptpBaseInDB.setUpdateBy(hostCode);
+            iWptpBaseService.getBaseMapper().updateById(wptpBaseInDB);
+        }
+        wptpBase.setDeleted("0");
+        wptpBase.setCreateTime(new Date());
+        wptpBase.setCreateBy(hostCode);
+        iWptpBaseService.saveMain(wptpBase, null);
+        return JSONArray.toJSON(new Result(true, "操作成功", 200, new Date().getTime())).toString();
       /*  }catch (Exception e){
             return JSONArray.toJSON(new Result(false, e.getMessage(), 500, new Date().getTime())).toString();
         }*/
@@ -177,10 +181,10 @@ public class PlantServiceImpl implements PlantService {
         String trim = jsonStr.trim();
         WptpBlockMeidicinal wptpBlockMeidicinal = new WptpBlockMeidicinal();//档案
         WptpBlockInfo wptpBlockInfo = new WptpBlockInfo();//地块
-        BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpBlockMeidicinal.class),wptpBlockMeidicinal);
-        BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpBlockInfo.class),wptpBlockInfo);
+        BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpBlockMeidicinal.class), wptpBlockMeidicinal);
+        BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpBlockInfo.class), wptpBlockInfo);
         Result result = ValidField.checkField(wptpBlockMeidicinal);
-        if (!result.isSuccess())return JSONArray.toJSON(result).toString();
+        if (!result.isSuccess()) return JSONArray.toJSON(result).toString();
         /**
          * 去除属性首尾空格
          */
@@ -193,13 +197,14 @@ public class PlantServiceImpl implements PlantService {
         /**
          * 校验企业id
          */
-        if (iWptpEntInfoService.getEntByEntId(wptpBlockMeidicinal.getEntId()))return new Result().error500("根据企业id查不到企业信息").toString();
+        if (iWptpEntInfoService.getEntByEntId(wptpBlockMeidicinal.getEntId()))
+            return new Result().error500("根据企业id查不到企业信息").toString();
         QueryWrapper<WptpBlockMeidicinal> queryWrapperM = new QueryWrapper<>();
         QueryWrapper<WptpBlockInfo> queryWrapperI = new QueryWrapper<>();
-        queryWrapperM.eq("block_medicinal_id",wptpBlockMeidicinal.getBlockMedicinalId());//判断是否有该流水号的记录
-        queryWrapperM.eq("deleted","0");
-        queryWrapperI.eq("block_code",wptpBlockMeidicinal.getBlockCode());//判断是否有该流水号的记录
-        queryWrapperI.eq("deleted","0");
+        queryWrapperM.eq("block_medicinal_id", wptpBlockMeidicinal.getBlockMedicinalId());//判断是否有该流水号的记录
+        queryWrapperM.eq("deleted", "0");
+        queryWrapperI.eq("block_code", wptpBlockMeidicinal.getBlockCode());//判断是否有该流水号的记录
+        queryWrapperI.eq("deleted", "0");
         WptpBlockMeidicinal wptpBlockMeidicinalInDB = iWptpBlockMeidicinalService.getBaseMapper().selectOne(queryWrapperM);
         WptpBlockInfo wptpBlockInfoInDB = iWptpBlockInfoService.getBaseMapper().selectOne(queryWrapperI);
         if (!oConvertUtils.isEmpty(wptpBlockMeidicinalInDB)) {
@@ -221,8 +226,8 @@ public class PlantServiceImpl implements PlantService {
         wptpBlockInfo.setCreateTime(new Date());
         wptpBlockInfo.setCreateBy(hostCode);
         iWptpBlockMeidicinalService.saveMain(wptpBlockMeidicinal);
-        iWptpBlockInfoService.saveMain(wptpBlockInfo,null);
-        return  JSONArray.toJSON(new Result(true, "操作成功", 200, new Date().getTime())).toString();
+        iWptpBlockInfoService.saveMain(wptpBlockInfo, null);
+        return JSONArray.toJSON(new Result(true, "操作成功", 200, new Date().getTime())).toString();
     }
 
     @Override
@@ -230,12 +235,12 @@ public class PlantServiceImpl implements PlantService {
         String trim = jsonStr.trim();
         JSONObject jsonObject = JSONObject.parseObject(trim);
         String r = jsonObject.getString("trim");
-        List<WptpPlantInfo> wptpPlantInfos = (List<WptpPlantInfo>)JSONArray.parseArray(r, WptpPlantInfo.class);
+        List<WptpPlantInfo> wptpPlantInfos = (List<WptpPlantInfo>) JSONArray.parseArray(r, WptpPlantInfo.class);
         /**
          * 去除字段首尾空格
          */
         for (WptpPlantInfo w :
-             wptpPlantInfos) {
+                wptpPlantInfos) {
             ValidField.trimSpace(w);
         }
         //校验主机代码
@@ -243,16 +248,16 @@ public class PlantServiceImpl implements PlantService {
 
         Result hostCodeResult = hostCodeCheck.checkHostCode(hostCode);
         if (!hostCodeResult.isSuccess()) return JSONArray.toJSON(hostCodeResult).toString();
-        for (WptpPlantInfo plantInfo:
+        for (WptpPlantInfo plantInfo :
                 wptpPlantInfos) {
             Result result = ValidField.checkField(plantInfo);
-            if (!result.isSuccess())return JSONArray.toJSON(result).toString();
+            if (!result.isSuccess()) return JSONArray.toJSON(result).toString();
             QueryWrapper<WptpPlantInfo> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("plant_id",plantInfo.getPlantId());//判断是否有该流水号的记录
-            queryWrapper.eq("deleted","0");
+            queryWrapper.eq("plant_id", plantInfo.getPlantId());//判断是否有该流水号的记录
+            queryWrapper.eq("deleted", "0");
             List<WptpPlantInfo> wptpPlantInfoList = iWptpPlantInfoService.getBaseMapper().selectList(queryWrapper);
             if (!oConvertUtils.isEmpty(wptpPlantInfoList)) {
-                for (WptpPlantInfo wptpPlantInfoInDB:wptpPlantInfoList
+                for (WptpPlantInfo wptpPlantInfoInDB : wptpPlantInfoList
                 ) {
                     wptpPlantInfoInDB.setDeleted("1");
                     wptpPlantInfoInDB.setUpdateTime(new Date());
@@ -267,18 +272,18 @@ public class PlantServiceImpl implements PlantService {
         }
 
 
-        return  JSONArray.toJSON(new Result(true, "操作成功", 200, new Date().getTime())).toString();
+        return JSONArray.toJSON(new Result(true, "操作成功", 200, new Date().getTime())).toString();
     }
 
     @Override
     public synchronized String addProcessInfo(@NotBlank String jsonStr) {
         String trim = jsonStr.trim();
         WptpProcessInfo wptpProcessInfo = new WptpProcessInfo();
-        BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpProcessInfo.class),wptpProcessInfo);
+        BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpProcessInfo.class), wptpProcessInfo);
         WptpProcessInfoVO wptpProcessMaterialVO = new WptpProcessInfoVO();
-        BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpProcessInfoVO.class),wptpProcessMaterialVO);
+        BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpProcessInfoVO.class), wptpProcessMaterialVO);
         Result result = ValidField.checkField(wptpProcessInfo);
-        if (!result.isSuccess())return JSONArray.toJSON(result).toString();
+        if (!result.isSuccess()) return JSONArray.toJSON(result).toString();
         /**
          * 去除属性首尾空格
          */
@@ -291,20 +296,20 @@ public class PlantServiceImpl implements PlantService {
         /**
          * 校验企业id
          */
-        if (iWptpEntInfoService.getEntByEntId(wptpProcessInfo.getEntId()))return new Result().error500("根据企业id查不到企业信息").toString();
-
+        if (iWptpEntInfoService.getEntByEntId(wptpProcessInfo.getEntId()))
+            return new Result().error500("根据企业id查不到企业信息").toString();
 
 
         QueryWrapper<WptpProcessInfo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("process_no",wptpProcessInfo.getProcessNo());//判断是否有该流水号的记录
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("process_no", wptpProcessInfo.getProcessNo());//判断是否有该流水号的记录
+        queryWrapper.eq("deleted", "0");
         WptpProcessInfo wptpProcessInfoInDB = iWptpProcessInfoService.getBaseMapper().selectOne(queryWrapper);
         /**
          * 加工原料
          */
         QueryWrapper<WptpProcessMaterial> wptpProcessMaterialQueryWrapper = new QueryWrapper<>();
-        wptpProcessMaterialQueryWrapper.eq("process_no",wptpProcessInfo.getProcessNo());//判断是否有该流水号的记录
-        wptpProcessMaterialQueryWrapper.eq("deleted","0");
+        wptpProcessMaterialQueryWrapper.eq("process_no", wptpProcessInfo.getProcessNo());//判断是否有该流水号的记录
+        wptpProcessMaterialQueryWrapper.eq("deleted", "0");
         List<WptpProcessMaterial> wptpProcessMaterialList = iWptpProcessMaterial.getBaseMapper().selectList(wptpProcessMaterialQueryWrapper);
         if (!oConvertUtils.isEmpty(wptpProcessInfoInDB)) {
             wptpProcessInfoInDB.setDeleted("1");
@@ -312,7 +317,7 @@ public class PlantServiceImpl implements PlantService {
             wptpProcessInfoInDB.setUpdateBy(hostCode);
             iWptpProcessInfoService.getBaseMapper().updateById(wptpProcessInfoInDB);
 
-            for (WptpProcessMaterial w:
+            for (WptpProcessMaterial w :
                     wptpProcessMaterialList) {
                 w.setDeleted("1");
                 w.setUpdateTime(new Date());
@@ -327,25 +332,25 @@ public class PlantServiceImpl implements PlantService {
         iWptpProcessInfoService.saveMain(wptpProcessInfo, null);
 
         List<WptpProcessMaterial> batch = wptpProcessMaterialVO.getBatch();
-        if (batch!=null){
-            for (WptpProcessMaterial wpm:
+        if (batch != null) {
+            for (WptpProcessMaterial wpm :
                     batch) {
-                BeanUtils.copyProperties(wptpProcessMaterialVO,wpm);
+                BeanUtils.copyProperties(wptpProcessMaterialVO, wpm);
                 wpm.setCreateTime(new Date());
                 wpm.setDeleted("0");
                 iWptpProcessMaterial.getBaseMapper().insert(wpm);
             }
         }
-        return  JSONArray.toJSON(new Result(true, "操作成功", 200, new Date().getTime())).toString();
+        return JSONArray.toJSON(new Result(true, "操作成功", 200, new Date().getTime())).toString();
     }
 
     @Override
     public synchronized String addSaleInfo(@NotBlank String jsonStr) {
         String trim = jsonStr.trim();
         WptpSale wptpSale = new WptpSale();
-        BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpSale.class),wptpSale);
+        BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpSale.class), wptpSale);
         Result result = ValidField.checkField(wptpSale);
-        if (!result.isSuccess())return JSONArray.toJSON(result).toString();
+        if (!result.isSuccess()) return JSONArray.toJSON(result).toString();
         /**
          * 去除属性首尾空格
          */
@@ -353,7 +358,7 @@ public class PlantServiceImpl implements PlantService {
         /**
          * 校验主机代码
          */
-         String hostCode = wptpSale.getHostCode();
+        String hostCode = wptpSale.getHostCode();
         Result hostCodeResult = hostCodeCheck.checkHostCode(hostCode);
         if (!hostCodeResult.isSuccess()) return JSONArray.toJSON(hostCodeResult).toString();
         /**
@@ -364,15 +369,16 @@ public class PlantServiceImpl implements PlantService {
         /**
          * 校验来源是否是0或者1
          */
-         String source = wptpSale.getSource();
-        if (!source.contains("1")&&!source.contains("0"))return new Result().error500("来源必须是0或者1").toString();
+        String source = wptpSale.getSource();
+        if (!source.contains("1") && !source.contains("0")) return new Result().error500("来源必须是0或者1").toString();
         /**
          * 校验企业ID
          */
-        if (iWptpEntInfoService.getEntByEntId(wptpSale.getEntId()))return new Result().error500("根据企业id查不到企业信息").toString();
+        if (iWptpEntInfoService.getEntByEntId(wptpSale.getEntId()))
+            return new Result().error500("根据企业id查不到企业信息").toString();
         QueryWrapper<WptpSale> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("sale_number",wptpSale.getSaleNumber());//判断是否有该流水号的记录
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("sale_number", wptpSale.getSaleNumber());//判断是否有该流水号的记录
+        queryWrapper.eq("deleted", "0");
         WptpSale wptpSaleInDB = iWptpSaleService.getBaseMapper().selectOne(queryWrapper);
         if (!oConvertUtils.isEmpty(wptpSaleInDB)) {
             wptpSaleInDB.setDeleted("1");
@@ -388,22 +394,24 @@ public class PlantServiceImpl implements PlantService {
          * 接收到销售数据就要上传至行业协会
          */
         try {
-            guildUpload.upload(wptpSale.getTraceCode(),"0");
+            guildUpload.upload(wptpSale.getTraceCode(), "0");
+            WptpUploadRecord xhUploadRecord = new WptpUploadRecord(new Date(), "成功", "", wptpSale.getTraceCode(), "", "种植");
+            xhUploadRecordService.addWptpUploadRecord(xhUploadRecord);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            WptpUploadRecord xhUploadRecord = new WptpUploadRecord(new Date(),"失败",e.getMessage(),wptpSale.getTraceCode(),"","种植");
+            WptpUploadRecord xhUploadRecord = new WptpUploadRecord(new Date(), "失败", e.getMessage(), wptpSale.getTraceCode(), "", "种植");
             xhUploadRecordService.addWptpUploadRecord(xhUploadRecord);
         }
-        return  JSONArray.toJSON(new Result(true, "操作成功", 200, new Date().getTime())).toString();
+        return JSONArray.toJSON(new Result(true, "操作成功", 200, new Date().getTime())).toString();
     }
 
     @Override
     public synchronized String addCsInfo(@NotBlank String jsonStr) {
         String trim = jsonStr.trim();
         WptpCsInfo wptpCsInfo = new WptpCsInfo();
-        BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpCsInfo.class),wptpCsInfo);
+        BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpCsInfo.class), wptpCsInfo);
         Result result = ValidField.checkField(wptpCsInfo);
-        if (!result.isSuccess())return JSONArray.toJSON(result).toString();
+        if (!result.isSuccess()) return JSONArray.toJSON(result).toString();
         /**
          * 去除属性首尾空格
          */
@@ -416,11 +424,12 @@ public class PlantServiceImpl implements PlantService {
         /**
          * 校验企业id
          */
-        if (iWptpEntInfoService.getEntByEntId(wptpCsInfo.getEntId()))return new Result().error500("根据企业id查不到企业信息").toString();
+        if (iWptpEntInfoService.getEntByEntId(wptpCsInfo.getEntId()))
+            return new Result().error500("根据企业id查不到企业信息").toString();
 
         QueryWrapper<WptpCsInfo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("cs_no",wptpCsInfo.getCsNo());//判断是否有该流水号的记录
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("cs_no", wptpCsInfo.getCsNo());//判断是否有该流水号的记录
+        queryWrapper.eq("deleted", "0");
         WptpCsInfo wptpCsInfoInDB = iWptpCsInfoService.getBaseMapper().selectOne(queryWrapper);
         if (!oConvertUtils.isEmpty(wptpCsInfoInDB)) {
             wptpCsInfoInDB.setDeleted("1");
@@ -432,6 +441,6 @@ public class PlantServiceImpl implements PlantService {
         wptpCsInfo.setCreateTime(new Date());
         wptpCsInfo.setCreateBy(hostCode);
         iWptpCsInfoService.save(wptpCsInfo);
-        return  JSONArray.toJSON(new Result(true, "操作成功", 200, new Date().getTime())).toString();
+        return JSONArray.toJSON(new Result(true, "操作成功", 200, new Date().getTime())).toString();
     }
 }

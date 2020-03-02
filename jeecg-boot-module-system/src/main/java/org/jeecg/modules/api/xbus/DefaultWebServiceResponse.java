@@ -11,9 +11,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>DefaultWebServiceResponse complex type�� Java �ࡣ
- * 
+ *
  * <p>����ģʽƬ��ָ�������ڴ����е�Ԥ�����ݡ�
- * 
+ *
  * <pre>
  * &lt;complexType name="DefaultWebServiceResponse"&gt;
  *   &lt;complexContent&gt;
@@ -26,15 +26,14 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "DefaultWebServiceResponse", propOrder = {
-    "returnCode",
-    "returnMessage"
+        "returnCode",
+        "returnMessage"
 })
-@NoArgsConstructor@AllArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class DefaultWebServiceResponse {
 
     protected String returnCode;
@@ -42,11 +41,9 @@ public class DefaultWebServiceResponse {
 
     /**
      * ��ȡreturnCode���Ե�ֵ��
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getReturnCode() {
         return returnCode;
@@ -54,11 +51,9 @@ public class DefaultWebServiceResponse {
 
     /**
      * ����returnCode���Ե�ֵ��
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setReturnCode(String value) {
         this.returnCode = value;
@@ -66,11 +61,9 @@ public class DefaultWebServiceResponse {
 
     /**
      * ��ȡreturnMessage���Ե�ֵ��
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getReturnMessage() {
         return returnMessage;
@@ -78,11 +71,9 @@ public class DefaultWebServiceResponse {
 
     /**
      * ����returnMessage���Ե�ֵ��
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setReturnMessage(String value) {
         this.returnMessage = value;

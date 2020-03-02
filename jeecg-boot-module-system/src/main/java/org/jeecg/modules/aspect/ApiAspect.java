@@ -20,6 +20,7 @@ import javax.validation.executable.ExecutableValidator;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.Set;
+
 @Aspect
 @Component
 public class ApiAspect {
@@ -27,12 +28,15 @@ public class ApiAspect {
     private ParameterNameDiscoverer parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
     private final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
     private final ExecutableValidator validator = factory.getValidator().forExecutables();
+
     private <T> Set<ConstraintViolation<T>> validMethodParams(T obj, Method method, Object[] params) {
         return validator.validateParameters(obj, method, params);
     }
+
     @Pointcut("execution(public * org.jeecg.modules.api.webservice.*ServiceImpl.*(..))")
     public void valid() {
     }
+
     @Around("valid()")
     public Object around(ProceedingJoinPoint pjp) {
         try {
@@ -56,24 +60,24 @@ public class ApiAspect {
             String[] parameterNames = parameterNameDiscoverer.getParameterNames(method);// 获得方法的参数名称   
             //如果有校验不通过的
             if (!validResult.isEmpty()) {
-                String  errorMsg="参数：";
-                for(ConstraintViolation<Object> constraintViolation : validResult) {
+                String errorMsg = "参数：";
+                for (ConstraintViolation<Object> constraintViolation : validResult) {
                     PathImpl pathImpl = (PathImpl) constraintViolation.getPropertyPath();  // 获得校验的参数路径信息
                     int paramIndex = pathImpl.getLeafNode().getParameterIndex(); // 获得校验的参数位置
                     String paramName = parameterNames[paramIndex];  // 获得校验的参数名称
-                    errorMsg+=paramName;
+                    errorMsg += paramName;
                 }
                 //返回第一条
-                errorMsg+=validResult.iterator().next().getMessage();
-                return JSONArray.toJSON(new Result(false,errorMsg,500,new Date().getTime())).toString();
+                errorMsg += validResult.iterator().next().getMessage();
+                return JSONArray.toJSON(new Result(false, errorMsg, 500, new Date().getTime())).toString();
             }
             /**
              * 异常处理
              */
             Object proceed;
             try {
-                 proceed = pjp.proceed();
-            }catch (Exception e){
+                proceed = pjp.proceed();
+            } catch (Exception e) {
                 return JSONArray.toJSON(new Result(false, e.getMessage(), 500, new Date().getTime())).toString();
             }
             return proceed;

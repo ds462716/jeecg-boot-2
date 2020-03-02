@@ -16,6 +16,7 @@ import java.util.List;
 
 /**
  * 根据省市区获取行政编码
+ *
  * @author laowang
  */
 @RestController
@@ -27,17 +28,18 @@ public class GovCodeController {
     private IWptpDistrictService wptpDistrictService;
     @Autowired
     private IWptpCityService wptpCityService;
+
     @PostMapping("/insertGovCode")
     public Result insertGovCode(@RequestBody List<PrinceVO> princes) throws IOException {
         //外层循环插入省
-        for (int i = 0; i <princes.size() ; i++) {
+        for (int i = 0; i < princes.size(); i++) {
             WptpProvince wptpProvince = new WptpProvince();
             PrinceVO princeVO = princes.get(i);
             wptpProvince.setAdmiCode(princeVO.getCode());
             wptpProvince.setName(princeVO.getName());
             wptpProvinceService.save(wptpProvince);
             //第二层插入市
-            for (int j = 0; j <princeVO.getCity().size() ; j++) {
+            for (int j = 0; j < princeVO.getCity().size(); j++) {
                 WptpCity wptpCity = new WptpCity();
                 CityVO cityVO = princeVO.getCity().get(j);
                 wptpCity.setAdmiCode(cityVO.getCode());

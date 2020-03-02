@@ -13,7 +13,7 @@ import java.util.List;
  * 饮片经营的追溯VO
  */
 @Data
-@ApiModel(value="饮片经营追溯结果集", description="饮片经营追溯结果集")
+@ApiModel(value = "饮片经营追溯结果集", description = "饮片经营追溯结果集")
 public class YpBusinessTraceVO {
     @ApiModelProperty(value = "饮片经营-饮片入库")
     private WptpYpbInstockVO wptpYpbInstockVO;

@@ -51,7 +51,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-@WebService(name = "toVoidService",targetNamespace="http://webservice.api.modules.jeecg.org/",endpointInterface = "org.jeecg.modules.api.webservice.ToVoidService")
+@WebService(name = "toVoidService", targetNamespace = "http://webservice.api.modules.jeecg.org/", endpointInterface = "org.jeecg.modules.api.webservice.ToVoidService")
 public class ToVoidServiceImpl implements ToVoidService {
 
     @Autowired

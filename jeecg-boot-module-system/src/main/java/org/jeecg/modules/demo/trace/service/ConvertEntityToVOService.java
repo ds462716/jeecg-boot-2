@@ -31,84 +31,104 @@ import org.jeecg.modules.demo.ypprocesssale.vo.WptpYpSaleVO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Service
 public interface ConvertEntityToVOService {
     /**
      * 把作业信息实体类转为VO
+     *
      * @return
      */
-     List<WptpPlantInfoVO> handlePlantInfoList(List<WptpPlantInfo> entityList);
+    List<WptpPlantInfoVO> handlePlantInfoList(List<WptpPlantInfo> entityList);
+
     /**
      * 把加工实体类转为VO
+     *
      * @return
      */
-     WptpProcessInfoVO handleProcessInfo(WptpProcessInfo wptpProcessInfo);
+    WptpProcessInfoVO handleProcessInfo(WptpProcessInfo wptpProcessInfo);
+
     /**
      * 把采收批次实体类转为VO
+     *
      * @return
      */
-     WptpCsInfoVO handleCsInfo(WptpCsInfo wptpCsInfo);
+    WptpCsInfoVO handleCsInfo(WptpCsInfo wptpCsInfo);
+
     /**
      * 把种植销售的实体类转为VO
      */
     WptpSaleVO handleSale(WptpSale wptpSale);
+
     /**
      * 把档案实体类转为VO
+     *
      * @param pageList
      * @return
      */
-     WptpBlockMeidicinalVO handleBlockMeidicinal(WptpBlockMeidicinal wptpBlockMeidicinal);
+    WptpBlockMeidicinalVO handleBlockMeidicinal(WptpBlockMeidicinal wptpBlockMeidicinal);
+
     /**
      * 把基地实体类转为VO
      */
-     WptpBaseVO handleBase(WptpBase wptpBase);
+    WptpBaseVO handleBase(WptpBase wptpBase);
 
     /**
      * 把药材销售实体类转为VO
+     *
      * @param wptpMedicineSale
      * @return
      */
-     WptpMedicineSaleVO handleMedicineSale(WptpMedicineSale wptpMedicineSale);
+    WptpMedicineSaleVO handleMedicineSale(WptpMedicineSale wptpMedicineSale);
 
     /**
      * 把药材入库实体类转为VO
+     *
      * @param wptpMedicineInstock
      * @return
      */
-     WptpMedicineInstockVO handleMedicineInstock(WptpMedicineInstock wptpMedicineInstock);
+    WptpMedicineInstockVO handleMedicineInstock(WptpMedicineInstock wptpMedicineInstock);
 
     /**
      * 把饮片加工-饮片销售实体类转为VO
+     *
      * @param wptpYpSale
      * @return
      */
-     WptpYpSaleVO handleYpSale(WptpYpSale wptpYpSale);
+    WptpYpSaleVO handleYpSale(WptpYpSale wptpYpSale);
+
     /**
      * 把饮片加工-饮片包装实体类转为VO
      */
-     WptpYpPackVO handleYpPack(WptpYpPack wptpYpPack);
+    WptpYpPackVO handleYpPack(WptpYpPack wptpYpPack);
+
     /**
      * 把饮片加工实体类转为VO
      */
-     WptpYpProcessVO handleYpProcess(WptpYpProcess wptpYpProcess);
+    WptpYpProcessVO handleYpProcess(WptpYpProcess wptpYpProcess);
 
     /**
      * 把饮片加工-饮片入库实体类转为VO
+     *
      * @param wptpYpInstock
      * @return
      */
-     WptpYpInstockVO handleYpInstock(WptpYpInstock wptpYpInstock);
+    WptpYpInstockVO handleYpInstock(WptpYpInstock wptpYpInstock);
+
     /**
      * 把饮片经营-饮片销售实体类转为VO
+     *
      * @param pageList
      * @return
      */
-     WptpYpbSaleVO handleYpbSale(WptpYpbSale wptpYpbSale);
+    WptpYpbSaleVO handleYpbSale(WptpYpbSale wptpYpbSale);
+
     /**
      * 把饮片经营-饮片入库实体类转为VO
+     *
      * @param pageList
      * @return
      */
-     WptpYpbInstockVO handleYpbInstock(WptpYpbInstock wptpYpbInstock);
+    WptpYpbInstockVO handleYpbInstock(WptpYpbInstock wptpYpbInstock);
 
 }

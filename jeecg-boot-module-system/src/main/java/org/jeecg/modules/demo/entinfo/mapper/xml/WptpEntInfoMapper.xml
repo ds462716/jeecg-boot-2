@@ -3,13 +3,12 @@
 <mapper namespace="org.jeecg.modules.demo.entinfo.mapper.WptpEntInfoMapper">
 
     <select id="getEntId" resultType="java.lang.String" parameterType="java.lang.String">
-SELECT  ent_id
-FROM wptp_ent_info
-WHERE  ent_id
-like CONCAT(#{districtCode},'%')
-order by ent_id desc  limit 0,1;
+        SELECT ent_id
+        FROM wptp_ent_info
+        WHERE ent_id
+        like CONCAT(#{districtCode},'%')
+        order by ent_id desc limit 0,1;
     </select>
 
 
-    
 </mapper>

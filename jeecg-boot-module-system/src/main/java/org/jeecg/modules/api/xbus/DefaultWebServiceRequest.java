@@ -8,9 +8,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>DefaultWebServiceRequest complex type�� Java �ࡣ
- * 
+ *
  * <p>����ģʽƬ��ָ�������ڴ����е�Ԥ�����ݡ�
- * 
+ *
  * <pre>
  * &lt;complexType name="DefaultWebServiceRequest"&gt;
  *   &lt;complexContent&gt;
@@ -26,16 +26,14 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "DefaultWebServiceRequest", propOrder = {
-    "msgBody",
-    "msgSendTime",
-    "password",
-    "serviceId",
-    "sourceAppCode"
+        "msgBody",
+        "msgSendTime",
+        "password",
+        "serviceId",
+        "sourceAppCode"
 })
 public class DefaultWebServiceRequest {
 
@@ -47,11 +45,9 @@ public class DefaultWebServiceRequest {
 
     /**
      * ��ȡmsgBody���Ե�ֵ��
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getMsgBody() {
         return msgBody;
@@ -59,11 +55,9 @@ public class DefaultWebServiceRequest {
 
     /**
      * ����msgBody���Ե�ֵ��
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setMsgBody(String value) {
         this.msgBody = value;
@@ -71,11 +65,9 @@ public class DefaultWebServiceRequest {
 
     /**
      * ��ȡmsgSendTime���Ե�ֵ��
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getMsgSendTime() {
         return msgSendTime;
@@ -83,11 +75,9 @@ public class DefaultWebServiceRequest {
 
     /**
      * ����msgSendTime���Ե�ֵ��
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setMsgSendTime(String value) {
         this.msgSendTime = value;
@@ -95,11 +85,9 @@ public class DefaultWebServiceRequest {
 
     /**
      * ��ȡpassword���Ե�ֵ��
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getPassword() {
         return password;
@@ -107,11 +95,9 @@ public class DefaultWebServiceRequest {
 
     /**
      * ����password���Ե�ֵ��
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setPassword(String value) {
         this.password = value;
@@ -119,11 +105,9 @@ public class DefaultWebServiceRequest {
 
     /**
      * ��ȡserviceId���Ե�ֵ��
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getServiceId() {
         return serviceId;
@@ -131,11 +115,9 @@ public class DefaultWebServiceRequest {
 
     /**
      * ����serviceId���Ե�ֵ��
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setServiceId(String value) {
         this.serviceId = value;
@@ -143,11 +125,9 @@ public class DefaultWebServiceRequest {
 
     /**
      * ��ȡsourceAppCode���Ե�ֵ��
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getSourceAppCode() {
         return sourceAppCode;
@@ -155,11 +135,9 @@ public class DefaultWebServiceRequest {
 
     /**
      * ����sourceAppCode���Ե�ֵ��
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setSourceAppCode(String value) {
         this.sourceAppCode = value;

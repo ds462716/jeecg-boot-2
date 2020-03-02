@@ -20,7 +20,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 /**
  * @Description: 订单
  * @Author: jeecg-boot
- * @Date:  2019-02-15
+ * @Date: 2019-02-15
  * @Version: V1.0
  */
 @Service
@@ -75,22 +75,22 @@ public class JeecgOrderMainServiceImpl extends ServiceImpl<JeecgOrderMainMapper,
         }
     }
 
-	@Override
-	@Transactional
-	public void delMain(String id) {
-		jeecgOrderMainMapper.deleteById(id);
-		jeecgOrderTicketMapper.deleteTicketsByMainId(id);
-		jeecgOrderCustomerMapper.deleteCustomersByMainId(id);
-	}
+    @Override
+    @Transactional
+    public void delMain(String id) {
+        jeecgOrderMainMapper.deleteById(id);
+        jeecgOrderTicketMapper.deleteTicketsByMainId(id);
+        jeecgOrderCustomerMapper.deleteCustomersByMainId(id);
+    }
 
-	@Override
-	@Transactional
-	public void delBatchMain(Collection<? extends Serializable> idList) {
-		for(Serializable id:idList) {
-			jeecgOrderMainMapper.deleteById(id);
-			jeecgOrderTicketMapper.deleteTicketsByMainId(id.toString());
-			jeecgOrderCustomerMapper.deleteCustomersByMainId(id.toString());
-		}
-	}
+    @Override
+    @Transactional
+    public void delBatchMain(Collection<? extends Serializable> idList) {
+        for (Serializable id : idList) {
+            jeecgOrderMainMapper.deleteById(id);
+            jeecgOrderTicketMapper.deleteTicketsByMainId(id.toString());
+            jeecgOrderCustomerMapper.deleteCustomersByMainId(id.toString());
+        }
+    }
 
 }

@@ -8,8 +8,9 @@ import org.jeecg.modules.demo.processinfo.entity.WptpProcessMaterial;
 
 import java.io.Serializable;
 import java.util.List;
+
 @Data
-@ApiModel(value="种植环节初加工结果集", description="种植环节初加工结果集")
+@ApiModel(value = "种植环节初加工结果集", description = "种植环节初加工结果集")
 public class WptpProcessInfoVO extends WptpProcessInfo implements Serializable {
     /**
      * 初加工原料表

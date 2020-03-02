@@ -19,8 +19,8 @@ public class Base {
     private String image;//图片,多张用竖线(|)隔开，不超10张
     private String landType;//土地类型
     private String lastCrop;//上一茬作物
-    private String  latitude;//纬度
-    private String  longitude;//经度
+    private String latitude;//纬度
+    private String longitude;//经度
     private String remarks;//备注信息
     private String soilPh;//土壤酸碱度
     private String soilType;//土壤类型

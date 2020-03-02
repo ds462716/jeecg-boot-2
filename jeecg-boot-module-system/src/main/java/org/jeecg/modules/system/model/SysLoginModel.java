@@ -7,15 +7,15 @@ import io.swagger.annotations.ApiModelProperty;
  * 登录表单
  *
  * @Author scott
- * @since  2019-01-18
+ * @since 2019-01-18
  */
-@ApiModel(value="登录对象", description="登录对象")
+@ApiModel(value = "登录对象", description = "登录对象")
 public class SysLoginModel {
-	@ApiModelProperty(value = "账号")
+    @ApiModelProperty(value = "账号")
     private String username;
-	@ApiModelProperty(value = "密码")
+    @ApiModelProperty(value = "密码")
     private String password;
-	@ApiModelProperty(value = "验证码")
+    @ApiModelProperty(value = "验证码")
     private String captcha;
 
     public String getUsername() {

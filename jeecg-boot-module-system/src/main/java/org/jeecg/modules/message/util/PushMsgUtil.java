@@ -28,10 +28,10 @@ public class PushMsgUtil {
     private ISysMessageTemplateService sysMessageTemplateService;
 
     /**
-     * @param msgType 消息类型 1短信 2邮件 3微信
-     * @param templateCode    消息模板码
-     * @param map     消息参数
-     * @param sentTo  接收消息方
+     * @param msgType      消息类型 1短信 2邮件 3微信
+     * @param templateCode 消息模板码
+     * @param map          消息参数
+     * @param sentTo       接收消息方
      */
     public boolean sendMessage(String msgType, String templateCode, Map<String, String> map, String sentTo) {
         List<SysMessageTemplate> sysSmsTemplates = sysMessageTemplateService.selectByCode(templateCode);
@@ -44,12 +44,12 @@ public class PushMsgUtil {
             String title = sysSmsTemplate.getTemplateName();
             //模板内容
             String content = sysSmsTemplate.getTemplateContent();
-            if(map!=null) {
-            	 for (Map.Entry<String, String> entry : map.entrySet()) {
-                     String str = "${" + entry.getKey() + "}";
-                     title = title.replace(str, entry.getValue());
-                     content = content.replace(str, entry.getValue());
-                 }
+            if (map != null) {
+                for (Map.Entry<String, String> entry : map.entrySet()) {
+                    String str = "${" + entry.getKey() + "}";
+                    title = title.replace(str, entry.getValue());
+                    content = content.replace(str, entry.getValue());
+                }
             }
             sysMessage.setEsTitle(title);
             sysMessage.setEsContent(content);
@@ -57,9 +57,9 @@ public class PushMsgUtil {
             sysMessage.setEsSendTime(new Date());
             sysMessage.setEsSendStatus(SendMsgStatusEnum.WAIT.getCode());
             sysMessage.setEsSendNum(0);
-            if(sysMessageService.save(sysMessage)) {
-				return true;
-			}
+            if (sysMessageService.save(sysMessage)) {
+                return true;
+            }
         }
         return false;
     }

@@ -9,25 +9,29 @@ import javax.validation.constraints.NotBlank;
 
 /**
  * 药材相关webservice接口
+ *
  * @author laowang
  */
-@WebService(name = "medicinalService",targetNamespace = "http://webservice.api.modules.jeecg.org/")
+@WebService(name = "medicinalService", targetNamespace = "http://webservice.api.modules.jeecg.org/")
 @Component
 public interface MedicinalService {
     /**
      * 药材入库
+     *
      * @param jsonStr
      * @return
      */
     @WebMethod
-    String medicineInstock(@WebParam(name = "jsonStr")@NotBlank String jsonStr);
+    String medicineInstock(@WebParam(name = "jsonStr") @NotBlank String jsonStr);
+
     /**
      * 药材销售
+     *
      * @param jsonStr
      * @return
      */
     @WebMethod
-    String medicineSale(@WebParam(name = "jsonStr")@NotBlank String jsonStr);
+    String medicineSale(@WebParam(name = "jsonStr") @NotBlank String jsonStr);
 
 
 }

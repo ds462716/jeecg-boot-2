@@ -9,17 +9,19 @@ import javax.validation.constraints.NotBlank;
 
 /**
  * 数据下发
+ *
  * @author laowang
  */
-@WebService(name = "dataDisseminationService",targetNamespace = "http://webservice.api.modules.jeecg.org/")
+@WebService(name = "dataDisseminationService", targetNamespace = "http://webservice.api.modules.jeecg.org/")
 @Component
 public interface DataDisseminationService {
     /**
      * 数据下发
+     *
      * @param jsonStr
      * @return
      */
     @WebMethod
-    String dataDissemination(@WebParam(name = "jsonStr")@NotBlank String jsonStr);
+    String dataDissemination(@WebParam(name = "jsonStr") @NotBlank String jsonStr);
 
 }

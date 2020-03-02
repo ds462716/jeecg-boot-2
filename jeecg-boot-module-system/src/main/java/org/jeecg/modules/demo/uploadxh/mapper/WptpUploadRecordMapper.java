@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 /**
  * @Description: 上传日志表
  * @Author: jeecg-boot
- * @Date:   2020-02-15
+ * @Date: 2020-02-15
  * @Version: V1.0
  */
 public interface WptpUploadRecordMapper extends BaseMapper<WptpUploadRecord> {

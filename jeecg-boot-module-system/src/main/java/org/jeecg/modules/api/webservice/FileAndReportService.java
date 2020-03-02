@@ -9,12 +9,13 @@ import javax.validation.constraints.NotBlank;
 
 /**
  * 文件上传webservice接口
+ *
  * @author laowang
  */
-@WebService(name = "fileAndReportService",targetNamespace = "http://webservice.api.modules.jeecg.org/")
+@WebService(name = "fileAndReportService", targetNamespace = "http://webservice.api.modules.jeecg.org/")
 @Component
 public interface FileAndReportService {
     @WebMethod
-    String upload(@WebParam(name = "jsonStr")@NotBlank String jsonStr) throws Exception;
+    String upload(@WebParam(name = "jsonStr") @NotBlank String jsonStr) throws Exception;
 
 }

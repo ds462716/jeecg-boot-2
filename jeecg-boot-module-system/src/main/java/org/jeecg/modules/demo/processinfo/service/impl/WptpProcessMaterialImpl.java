@@ -18,8 +18,8 @@ public class WptpProcessMaterialImpl extends ServiceImpl<WptpProcessMaterialMapp
     @Override
     public List<WptpProcessMaterial> listByCsNo(String csBatch) {
         QueryWrapper<WptpProcessMaterial> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("cs_batch",csBatch);
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("cs_batch", csBatch);
+        queryWrapper.eq("deleted", "0");
         List<WptpProcessMaterial> wptpProcessMaterials = wptpProcessMaterialMapper.selectList(queryWrapper);
         return wptpProcessMaterials;
     }

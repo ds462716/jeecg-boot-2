@@ -20,10 +20,11 @@ public class Client {
         System.out.println(dt.getClass().getName());
         System.out.println(dt);
        System.out.println(dt.toString());*/
-      /*  System.out.println(new Date().getTime());*/
-        String test="121319";
-        System.out.println(test.substring(1,test.length()));
+        /*  System.out.println(new Date().getTime());*/
+        String test = "121319";
+        System.out.println(test.substring(1, test.length()));
     }
+
     public static java.sql.Date StringToDate(String sDate) {
         /**
          *str转date方法
