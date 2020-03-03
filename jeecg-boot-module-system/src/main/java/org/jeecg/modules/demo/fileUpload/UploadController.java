@@ -22,6 +22,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 文件上传
@@ -118,19 +120,12 @@ public class UploadController {
      * @param fileUrl
      * @return
      */
-    @GetMapping("/upload/deleteFileTest")
     public boolean delFileOne(String fileUrl) {
-       /* HttpUtils.sendGet("http://180.168.130.217:9010")*/
-        boolean deleteFlag = false;
-        if (!oConvertUtils.isEmpty(fileUrl)) {
-            File file = new File(fileUrl);
-            if (file.exists()) {
-                deleteFlag = file.delete();
-            } else {
-                deleteFlag = false;
-            }
-        }
-        return deleteFlag;
+        Map<String, String> map = new HashMap<>();
+        map.put("fileUrl",fileUrl);
+        String deleteFlag= HttpUtils.sendGet("http://180.168.130.217:9010/operate-file/file/deleteFile",map);
+        if (deleteFlag.contains("false")) return false;
+        return true;
     }
 }
 
