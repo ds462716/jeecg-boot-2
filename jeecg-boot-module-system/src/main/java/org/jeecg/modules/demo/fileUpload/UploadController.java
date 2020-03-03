@@ -120,7 +120,7 @@ public class UploadController {
      * @param fileUrl
      * @return
      */
-    public boolean delFileOne(String fileUrl) {
+    private boolean delFileOne(String fileUrl) {
         Map<String, String> map = new HashMap<>();
         map.put("fileUrl",fileUrl);
         String deleteFlag= HttpUtils.sendGet("http://180.168.130.217:9010/operate-file/file/deleteFile",map);
