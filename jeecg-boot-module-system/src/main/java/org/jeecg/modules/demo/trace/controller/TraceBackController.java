@@ -77,15 +77,18 @@ public class TraceBackController {
             case "11":
                 result = traceBackService.medicinalTrace(traceCode);
                 if (!oConvertUtils.isEmpty(result.getResult())) {
-                    MedicineTraceVO medicineVO = result.getResult().getMedicineVO();
-                    if (!oConvertUtils.isEmpty(medicineVO)) {
-                        WptpMedicineSaleVO wptpMedicineSaleVO = medicineVO.getWptpMedicineSaleVO();
-                        if (!oConvertUtils.isEmpty(wptpMedicineSaleVO)) {
-                            String medicinalCode = wptpMedicineSaleVO.getCategoryCode();
-                            MedicinalVO medicinalVO = listMedicineImageByCode(medicinalCode);
-                            TraceVO traceVO = result.getResult();
-                            traceVO.setMedicinalImageVO(medicinalVO);
-                            result.setResult(traceVO);
+                    List<MedicineTraceVO> medicineVOList = result.getResult().getMedicineVOList();
+                    if (!oConvertUtils.isEmpty(medicineVOList)) {
+                        MedicineTraceVO medicineVO = medicineVOList.get(0);
+                        if (!oConvertUtils.isEmpty(medicineVO)) {
+                            WptpMedicineSaleVO wptpMedicineSaleVO = medicineVO.getWptpMedicineSaleVO();
+                            if (!oConvertUtils.isEmpty(wptpMedicineSaleVO)) {
+                                String medicinalCode = wptpMedicineSaleVO.getCategoryCode();
+                                MedicinalVO medicinalVO = listMedicineImageByCode(medicinalCode);
+                                TraceVO traceVO = result.getResult();
+                                traceVO.setMedicinalImageVO(medicinalVO);
+                                result.setResult(traceVO);
+                            }
                         }
                     }
                 }

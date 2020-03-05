@@ -27,7 +27,7 @@ public class TraceVO {
      * 药材经营
      */
     @ApiModelProperty(value = "药材经营")
-    private MedicineTraceVO medicineVO;
+    private List<MedicineTraceVO> medicineVOList;
 
     /**
      * 饮片加工

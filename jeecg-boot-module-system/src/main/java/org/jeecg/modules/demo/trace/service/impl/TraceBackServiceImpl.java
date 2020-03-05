@@ -228,19 +228,24 @@ public class TraceBackServiceImpl implements TraceBackService {
             return new Result<TraceVO>(true, "操作成功", 200, traceVO, new Date().getTime());
         String preTraceCode = wptpYpbInstockVO.getTraceCode();//上游环节追溯码
         Result<TraceVO> traceVOResult = null;
+        int flag=0;
         switch (preTraceCode.substring(1, 3)) {
             case "04"://种植
                 traceVOResult = plantTraceLink01(preTraceCode);
+                flag=1;
                 break;
             case "11"://药材经营
                 traceVOResult = medicinalTrace(preTraceCode);
+                flag=1;
                 break;
             case "23"://饮片加工
                 traceVOResult = ypProcessTrace(preTraceCode);
+                flag=1;
         }
-        TraceVO result = traceVOResult.getResult();
-        if (!oConvertUtils.isEmpty(result)) BeanUtils.copyProperties(result, traceVO);
-        traceVO.setYpBusinessTraceVOList(ypBusinessTraceVOS);
+        if (flag==1){
+            TraceVO result = traceVOResult.getResult();
+            if (!oConvertUtils.isEmpty(result)) BeanUtils.copyProperties(result, traceVO);
+        }
         return new Result<TraceVO>(true, "操作成功", 200, traceVO, new Date().getTime());
 /*        WptpYpbSaleVO ypbSaleVO = traceBaseDataService.getYpbSaleVO(traceCode);
         if (oConvertUtils.isEmpty(ypbSaleVO))return new Result().error500("未找到相关饮片销售记录");
@@ -307,40 +312,57 @@ public class TraceBackServiceImpl implements TraceBackService {
         }
         return sourceList;
     }
+    @Override
+    public List<MedicineTraceVO> listMedicineTraceVO(String traceCode, List<MedicineTraceVO> sourceList) {
+        WptpMedicineSaleVO medicineSaleVO = traceBaseDataService.getMedicineSaleVO(traceCode);
+        MedicineTraceVO medicineTraceVO = new MedicineTraceVO();
+        if (oConvertUtils.isEmpty(medicineTraceVO)) return null;
+        String instockNumber = medicineSaleVO.getInstockNumber();//入库流水号
+        WptpMedicineInstockVO medicineInstockVO = traceBaseDataService.getMedicineInstockVO(instockNumber);
+        String hostCode = medicineInstockVO.getHostCode();
+        String entName = traceBaseDataService.getEntNameByHostCode(hostCode);
+        medicineSaleVO.setHostCode(entName);//所属企业
+        medicineTraceVO.setWptpMedicineSaleVO(medicineSaleVO);
+        medicineTraceVO.setWptpMedicineInstockVO(medicineInstockVO);
+        if (!oConvertUtils.isEmpty(medicineInstockVO)) {
+            medicineTraceVO.setWptpMedicineInstockFileList(traceBaseDataService.listWptpMedicineInstockFiles(medicineInstockVO.getInstockNumber()));
+        }
+        sourceList.add(medicineTraceVO);
+        /**
+         * 11:药材经营
+         */
+        if (!oConvertUtils.isEmpty(medicineInstockVO)) {
+            String preTraceCode = medicineInstockVO.getTraceCode();//上游环节追溯码
+            String link = preTraceCode.substring(1, 3);
+            if (link.contains("11")) {
+                return listMedicineTraceVO(preTraceCode, sourceList);
+            }
+        }
+        return sourceList;
+    }
 
     @Override
     public synchronized Result<TraceVO> medicinalTrace(String traceCode) {
+
+        List<MedicineTraceVO> medicineTraceVOS = listMedicineTraceVO(traceCode, new ArrayList<MedicineTraceVO>());
+        if (oConvertUtils.isEmpty(medicineTraceVOS)) return new Result().error500("未找到相关药材-销售记录");
+        MedicineTraceVO medicineTraceVO = medicineTraceVOS.get(medicineTraceVOS.size() - 1);
+
         TraceVO traceVO = new TraceVO();
-        MedicineTraceVO medicineTraceVO = new MedicineTraceVO();
-        WptpMedicineSaleVO medicineSaleVO = traceBaseDataService.getMedicineSaleVO(traceCode);
-        medicineTraceVO.setWptpMedicineSaleVO(medicineSaleVO);
-        if (oConvertUtils.isEmpty(medicineSaleVO)) return new Result().error500("未找到相关药材-销售记录");
-        String instockNumber = medicineSaleVO.getInstockNumber();//入库流水号
-        WptpMedicineInstockVO medicineInstockVO = traceBaseDataService.getMedicineInstockVO(instockNumber);
-        medicineTraceVO.setWptpMedicineInstockVO(medicineInstockVO);
-        traceVO.setMedicineVO(medicineTraceVO);
-        if (oConvertUtils.isEmpty(medicineInstockVO)) {
-            return new Result<TraceVO>(true, "操作成功", 200, traceVO, new Date().getTime());
-        }
-        String preTraceCode = medicineInstockVO.getTraceCode();//是否是种端端追溯码
+        traceVO.setMedicineVOList(medicineTraceVOS);
+        WptpMedicineInstockVO wptpMedicineInstockVO = medicineTraceVO.getWptpMedicineInstockVO();
+        if (oConvertUtils.isEmpty(wptpMedicineInstockVO)) return new Result<TraceVO>(true, "操作成功", 200, traceVO, new Date().getTime());
+        String preTraceCode = wptpMedicineInstockVO.getTraceCode();//上游环节追溯码
         /**
          * 04则是种植端追溯码
          */
         if (preTraceCode.substring(1, 3).contains("04")) {
-            Result<TraceVO> traceVOResult = plantTraceLink01(preTraceCode);
+            Result<TraceVO>  traceVOResult = plantTraceLink01(preTraceCode);
             if (traceVOResult.getCode() == 500)
                 return new Result<TraceVO>(true, "操作成功", 200, traceVO, new Date().getTime());
             TraceVO result = traceVOResult.getResult();
             BeanUtils.copyProperties(result, traceVO);
         }
-        List<WptpMedicineInstockFile> wptpMedicineInstockFiles = traceBaseDataService.listWptpMedicineInstockFiles(medicineInstockVO.getInstockNumber());//药材入库文件
-        String hostCode = medicineSaleVO.getHostCode();
-        String entName = traceBaseDataService.getEntNameByHostCode(hostCode);
-        medicineSaleVO.setHostCode(entName);//所属企业
-        medicineTraceVO.setWptpMedicineSaleVO(medicineSaleVO);
-        medicineTraceVO.setWptpMedicineInstockVO(medicineInstockVO);
-        medicineTraceVO.setWptpMedicineInstockFileList(wptpMedicineInstockFiles);
-        traceVO.setMedicineVO(medicineTraceVO);
         return new Result<TraceVO>(true, "操作成功", 200, traceVO, new Date().getTime());
     }
 

@@ -1,6 +1,7 @@
 package org.jeecg.modules.demo.trace.service;
 
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.modules.demo.trace.vo.MedicineTraceVO;
 import org.jeecg.modules.demo.trace.vo.TraceVO;
 import org.jeecg.modules.demo.trace.vo.YpBusinessTraceVO;
 import org.springframework.stereotype.Service;
@@ -56,5 +57,9 @@ public interface TraceBackService {
      * 由于饮片经营环节的上游可能是本身，所以经过此环节时需要递归调用，返回饮片经营环节list结果集
      */
     List<YpBusinessTraceVO> listYpBusinessTraceVO(String traceCode, List<YpBusinessTraceVO> sourceList);
+    /**
+     * 由于药材经营环节的上游可能是本身，所以经过此环节时需要递归调用，返回药材经营环节list结果集
+     */
+    List<MedicineTraceVO> listMedicineTraceVO(String traceCode, List<MedicineTraceVO> sourceList);
 
 }

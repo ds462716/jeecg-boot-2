@@ -236,7 +236,11 @@ public class GuildUpload {
                 }
                 break;
             case "11":
-                MedicineTraceVO medicineVO = result.getResult().getMedicineVO();
+                List<MedicineTraceVO> medicineTraceVOList = result.getResult().getMedicineVOList();
+                MedicineTraceVO medicineVO=null;
+                if (!oConvertUtils.isEmpty(medicineTraceVOList)){
+                     medicineVO = medicineTraceVOList.get(0);
+                }
                 if (!oConvertUtils.isEmpty(medicineVO)) {
                     WptpMedicineSaleVO wptpMedicineSaleVO = medicineVO.getWptpMedicineSaleVO();
                     String entId = getEntIdByEntName(wptpMedicineSaleVO.getHostCode());
