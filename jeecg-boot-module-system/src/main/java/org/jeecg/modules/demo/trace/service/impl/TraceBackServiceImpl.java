@@ -222,7 +222,7 @@ public class TraceBackServiceImpl implements TraceBackService {
         if (oConvertUtils.isEmpty(ypBusinessTraceVOS)) return new Result().error500("未找到相关饮片销售的记录");
         YpBusinessTraceVO ypBusinessTraceVO = ypBusinessTraceVOS.get(ypBusinessTraceVOS.size() - 1);
         TraceVO traceVO = new TraceVO();
-        traceVO.setYpBusinessTraceVOList(ypBusinessTraceVOS);
+
         WptpYpbInstockVO wptpYpbInstockVO = ypBusinessTraceVO.getWptpYpbInstockVO();
         if (oConvertUtils.isEmpty(wptpYpbInstockVO))
             return new Result<TraceVO>(true, "操作成功", 200, traceVO, new Date().getTime());
@@ -246,6 +246,7 @@ public class TraceBackServiceImpl implements TraceBackService {
             TraceVO result = traceVOResult.getResult();
             if (!oConvertUtils.isEmpty(result)) BeanUtils.copyProperties(result, traceVO);
         }
+        traceVO.setYpBusinessTraceVOList(ypBusinessTraceVOS);
         return new Result<TraceVO>(true, "操作成功", 200, traceVO, new Date().getTime());
 /*        WptpYpbSaleVO ypbSaleVO = traceBaseDataService.getYpbSaleVO(traceCode);
         if (oConvertUtils.isEmpty(ypbSaleVO))return new Result().error500("未找到相关饮片销售记录");
@@ -349,7 +350,7 @@ public class TraceBackServiceImpl implements TraceBackService {
         MedicineTraceVO medicineTraceVO = medicineTraceVOS.get(medicineTraceVOS.size() - 1);
 
         TraceVO traceVO = new TraceVO();
-        traceVO.setMedicineVOList(medicineTraceVOS);
+
         WptpMedicineInstockVO wptpMedicineInstockVO = medicineTraceVO.getWptpMedicineInstockVO();
         if (oConvertUtils.isEmpty(wptpMedicineInstockVO)) return new Result<TraceVO>(true, "操作成功", 200, traceVO, new Date().getTime());
         String preTraceCode = wptpMedicineInstockVO.getTraceCode();//上游环节追溯码
@@ -363,6 +364,7 @@ public class TraceBackServiceImpl implements TraceBackService {
             TraceVO result = traceVOResult.getResult();
             BeanUtils.copyProperties(result, traceVO);
         }
+        traceVO.setMedicineVOList(medicineTraceVOS);
         return new Result<TraceVO>(true, "操作成功", 200, traceVO, new Date().getTime());
     }
 

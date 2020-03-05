@@ -167,12 +167,14 @@ public class DataDisseminationServiceImpl implements DataDisseminationService {
                     if ("0".equals(w.getSource())) {//0代表来源是饮片包装
                         QueryWrapper<WptpYpPack> queryWrapper = new QueryWrapper<>();
                         queryWrapper.eq("pack_no", w.getSourceNo());
+                        queryWrapper.eq("deleted", "0");
                         WptpYpPack wptpYpPack = wptpYpPackService.getBaseMapper().selectOne(queryWrapper);
                         if (oConvertUtils.isEmpty(wptpYpPack)) continue;
                         processNo = wptpYpPack.getProcessNo();
                     } else if ("1".equals(w.getSource())) {
                         QueryWrapper<WptpYpProcess> queryWrapper = new QueryWrapper<>();
                         queryWrapper.eq("process_no", w.getSourceNo());
+                        queryWrapper.eq("deleted", "0");
                         WptpYpProcess wptpYpProcess = iWptpYpProcessService.getBaseMapper().selectOne(queryWrapper);
                         processNo = wptpYpProcess.getProcessNo();
                     }
