@@ -9,8 +9,10 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-@Data@NoArgsConstructor@AllArgsConstructor
-@ApiModel(value="主页展示信息", description="主页展示信息")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@ApiModel(value = "主页展示信息", description = "主页展示信息")
 public class IndexVO {
     /**
      * 企业分布

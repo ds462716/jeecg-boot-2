@@ -4,6 +4,7 @@ import lombok.Data;
 
 /**
  * 文件参数
+ *
  * @author laowang
  */
 @Data

@@ -7,12 +7,13 @@ import org.springframework.data.repository.query.Param;
 /**
  * @Description: wptp_province
  * @Author: jeecg-boot
- * @Date:   2019-10-09
+ * @Date: 2019-10-09
  * @Version: V1.0
  */
 public interface WptpProvinceMapper extends BaseMapper<WptpProvince> {
     /**
      * 根据省份名，模糊查询一个Province对象
+     *
      * @param name
      * @return
      */

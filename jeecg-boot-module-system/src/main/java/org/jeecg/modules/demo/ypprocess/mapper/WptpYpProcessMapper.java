@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 /**
  * @Description: 饮片加工表
  * @Author: jeecg-boot
- * @Date:   2019-10-11
+ * @Date: 2019-10-11
  * @Version: V1.0
  */
 public interface WptpYpProcessMapper extends BaseMapper<WptpYpProcess> {

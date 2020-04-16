@@ -8,6 +8,7 @@ import java.util.List;
 
 /**
  * 上传至行业协会的数据
+ *
  * @author laowang
  */
 @Data
@@ -52,10 +53,9 @@ public class UploadParam implements Serializable {
     private String traceStage;//追溯环节(其他0、生产1、加工2、流通3、批发4、零售/医院5、种植6) ,
     private String wayBillCode;//发货单号
 
-    private List<WarehouseInfo>  warehouseInfo;//仓库信息
+    private List<WarehouseInfo> warehouseInfo;//仓库信息
 
     private List<PackingInfo> packingInfo;//包装信息
-
 
 
 }

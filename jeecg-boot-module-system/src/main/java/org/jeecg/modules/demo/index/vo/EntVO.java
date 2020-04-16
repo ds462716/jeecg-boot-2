@@ -13,10 +13,10 @@ import java.util.Map;
  * 主页企业信息相关
  */
 @Data
-@ApiModel(value="主页地图", description="主页地图")
+@ApiModel(value = "主页地图", description = "主页地图")
 public class EntVO extends WptpEntInfo {
     @ApiModelProperty(value = "经纬度")
-    private String [] gps;
+    private String[] gps;
     /**企业名称*/
     /*@ApiModelProperty(value = "企业名称")
     private java.lang.String entName;

@@ -7,6 +7,7 @@ import java.util.List;
 
 /**
  * 上传文件相关的参数
+ *
  * @author laowang
  */
 @Data

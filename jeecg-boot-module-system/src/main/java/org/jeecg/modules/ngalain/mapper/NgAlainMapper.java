@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface NgAlainMapper extends BaseMapper {
-    public List<Map<String,String>> getDictByTable(@Param("table") String table, @Param("key") String key, @Param("value") String value);
+    public List<Map<String, String>> getDictByTable(@Param("table") String table, @Param("key") String key, @Param("value") String value);
 
 }

@@ -10,7 +10,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 /**
  * @Description: wptp_city
  * @Author: jeecg-boot
- * @Date:   2019-10-09
+ * @Date: 2019-10-09
  * @Version: V1.0
  */
 @Service

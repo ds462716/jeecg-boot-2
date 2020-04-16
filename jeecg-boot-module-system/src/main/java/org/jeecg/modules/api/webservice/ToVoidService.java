@@ -9,16 +9,18 @@ import javax.validation.constraints.NotBlank;
 
 /**
  * 逆向作废
+ *
  * @author laowang
  */
-@WebService(name = "toVoidService",targetNamespace = "http://webservice.api.modules.jeecg.org/")
+@WebService(name = "toVoidService", targetNamespace = "http://webservice.api.modules.jeecg.org/")
 @Component
 public interface ToVoidService {
     /**
      * 统一作废接口
+     *
      * @param jsonStr
      * @return
      */
     @WebMethod
-    String toviod(@WebParam(name = "jsonStr")@NotBlank String jsonStr);
+    String toviod(@WebParam(name = "jsonStr") @NotBlank String jsonStr);
 }

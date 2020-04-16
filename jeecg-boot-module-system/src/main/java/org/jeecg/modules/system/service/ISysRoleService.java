@@ -17,6 +17,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2018-12-19
  */
 public interface ISysRoleService extends IService<SysRole> {
-	
+
 
 }

@@ -38,11 +38,12 @@ import java.util.Date;
 
 /**
  * 饮片相关webservice接口
+ *
  * @author laowang
  */
 @Service
 @Slf4j
-public class YpServiceImpl implements  YpService{
+public class YpServiceImpl implements YpService {
     @Autowired
     private GuildUpload guildUpload;
     @Autowired
@@ -67,15 +68,17 @@ public class YpServiceImpl implements  YpService{
     private IWptpEntInfoService iWptpEntInfoService;
     @Autowired
     private IWptpHostcodeService iWptpHostcodeService;
+
     /**
      * 饮片入库
+     *
      * @param jsonStr
      * @return
      */
-    public synchronized String ypInstock(@NotBlank String jsonStr){
+    public synchronized String ypInstock(@NotBlank String jsonStr) {
         String trim = jsonStr.trim();
         WptpYpInstock wptpYpInstock = new WptpYpInstock();
-        BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpYpInstock.class),wptpYpInstock);
+        BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpYpInstock.class), wptpYpInstock);
         Result result = ValidField.checkField(wptpYpInstock);
         if (!result.isSuccess()) return JSONArray.toJSON(result).toString();
         /**
@@ -95,17 +98,18 @@ public class YpServiceImpl implements  YpService{
             String sqlDateArrivalTime = DateUtils.StringToSQLDateStr(arrivalTime);
             wptpYpInstock.setArrivalTime(sqlDateArrivalTime);
         }
-        if (checkTime.contains("/")){
+        if (checkTime.contains("/")) {
             String sqlDateCheckTime = DateUtils.StringToSQLDateStr(checkTime);
             wptpYpInstock.setCheckTime(sqlDateCheckTime);
         }
         /**
          * 校验企业id
          */
-        if (iWptpEntInfoService.getEntByEntId(wptpYpInstock.getEntId()))return new Result().error500("根据企业id查不到企业信息").toString();
+        if (iWptpEntInfoService.getEntByEntId(wptpYpInstock.getEntId()))
+            return new Result().error500("根据企业id查不到企业信息").toString();
         QueryWrapper<WptpYpInstock> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("instock_number",wptpYpInstock.getInstockNumber());//判断是否有该流水号的记录
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("instock_number", wptpYpInstock.getInstockNumber());//判断是否有该流水号的记录
+        queryWrapper.eq("deleted", "0");
         WptpYpInstock wptpYpInstockInDB = wptpYpInstockService.getBaseMapper().selectOne(queryWrapper);
         if (!oConvertUtils.isEmpty(wptpYpInstockInDB)) {
             wptpYpInstockInDB.setDeleted("1");
@@ -121,16 +125,16 @@ public class YpServiceImpl implements  YpService{
     }
 
 
-
     /**
      * 饮片加工
+     *
      * @param jsonStr
      * @return
      */
-    public synchronized String ypProcess(@NotBlank String jsonStr){
+    public synchronized String ypProcess(@NotBlank String jsonStr) {
         String trim = jsonStr.trim();
         WptpYpProcess wptpYpProcess = new WptpYpProcess();
-        BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpYpProcess.class),wptpYpProcess);
+        BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpYpProcess.class), wptpYpProcess);
         Result result = ValidField.checkField(wptpYpProcess);
         if (!result.isSuccess()) return JSONArray.toJSON(result).toString();
         /**
@@ -144,30 +148,30 @@ public class YpServiceImpl implements  YpService{
         /**
          * 对时间相关的字段进行格式转化
          */
-         String producedDate = wptpYpProcess.getProducedDate();
-         String expiredDate = wptpYpProcess.getExpiredDate();
-         String checkTime = wptpYpProcess.getCheckTime();
-         String inTime = wptpYpProcess.getInTime();
-        if (checkTime.contains("/")){
+        String producedDate = wptpYpProcess.getProducedDate();
+        String expiredDate = wptpYpProcess.getExpiredDate();
+        String checkTime = wptpYpProcess.getCheckTime();
+        String inTime = wptpYpProcess.getInTime();
+        if (checkTime.contains("/")) {
             String sqlDateCheckTime = DateUtils.StringToSQLDateStr(checkTime);
-             wptpYpProcess.setCheckTime(sqlDateCheckTime);
-         }
-        if (expiredDate.contains("/")){
+            wptpYpProcess.setCheckTime(sqlDateCheckTime);
+        }
+        if (expiredDate.contains("/")) {
             String sqlDateExpiredDate = DateUtils.StringToSQLDateStr(expiredDate);
             wptpYpProcess.setExpiredDate(sqlDateExpiredDate);
         }
-        if (producedDate.contains("/")){
+        if (producedDate.contains("/")) {
             String sqlDateProducedDate = DateUtils.StringToSQLDateStr(producedDate);
             wptpYpProcess.setProducedDate(sqlDateProducedDate);
         }
-        if (inTime.contains("/")){
+        if (inTime.contains("/")) {
             String sqlDateInTime = DateUtils.StringToSQLDateStr(inTime);
             wptpYpProcess.setInTime(sqlDateInTime);
         }
 
         QueryWrapper<WptpYpProcess> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("process_no",wptpYpProcess.getProcessNo());//判断是否有该流水号的记录
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("process_no", wptpYpProcess.getProcessNo());//判断是否有该流水号的记录
+        queryWrapper.eq("deleted", "0");
         WptpYpProcess wptpYpProcessInDB = wptpYpProcessService.getBaseMapper().selectOne(queryWrapper);
         if (!oConvertUtils.isEmpty(wptpYpProcessInDB)) {
             wptpYpProcessInDB.setDeleted("1");
@@ -184,13 +188,14 @@ public class YpServiceImpl implements  YpService{
 
     /**
      * 饮片包装
+     *
      * @param jsonStr
      * @return
      */
-    public synchronized  String ypPack(@NotBlank String jsonStr){
+    public synchronized String ypPack(@NotBlank String jsonStr) {
         String trim = jsonStr.trim();
         WptpYpPack wptpYpPack = new WptpYpPack();
-        BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpYpPack.class),wptpYpPack);
+        BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpYpPack.class), wptpYpPack);
         Result result = ValidField.checkField(wptpYpPack);
         if (!result.isSuccess()) return JSONArray.toJSON(result).toString();
         /**
@@ -202,8 +207,8 @@ public class YpServiceImpl implements  YpService{
 
         if (!hostCodeResult.isSuccess()) return JSONArray.toJSON(hostCodeResult).toString();
         QueryWrapper<WptpYpPack> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("pack_no",wptpYpPack.getPackNo());//判断是否有该流水号的记录
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("pack_no", wptpYpPack.getPackNo());//判断是否有该流水号的记录
+        queryWrapper.eq("deleted", "0");
         WptpYpPack wptpYpPackInDB = wptpYpPackService.getBaseMapper().selectOne(queryWrapper);
         if (!oConvertUtils.isEmpty(wptpYpPackInDB)) {
             wptpYpPackInDB.setDeleted("1");
@@ -220,13 +225,14 @@ public class YpServiceImpl implements  YpService{
 
     /**
      * 饮片销售
+     *
      * @param jsonStr
      * @return
      */
-    public synchronized String ypSale(@NotBlank String jsonStr){
+    public synchronized String ypSale(@NotBlank String jsonStr) {
         String trim = jsonStr.trim();
         WptpYpSale wptpYpSale = new WptpYpSale();
-        BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpYpSale.class),wptpYpSale);
+        BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpYpSale.class), wptpYpSale);
         Result result = ValidField.checkField(wptpYpSale);
         if (!result.isSuccess()) return JSONArray.toJSON(result).toString();
         /**
@@ -247,15 +253,16 @@ public class YpServiceImpl implements  YpService{
         /**
          * 校验企业id
          */
-        if (iWptpEntInfoService.getEntByEntId(wptpYpSale.getEntId()))return new Result().error500("根据企业id查不到企业信息").toString();
-         String saleTime = wptpYpSale.getSaleTime();
-        if (saleTime.contains("/")){
+        if (iWptpEntInfoService.getEntByEntId(wptpYpSale.getEntId()))
+            return new Result().error500("根据企业id查不到企业信息").toString();
+        String saleTime = wptpYpSale.getSaleTime();
+        if (saleTime.contains("/")) {
             String sqlDateSaleTime = DateUtils.StringToSQLDateStr(saleTime);
             wptpYpSale.setSaleTime(sqlDateSaleTime);
         }
         QueryWrapper<WptpYpSale> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("sale_number",wptpYpSale.getSaleNumber());//判断是否有该流水号的记录
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("sale_number", wptpYpSale.getSaleNumber());//判断是否有该流水号的记录
+        queryWrapper.eq("deleted", "0");
         WptpYpSale wptpYpSaleInDB = wptpYpSaleService.getBaseMapper().selectOne(queryWrapper);
         if (!oConvertUtils.isEmpty(wptpYpSaleInDB)) {
             wptpYpSaleInDB.setDeleted("1");
@@ -268,20 +275,21 @@ public class YpServiceImpl implements  YpService{
         wptpYpSale.setCreateBy(wptpYpSale.getHostCode());
         String entIdByHostCode = getEntIdByHostCode(wptpYpSale.getHostCode());
         String entXhCode = getEntXhCode(entIdByHostCode);
-        wptpYpSale.setXhTraceCode(entXhCode+"-"+wptpYpSale.getTraceCode());
+        wptpYpSale.setXhTraceCode(entXhCode + "-" + wptpYpSale.getTraceCode());
         wptpYpSaleService.saveMain(wptpYpSale, null);
         /**
          * 接收到销售数据就要上传至行业协会
          */
         try {
-            guildUpload.upload(wptpYpSale.getTraceCode(),"0");
+            guildUpload.upload(wptpYpSale.getTraceCode(), "0");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            WptpUploadRecord xhUploadRecord = new WptpUploadRecord(new Date(),"失败",e.getMessage(),wptpYpSale.getTraceCode(),"");
+            WptpUploadRecord xhUploadRecord = new WptpUploadRecord(new Date(), "失败", e.getMessage(), wptpYpSale.getTraceCode(), "", "饮片加工");
             xhUploadRecordService.addWptpUploadRecord(xhUploadRecord);
         }
         return JSONArray.toJSON(new Result(true, "操作成功", 200, new Date().getTime())).toString();
     }
+
     /**
      * 饮片经营-饮片入库
      */
@@ -289,7 +297,7 @@ public class YpServiceImpl implements  YpService{
     public synchronized String ypbInstock(@NotBlank String jsonStr) {
         String trim = jsonStr.trim();
         WptpYpbInstock wptpYpbInstock = new WptpYpbInstock();
-        BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpYpbInstock.class),wptpYpbInstock);
+        BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpYpbInstock.class), wptpYpbInstock);
         Result result = ValidField.checkField(wptpYpbInstock);
         if (!result.isSuccess()) return JSONArray.toJSON(result).toString();
         /**
@@ -303,10 +311,11 @@ public class YpServiceImpl implements  YpService{
         /**
          * 校验企业id
          */
-        if (iWptpEntInfoService.getEntByEntId(wptpYpbInstock.getEntId()))return new Result().error500("根据企业id查不到企业信息").toString();
+        if (iWptpEntInfoService.getEntByEntId(wptpYpbInstock.getEntId()))
+            return new Result().error500("根据企业id查不到企业信息").toString();
         QueryWrapper<WptpYpbInstock> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("instock_number",wptpYpbInstock.getInstockNumber());//判断是否有该流水号的记录
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("instock_number", wptpYpbInstock.getInstockNumber());//判断是否有该流水号的记录
+        queryWrapper.eq("deleted", "0");
         WptpYpbInstock wptpYpbInstockInDB = iWptpYpbInstockService.getBaseMapper().selectOne(queryWrapper);
         if (!oConvertUtils.isEmpty(wptpYpbInstockInDB)) {
             wptpYpbInstockInDB.setDeleted("1");
@@ -318,8 +327,9 @@ public class YpServiceImpl implements  YpService{
         wptpYpbInstock.setCreateDate(new Date());
         wptpYpbInstock.setCreateBy(wptpYpbInstock.getHostCode());
         iWptpYpbInstockService.saveMain(wptpYpbInstock, null);
-        return JSONArray.toJSON(new Result(true, "操作成功", 200,new Date().getTime())).toString();
+        return JSONArray.toJSON(new Result(true, "操作成功", 200, new Date().getTime())).toString();
     }
+
     /**
      * 饮片经营-饮片销售
      */
@@ -327,7 +337,7 @@ public class YpServiceImpl implements  YpService{
     public synchronized String ypbSale(@NotBlank String jsonStr) {
         String trim = jsonStr.trim();
         WptpYpbSale wptpYpbSale = new WptpYpbSale();
-        BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpYpbSale.class),wptpYpbSale);
+        BeanUtils.copyProperties(JSONObject.parseObject(trim, WptpYpbSale.class), wptpYpbSale);
         Result result = ValidField.checkField(wptpYpbSale);
         if (!result.isSuccess()) return JSONArray.toJSON(result).toString();
         /**
@@ -348,10 +358,11 @@ public class YpServiceImpl implements  YpService{
         /**
          * 校验企业id
          */
-        if (iWptpEntInfoService.getEntByEntId(wptpYpbSale.getEntId()))return new Result().error500("根据企业id查不到企业信息").toString();
+        if (iWptpEntInfoService.getEntByEntId(wptpYpbSale.getEntId()))
+            return new Result().error500("根据企业id查不到企业信息").toString();
         QueryWrapper<WptpYpbSale> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("instock_no",wptpYpbSale.getInstockNo());//判断是否有该流水号的记录
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("instock_no", wptpYpbSale.getInstockNo());//判断是否有该流水号的记录
+        queryWrapper.eq("deleted", "0");
         WptpYpbSale wptpYpbSaleInDB = iWptpYpbSaleService.getBaseMapper().selectOne(queryWrapper);
         if (!oConvertUtils.isEmpty(wptpYpbSaleInDB)) {
             wptpYpbSaleInDB.setDeleted("1");
@@ -364,44 +375,47 @@ public class YpServiceImpl implements  YpService{
         wptpYpbSale.setCreateBy(wptpYpbSale.getHostCode());
         String entIdByHostCode = getEntIdByHostCode(wptpYpbSale.getHostCode());
         String entXhCode = getEntXhCode(entIdByHostCode);
-        wptpYpbSale.setXhTraceCode(entXhCode+"-"+wptpYpbSale.getTraceCode());
+        wptpYpbSale.setXhTraceCode(entXhCode + "-" + wptpYpbSale.getTraceCode());
         iWptpYpbSaleService.save(wptpYpbSale);
         /**
          * 接收到销售数据就要上传至行业协会
          */
         try {
-            guildUpload.upload(wptpYpbSale.getTraceCode(),"0");
+            guildUpload.upload(wptpYpbSale.getTraceCode(), "0");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            WptpUploadRecord xhUploadRecord = new WptpUploadRecord(new Date(),"失败",e.getMessage(),wptpYpbSale.getTraceCode(),"");
+            WptpUploadRecord xhUploadRecord = new WptpUploadRecord(new Date(), "失败", e.getMessage(), wptpYpbSale.getTraceCode(), "", "饮片经营");
             xhUploadRecordService.addWptpUploadRecord(xhUploadRecord);
         }
-        return JSONArray.toJSON(new Result(true, "操作成功", 200,new Date().getTime())).toString();
+        return JSONArray.toJSON(new Result(true, "操作成功", 200, new Date().getTime())).toString();
     }
 
     /**
      * 根据主机代码查询企业id
+     *
      * @return
      */
-    private String getEntIdByHostCode(String hostCode){
+    private String getEntIdByHostCode(String hostCode) {
         QueryWrapper<WptpHostcode> entInfoQueryWrapper = new QueryWrapper<>();
-        if (oConvertUtils.isEmpty(hostCode))return null;
-        entInfoQueryWrapper.eq("host_code",hostCode.trim());
+        if (oConvertUtils.isEmpty(hostCode)) return null;
+        entInfoQueryWrapper.eq("host_code", hostCode.trim());
         WptpHostcode wptpHostcode = iWptpHostcodeService.getBaseMapper().selectOne(entInfoQueryWrapper);
-        if (!oConvertUtils.isEmpty(wptpHostcode))return wptpHostcode.getEntId();
+        if (!oConvertUtils.isEmpty(wptpHostcode)) return wptpHostcode.getEntId();
         return null;
     }
+
     /**
      * 根据企业id查询xhCode
+     *
      * @return
      */
-    private String getEntXhCode(String entId){
+    private String getEntXhCode(String entId) {
         QueryWrapper<WptpEntInfo> entInfoQueryWrapper = new QueryWrapper<>();
-        if (oConvertUtils.isEmpty(entId))return null;
-        entInfoQueryWrapper.eq("ent_id",entId.trim());
-        entInfoQueryWrapper.eq("deleted","0");
+        if (oConvertUtils.isEmpty(entId)) return null;
+        entInfoQueryWrapper.eq("ent_id", entId.trim());
+        entInfoQueryWrapper.eq("deleted", "0");
         WptpEntInfo wptpEntInfo = iWptpEntInfoService.getBaseMapper().selectOne(entInfoQueryWrapper);
-        if (!oConvertUtils.isEmpty(wptpEntInfo))return wptpEntInfo.getXhCode();
+        if (!oConvertUtils.isEmpty(wptpEntInfo)) return wptpEntInfo.getXhCode();
         return null;
     }
 

@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.constraints.NotBlank;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+
 @RestController
 public class DataDisseminationController {
     @Autowired
@@ -60,6 +61,7 @@ public class DataDisseminationController {
     private IWptpYpProcessService iWptpYpProcessService;
     @Autowired
     private IWptpYpProcessFileService iWptpYpProcessFileService;
+
     @RequestMapping("/dataDissemination")
     public synchronized String dataDissemination(@NotBlank String jsonStr) {
         DataDissemination dataDissemination = new DataDissemination();
@@ -88,88 +90,93 @@ public class DataDisseminationController {
                 Map<String, Object> map = new HashMap<>();
 
                 QueryWrapper<WptpCsInfo> csInfoQueryWrapper = new QueryWrapper<>();
-                csInfoQueryWrapper.between("create_time", DateUtils.getDateBefore(new Date(),2),new Date());
+                csInfoQueryWrapper.between("create_time", DateUtils.getDateBefore(new Date(), 2), new Date());
                 List<WptpCsInfo> wptpCsInfos = iWptpCsInfoService.getBaseMapper().selectList(csInfoQueryWrapper);
-                if (wptpCsInfos.isEmpty())return JSONArray.toJSON(new Result(true, "无数据", 200, new Date().getTime())).toString();
-                for (WptpCsInfo csInfo:
+                if (wptpCsInfos.isEmpty())
+                    return JSONArray.toJSON(new Result(true, "无数据", 200, new Date().getTime())).toString();
+                for (WptpCsInfo csInfo :
                         wptpCsInfos) {
-                    map.put("base_code",csInfo.getBaseCode());
+                    map.put("base_code", csInfo.getBaseCode());
                     List<WptpBase> wptpBases = iWptpBaseService.getBaseMapper().selectByMap(map);
                     csInfo.setBaseName(wptpBases.get(0).getBaseName());
                     map.clear();
                 }
-                return JSONArray.toJSON(new Result(true, "操作成功", 200,wptpCsInfos, new Date().getTime())).toString();
+                return JSONArray.toJSON(new Result(true, "操作成功", 200, wptpCsInfos, new Date().getTime())).toString();
             case "11":
                 QueryWrapper<WptpMedicineSale> medicineSaleQueryWrapper = new QueryWrapper<>();
-                medicineSaleQueryWrapper.between("create_time", DateUtils.getDateBefore(new Date(),2),new Date());
+                medicineSaleQueryWrapper.between("create_time", DateUtils.getDateBefore(new Date(), 2), new Date());
                 List<WptpMedicineSale> wptpMedicineSales = iWptpMedicineSaleService.getBaseMapper().selectList(medicineSaleQueryWrapper);
-                if (wptpMedicineSales.isEmpty())return JSONArray.toJSON(new Result(true, "无数据", 200, new Date().getTime())).toString();
-                return JSONArray.toJSON(new Result(true, "操作成功", 200,wptpMedicineSales, new Date().getTime())).toString();
+                if (wptpMedicineSales.isEmpty())
+                    return JSONArray.toJSON(new Result(true, "无数据", 200, new Date().getTime())).toString();
+                return JSONArray.toJSON(new Result(true, "操作成功", 200, wptpMedicineSales, new Date().getTime())).toString();
             case "31":
                 QueryWrapper<WptpYpbSale> ypbSaleQueryWrapper = new QueryWrapper<>();
-                ypbSaleQueryWrapper.between("create_time", DateUtils.getDateBefore(new Date(),2),new Date());
+                ypbSaleQueryWrapper.between("create_time", DateUtils.getDateBefore(new Date(), 2), new Date());
                 List<WptpYpbSale> wptpYpbSales = iWptpYpbSaleService.getBaseMapper().selectList(ypbSaleQueryWrapper);
-                if (wptpYpbSales.isEmpty())return JSONArray.toJSON(new Result(true, "无数据", 200, new Date().getTime())).toString();
-                return JSONArray.toJSON(new Result(true, "操作成功", 200,wptpYpbSales, new Date().getTime())).toString();
+                if (wptpYpbSales.isEmpty())
+                    return JSONArray.toJSON(new Result(true, "无数据", 200, new Date().getTime())).toString();
+                return JSONArray.toJSON(new Result(true, "操作成功", 200, wptpYpbSales, new Date().getTime())).toString();
             case "23":
                 QueryWrapper<WptpYpSale> ypSaleQueryWrapper = new QueryWrapper<>();
-                ypSaleQueryWrapper.between("create_time", DateUtils.getDateBefore(new Date(),2),new Date());
+                ypSaleQueryWrapper.between("create_time", DateUtils.getDateBefore(new Date(), 2), new Date());
                 List<WptpYpSale> wptpYpSales = iWptpYpSaleService.getBaseMapper().selectList(ypSaleQueryWrapper);
-                if (wptpYpSales.isEmpty())return JSONArray.toJSON(new Result(true, "无数据", 200, new Date().getTime())).toString();
+                if (wptpYpSales.isEmpty())
+                    return JSONArray.toJSON(new Result(true, "无数据", 200, new Date().getTime())).toString();
                 List<WptpYpSaleVO> wptpYpSaleVOS = new ArrayList<>();
-                for (WptpYpSale w:
+                for (WptpYpSale w :
                         wptpYpSales) {
-                    ConcurrentHashMap<String,Object> paramMap =new ConcurrentHashMap();
-                    String processNo="";//加工单号
-                    if ("0".equals(w.getSource())){//0代表来源是饮片包装
+                    ConcurrentHashMap<String, Object> paramMap = new ConcurrentHashMap();
+                    String processNo = "";//加工单号
+                    if ("0".equals(w.getSource())) {//0代表来源是饮片包装
                         QueryWrapper<WptpYpPack> queryWrapper = new QueryWrapper<>();
-                        queryWrapper.eq("pack_no",w.getSourceNo());
+                        queryWrapper.eq("pack_no", w.getSourceNo());
                         WptpYpPack wptpYpPack = wptpYpPackService.getBaseMapper().selectOne(queryWrapper);
-                        processNo=wptpYpPack.getProcessNo();
-                    }else if ("1".equals(w.getSource())){
+                        processNo = wptpYpPack.getProcessNo();
+                    } else if ("1".equals(w.getSource())) {
                         QueryWrapper<WptpYpProcess> queryWrapper = new QueryWrapper<>();
-                        queryWrapper.eq("process_no",w.getSourceNo());
-                        WptpYpProcess wptpYpProcess= iWptpYpProcessService.getBaseMapper().selectOne(queryWrapper);
-                        processNo=wptpYpProcess.getProcessNo();
+                        queryWrapper.eq("process_no", w.getSourceNo());
+                        WptpYpProcess wptpYpProcess = iWptpYpProcessService.getBaseMapper().selectOne(queryWrapper);
+                        processNo = wptpYpProcess.getProcessNo();
                     }
 
-                    paramMap.put("main_id",processNo);
+                    paramMap.put("main_id", processNo);
                     List<WptpYpProcessFile> fileList = iWptpYpProcessFileService.getBaseMapper().selectByMap(paramMap);
                     List<String> paths = new ArrayList<>();//保存图片路径
-                    for (WptpYpProcessFile file:
+                    for (WptpYpProcessFile file :
                             fileList) {
                         paths.add(file.getPath());
                     }
                     WptpYpSaleVO wptpYpSaleVO = new WptpYpSaleVO();//展示类
-                    BeanUtils.copyProperties(w,wptpYpSaleVO);
+                    BeanUtils.copyProperties(w, wptpYpSaleVO);
                     wptpYpSaleVO.setReport(paths);
                     wptpYpSaleVOS.add(wptpYpSaleVO);
                     paramMap.clear();
                 }
-                return JSONArray.toJSON(new Result(true, "操作成功", 200,wptpYpSaleVOS, new Date().getTime())).toString();
+                return JSONArray.toJSON(new Result(true, "操作成功", 200, wptpYpSaleVOS, new Date().getTime())).toString();
             case "04":
                 QueryWrapper<WptpSale> saleQueryWrapper = new QueryWrapper<>();
-                saleQueryWrapper.between("create_time", DateUtils.getDateBefore(new Date(),2),new Date());
+                saleQueryWrapper.between("create_time", DateUtils.getDateBefore(new Date(), 2), new Date());
                 List<WptpSale> sales = iWptpSaleService.getBaseMapper().selectList(saleQueryWrapper);
-                if (sales.isEmpty())return JSONArray.toJSON(new Result(true, "无数据", 200, new Date().getTime())).toString();
+                if (sales.isEmpty())
+                    return JSONArray.toJSON(new Result(true, "无数据", 200, new Date().getTime())).toString();
                 List<WptpSaleVO> wptpSaleVOS = new ArrayList<>();
-                for (WptpSale w:
+                for (WptpSale w :
                         sales) {
-                    ConcurrentHashMap<String,Object> paramMap =new ConcurrentHashMap();
-                    paramMap.put("main_id",w.getMedicineBatch());
+                    ConcurrentHashMap<String, Object> paramMap = new ConcurrentHashMap();
+                    paramMap.put("main_id", w.getMedicineBatch());
                     List<WptpProcessFile> fileList = iWptpProcessFileService.getBaseMapper().selectByMap(paramMap);
                     List<String> paths = new ArrayList<>();//保存图片路径
-                    for (WptpProcessFile file:
+                    for (WptpProcessFile file :
                             fileList) {
                         paths.add(file.getPath());
                     }
                     WptpSaleVO wptpSaleVO = new WptpSaleVO();//展示类
-                    BeanUtils.copyProperties(w,wptpSaleVO);
+                    BeanUtils.copyProperties(w, wptpSaleVO);
                     wptpSaleVO.setReport(paths);
                     wptpSaleVOS.add(wptpSaleVO);
                     paramMap.clear();
                 }
-                return JSONArray.toJSON(new Result(true, "操作成功", 200,wptpSaleVOS, new Date().getTime())).toString();
+                return JSONArray.toJSON(new Result(true, "操作成功", 200, wptpSaleVOS, new Date().getTime())).toString();
 
         }
         return JSONArray.toJSON(new Result(false, "操作失败没找到相应流程", 500, new Date().getTime())).toString();

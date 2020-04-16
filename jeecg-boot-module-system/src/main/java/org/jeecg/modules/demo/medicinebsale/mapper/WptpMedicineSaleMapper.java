@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 /**
  * @Description: 饮片经营出库销售
  * @Author: jeecg-boot
- * @Date:   2019-10-09
+ * @Date: 2019-10-09
  * @Version: V1.0
  */
 public interface WptpMedicineSaleMapper extends BaseMapper<WptpMedicineSale> {

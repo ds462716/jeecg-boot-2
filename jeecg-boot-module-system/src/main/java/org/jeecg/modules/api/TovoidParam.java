@@ -6,6 +6,7 @@ import javax.validation.constraints.NotBlank;
 
 /**
  * 作废接口的参数类
+ *
  * @author laowang
  */
 @Data

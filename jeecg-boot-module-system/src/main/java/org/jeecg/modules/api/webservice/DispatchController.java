@@ -18,16 +18,17 @@ public class DispatchController {
     private FileAndReportService fileAndReportService;
     @Autowired
     private ToVoidService toVoidService;
+
     @PostMapping("/whichService")
-    public String whichService( String jsonStr,Integer condition){
+    public String whichService(String jsonStr, Integer condition) {
         StringBuilder result = new StringBuilder();
-        switch (condition){
-             /**
-              * 数据下发
-              */
-             case 1:
-                 result.append(dataDisseminationService.dataDissemination(jsonStr));
-                 break;
+        switch (condition) {
+            /**
+             * 数据下发
+             */
+            case 1:
+                result.append(dataDisseminationService.dataDissemination(jsonStr));
+                break;
             /**
              * 逆向作废
              */
@@ -41,8 +42,8 @@ public class DispatchController {
                 try {
                     result.append(fileAndReportService.upload(jsonStr));
                 } catch (Exception e) {
-                    System.out.println(e.getMessage()+e.getCause()+e.getLocalizedMessage()+e.getStackTrace());
-                   return JSONArray.toJSON(new Result().error500(e.getMessage())).toString();
+                    System.out.println(e.getMessage() + e.getCause() + e.getLocalizedMessage() + e.getStackTrace());
+                    return JSONArray.toJSON(new Result().error500(e.getMessage())).toString();
                 }
                 break;
             /**

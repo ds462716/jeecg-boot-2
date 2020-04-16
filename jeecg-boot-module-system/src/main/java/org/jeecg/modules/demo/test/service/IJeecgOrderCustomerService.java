@@ -9,10 +9,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 /**
  * @Description: 订单客户
  * @Author: jeecg-boot
- * @Date:  2019-02-15
+ * @Date: 2019-02-15
  * @Version: V1.0
  */
 public interface IJeecgOrderCustomerService extends IService<JeecgOrderCustomer> {
-	
-	public List<JeecgOrderCustomer> selectCustomersByMainId(String mainId);
+
+    public List<JeecgOrderCustomer> selectCustomersByMainId(String mainId);
 }

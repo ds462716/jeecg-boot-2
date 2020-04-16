@@ -25,6 +25,7 @@ import java.util.Set;
 
 /**
  * 控制层的切面校验类
+ *
  * @author laowang
  */
 @Aspect
@@ -34,12 +35,15 @@ public class ValidAspect {
     private ParameterNameDiscoverer parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
     private final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
     private final ExecutableValidator validator = factory.getValidator().forExecutables();
+
     private <T> Set<ConstraintViolation<T>> validMethodParams(T obj, Method method, Object[] params) {
         return validator.validateParameters(obj, method, params);
     }
+
     @Pointcut("execution(public * org.jeecg.modules.*.*.*.*Controller.*(..))")
     public void valid() {
     }
+
     @Around("valid()")
     public Object around(ProceedingJoinPoint pjp) {
         try {
@@ -66,7 +70,7 @@ public class ValidAspect {
                              * 返回第一条校验失败信息。也可以拼接起来返回所有的
                              */
                             System.out.println(error.getDefaultMessage());
-                            return new Result(false,error.getDefaultMessage(),500,new Date().getTime());
+                            return new Result(false, error.getDefaultMessage(), 500, new Date().getTime());
                         }
                     }
                 }
@@ -83,17 +87,17 @@ public class ValidAspect {
             //如果有校验不通过的
             if (!validResult.isEmpty()) {
                 String[] parameterNames = parameterNameDiscoverer.getParameterNames(method); // 获得方法的参数名称
-                String  errorMsg="参数：";
-                for(ConstraintViolation<Object> constraintViolation : validResult) {
+                String errorMsg = "参数：";
+                for (ConstraintViolation<Object> constraintViolation : validResult) {
                     PathImpl pathImpl = (PathImpl) constraintViolation.getPropertyPath();  // 获得校验的参数路径信息
                     int paramIndex = pathImpl.getLeafNode().getParameterIndex(); // 获得校验的参数位置
                     String paramName = parameterNames[paramIndex];  // 获得校验的参数名称
-                    errorMsg+=paramName;
+                    errorMsg += paramName;
                 }
                 //返回第一条
-               /* return validResult.iterator().next().getMessage();*/
-                errorMsg+=validResult.iterator().next().getMessage();
-                return new Result(false,errorMsg,500,new Date().getTime());
+                /* return validResult.iterator().next().getMessage();*/
+                errorMsg += validResult.iterator().next().getMessage();
+                return new Result(false, errorMsg, 500, new Date().getTime());
             }
 
             /**
@@ -102,7 +106,7 @@ public class ValidAspect {
             Object proceed;
             try {
                 proceed = pjp.proceed();
-            }catch (Exception e){
+            } catch (Exception e) {
                 return new Result(false, e.getMessage(), 500, new Date().getTime());
             }
             return proceed;

@@ -35,7 +35,7 @@ public class NgAlainController {
     @RequestMapping(value = "/getAppData")
     @ResponseBody
     public JSONObject getAppData(HttpServletRequest request) throws Exception {
-       String token=request.getHeader("X-Access-Token");
+        String token = request.getHeader("X-Access-Token");
         JSONObject j = new JSONObject();
         LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         JSONObject userObjcet = new JSONObject();
@@ -44,7 +44,7 @@ public class NgAlainController {
         userObjcet.put("email", user.getEmail());
         userObjcet.put("token", token);
         j.put("user", userObjcet);
-        j.put("menu",ngAlainService.getMenu(user.getUsername()));
+        j.put("menu", ngAlainService.getMenu(user.getUsername()));
         JSONObject app = new JSONObject();
         app.put("name", "jeecg-boot-angular");
         app.put("description", "jeecg+ng-alain整合版本");
@@ -54,7 +54,7 @@ public class NgAlainController {
 
     @RequestMapping(value = "/getDictItems/{dictCode}", method = RequestMethod.GET)
     public Object getDictItems(@PathVariable String dictCode) {
-        log.info(" dictCode : "+ dictCode);
+        log.info(" dictCode : " + dictCode);
         Result<List<DictModel>> result = new Result<List<DictModel>>();
         List<DictModel> ls = null;
         try {
@@ -62,25 +62,26 @@ public class NgAlainController {
             result.setSuccess(true);
             result.setResult(ls);
         } catch (Exception e) {
-            log.error(e.getMessage(),e);
+            log.error(e.getMessage(), e);
             result.error500("操作失败");
             return result;
         }
-        List<JSONObject> dictlist=new ArrayList<>();
+        List<JSONObject> dictlist = new ArrayList<>();
         for (DictModel l : ls) {
-            JSONObject dict=new JSONObject();
-                try {
-                    dict.put("value",Integer.parseInt(l.getValue()));
-                } catch (NumberFormatException e) {
-                    dict.put("value",l.getValue());
-                }
-            dict.put("label",l.getText());
+            JSONObject dict = new JSONObject();
+            try {
+                dict.put("value", Integer.parseInt(l.getValue()));
+            } catch (NumberFormatException e) {
+                dict.put("value", l.getValue());
+            }
+            dict.put("label", l.getText());
             dictlist.add(dict);
         }
         return dictlist;
     }
+
     @RequestMapping(value = "/getDictItemsByTable/{table}/{key}/{value}", method = RequestMethod.GET)
-    public Object getDictItemsByTable(@PathVariable String table,@PathVariable String key,@PathVariable String value) {
-        return this.ngAlainService.getDictByTable(table,key,value);
+    public Object getDictItemsByTable(@PathVariable String table, @PathVariable String key, @PathVariable String value) {
+        return this.ngAlainService.getDictByTable(table, key, value);
     }
 }

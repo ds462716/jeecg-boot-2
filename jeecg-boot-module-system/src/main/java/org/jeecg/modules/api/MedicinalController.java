@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
+
 @RestController
 @RequestMapping("/medicinal")
 @Slf4j
@@ -37,11 +38,12 @@ public class MedicinalController {
     private GuildUpload guildUpload;
     @Autowired
     private IWptpUploadRecordService xhUploadRecordService;
+
     @RequestMapping("/instock")
     public synchronized String medicineInstock(@NotBlank String jsonStr) {
         String trim = jsonStr.trim();
         WptpMedicineInstock wptpMedicineInstock = new WptpMedicineInstock();
-        BeanUtils.copyProperties(com.alibaba.fastjson.JSONObject.parseObject(trim, WptpMedicineInstock.class),wptpMedicineInstock);
+        BeanUtils.copyProperties(com.alibaba.fastjson.JSONObject.parseObject(trim, WptpMedicineInstock.class), wptpMedicineInstock);
         Result result = ValidField.checkField(wptpMedicineInstock);
         if (!result.isSuccess()) return JSONArray.toJSON(result).toString();
         /**
@@ -57,10 +59,11 @@ public class MedicinalController {
         /**
          * 校验企业id
          */
-        if (iWptpEntInfoService.getEntByEntId(wptpMedicineInstock.getEntId()))return new Result().error500("根据企业id查不到企业信息").toString();
+        if (iWptpEntInfoService.getEntByEntId(wptpMedicineInstock.getEntId()))
+            return new Result().error500("根据企业id查不到企业信息").toString();
         QueryWrapper<WptpMedicineInstock> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("instock_number",wptpMedicineInstock.getInstockNumber());//判断是否有该流水号的记录
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("instock_number", wptpMedicineInstock.getInstockNumber());//判断是否有该流水号的记录
+        queryWrapper.eq("deleted", "0");
         WptpMedicineInstock wptpMedicineInstockInDB = iWptpMedicineInstockService.getBaseMapper().selectOne(queryWrapper);
         if (!oConvertUtils.isEmpty(wptpMedicineInstockInDB)) {
             wptpMedicineInstockInDB.setDeleted("1");
@@ -74,11 +77,12 @@ public class MedicinalController {
         iWptpMedicineInstockService.saveMain(wptpMedicineInstock, null);
         return JSONArray.toJSON(new Result(true, "操作成功", 200, new Date().getTime())).toString();
     }
+
     @RequestMapping("/sale")
     public synchronized String medicineSale(@NotBlank String jsonStr) {
         String replace = jsonStr.trim();
         WptpMedicineSale wptpMedicineSale = new WptpMedicineSale();
-        BeanUtils.copyProperties(com.alibaba.fastjson.JSONObject.parseObject(replace, WptpMedicineSale.class),wptpMedicineSale);
+        BeanUtils.copyProperties(com.alibaba.fastjson.JSONObject.parseObject(replace, WptpMedicineSale.class), wptpMedicineSale);
         Result result = ValidField.checkField(wptpMedicineSale);
         if (!result.isSuccess()) return JSONArray.toJSON(result).toString();
         /**
@@ -99,10 +103,11 @@ public class MedicinalController {
         /**
          * 校验企业id
          */
-        if (iWptpEntInfoService.getEntByEntId(wptpMedicineSale.getEntId()))return new Result().error500("根据企业id查不到企业信息").toString();
+        if (iWptpEntInfoService.getEntByEntId(wptpMedicineSale.getEntId()))
+            return new Result().error500("根据企业id查不到企业信息").toString();
         QueryWrapper<WptpMedicineSale> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("sale_number",wptpMedicineSale.getSaleNumber());//判断是否有该流水号的记录
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("sale_number", wptpMedicineSale.getSaleNumber());//判断是否有该流水号的记录
+        queryWrapper.eq("deleted", "0");
         WptpMedicineSale wptpMedicineSaleInDB = iWptpMedicineSaleService.getBaseMapper().selectOne(queryWrapper);
         if (!oConvertUtils.isEmpty(wptpMedicineSaleInDB)) {
             wptpMedicineSaleInDB.setDeleted("1");
@@ -118,10 +123,10 @@ public class MedicinalController {
          * 接收到销售数据就要上传至行业协会
          */
         try {
-            guildUpload.upload(wptpMedicineSale.getTraceCode(),"0");
+            guildUpload.upload(wptpMedicineSale.getTraceCode(), "0");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            WptpUploadRecord xhUploadRecord = new WptpUploadRecord(new Date(),"失败",e.getMessage(),wptpMedicineSale.getTraceCode(),"");
+            WptpUploadRecord xhUploadRecord = new WptpUploadRecord(new Date(), "失败", e.getMessage(), wptpMedicineSale.getTraceCode(), "", "药材经营");
             xhUploadRecordService.addWptpUploadRecord(xhUploadRecord);
         }
         return JSONArray.toJSON(new Result(true, "操作成功", 200, new Date().getTime())).toString();

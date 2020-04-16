@@ -19,77 +19,79 @@ import java.util.List;
 /**
  * @Description: 企业基本信息
  * @Author: jeecg-boot
- * @Date:   2019-10-11
+ * @Date: 2019-10-11
  * @Version: V1.0
  */
 @Service
 public class WptpEntInfoServiceImpl extends ServiceImpl<WptpEntInfoMapper, WptpEntInfo> implements IWptpEntInfoService {
 
-	@Autowired
-	private WptpEntInfoMapper wptpEntInfoMapper;
-	@Autowired
-	private WptpEntFileMapper wptpEntFileMapper;
-	
-	@Override
-	@Transactional
-	public void saveMain(WptpEntInfo wptpEntInfo, List<WptpEntFile> wptpEntFileList) {
-		wptpEntInfoMapper.insert(wptpEntInfo);
-		if(wptpEntFileList!=null && wptpEntFileList.size()>0) {
-			for(WptpEntFile entity:wptpEntFileList) {
-				//外键设置
-				entity.setMainId(wptpEntInfo.getId());
-				wptpEntFileMapper.insert(entity);
-			}
-		}
-	}
+    @Autowired
+    private WptpEntInfoMapper wptpEntInfoMapper;
+    @Autowired
+    private WptpEntFileMapper wptpEntFileMapper;
 
-	@Override
-	@Transactional
-	public void updateMain(WptpEntInfo wptpEntInfo,List<WptpEntFile> wptpEntFileList) {
-		wptpEntInfoMapper.updateById(wptpEntInfo);
-		
-		//1.先删除子表数据
-		wptpEntFileMapper.deleteByMainId(wptpEntInfo.getId());
-		
-		//2.子表数据重新插入
-		if(wptpEntFileList!=null && wptpEntFileList.size()>0) {
-			for(WptpEntFile entity:wptpEntFileList) {
-				//外键设置
-				entity.setMainId(wptpEntInfo.getId());
-				wptpEntFileMapper.insert(entity);
-			}
-		}
-	}
+    @Override
+    @Transactional
+    public void saveMain(WptpEntInfo wptpEntInfo, List<WptpEntFile> wptpEntFileList) {
+        wptpEntInfoMapper.insert(wptpEntInfo);
+        if (wptpEntFileList != null && wptpEntFileList.size() > 0) {
+            for (WptpEntFile entity : wptpEntFileList) {
+                //外键设置
+                entity.setMainId(wptpEntInfo.getId());
+                wptpEntFileMapper.insert(entity);
+            }
+        }
+    }
 
-	@Override
-	@Transactional
-	public void delMain(String id) {
-		wptpEntFileMapper.deleteByMainId(id);
-		wptpEntInfoMapper.deleteById(id);
-	}
+    @Override
+    @Transactional
+    public void updateMain(WptpEntInfo wptpEntInfo, List<WptpEntFile> wptpEntFileList) {
+        wptpEntInfoMapper.updateById(wptpEntInfo);
 
-	@Override
-	@Transactional
-	public void delBatchMain(Collection<? extends Serializable> idList) {
-		for(Serializable id:idList) {
-			wptpEntFileMapper.deleteByMainId(id.toString());
-			wptpEntInfoMapper.deleteById(id);
-		}
-	}
-	@Override
-	@Transactional
-	public  String  getEntId(String districtCode) {
-			return wptpEntInfoMapper.getEntId(districtCode);
-	}
-	@Override
-	public Boolean getEntByEntId(String entId){
-		QueryWrapper<WptpEntInfo> entInfoQueryWrapper = new QueryWrapper<>();
-		entInfoQueryWrapper.eq("ent_id",entId);//判断是否有该流水号的记录
-		entInfoQueryWrapper.eq("deleted","0");
-		WptpEntInfo wptpEntInfo = wptpEntInfoMapper.selectOne(entInfoQueryWrapper);
-		if (oConvertUtils.isEmpty(wptpEntInfo)){
-			return true;
-		}
-		return false;
-	}
+        //1.先删除子表数据
+        wptpEntFileMapper.deleteByMainId(wptpEntInfo.getId());
+
+        //2.子表数据重新插入
+        if (wptpEntFileList != null && wptpEntFileList.size() > 0) {
+            for (WptpEntFile entity : wptpEntFileList) {
+                //外键设置
+                entity.setMainId(wptpEntInfo.getId());
+                wptpEntFileMapper.insert(entity);
+            }
+        }
+    }
+
+    @Override
+    @Transactional
+    public void delMain(String id) {
+        wptpEntFileMapper.deleteByMainId(id);
+        wptpEntInfoMapper.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void delBatchMain(Collection<? extends Serializable> idList) {
+        for (Serializable id : idList) {
+            wptpEntFileMapper.deleteByMainId(id.toString());
+            wptpEntInfoMapper.deleteById(id);
+        }
+    }
+
+    @Override
+    @Transactional
+    public String getEntId(String districtCode) {
+        return wptpEntInfoMapper.getEntId(districtCode);
+    }
+
+    @Override
+    public Boolean getEntByEntId(String entId) {
+        QueryWrapper<WptpEntInfo> entInfoQueryWrapper = new QueryWrapper<>();
+        entInfoQueryWrapper.eq("ent_id", entId);//判断是否有该流水号的记录
+        entInfoQueryWrapper.eq("deleted", "0");
+        WptpEntInfo wptpEntInfo = wptpEntInfoMapper.selectOne(entInfoQueryWrapper);
+        if (oConvertUtils.isEmpty(wptpEntInfo)) {
+            return true;
+        }
+        return false;
+    }
 }

@@ -130,21 +130,22 @@ public class TraceBaseDataServiceImpl implements TraceBaseDataService {
     private WptpBaseFileMapper wptpBaseFileMapper;
     @Autowired
     private WptpHostcodeMapper hostcodeMapper;
+
     @Override
     public WptpCsInfoVO getCsInfoVO(String medicineBatch) {
         QueryWrapper<WptpCsInfo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("cs_no",medicineBatch.trim());
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("cs_no", medicineBatch.trim());
+        queryWrapper.eq("deleted", "0");
         WptpCsInfo wptpCsInfo = wptpCsInfoMapper.selectOne(queryWrapper);
-        if (oConvertUtils.isEmpty(wptpCsInfo))return null;
+        if (oConvertUtils.isEmpty(wptpCsInfo)) return null;
         return convertEntityToVOService.handleCsInfo(wptpCsInfo);
     }
 
     @Override
     public List<WptpPlantInfoVO> listPlantInfoVO(String medicineBatch) {
         QueryWrapper<WptpPlantInfo> wptpPlantInfoQueryWrapper = new QueryWrapper<>();
-        wptpPlantInfoQueryWrapper.eq("block_medicinal_id",medicineBatch.trim());
-        wptpPlantInfoQueryWrapper.eq("deleted","0");
+        wptpPlantInfoQueryWrapper.eq("block_medicinal_id", medicineBatch.trim());
+        wptpPlantInfoQueryWrapper.eq("deleted", "0");
         wptpPlantInfoQueryWrapper.orderByAsc("operate_time");
         List<WptpPlantInfo> wptpPlantInfos = wptpPlantInfoMapper.selectList(wptpPlantInfoQueryWrapper);
         return convertEntityToVOService.handlePlantInfoList(wptpPlantInfos);
@@ -153,104 +154,108 @@ public class TraceBaseDataServiceImpl implements TraceBaseDataService {
     @Override
     public List<WptpPlantFile> listPlantFiles(String plantId) {
         QueryWrapper<WptpPlantFile> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("main_id",plantId.trim());
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("main_id", plantId.trim());
+        queryWrapper.eq("deleted", "0");
         List<WptpPlantFile> wptpPlantFiles = wptpPlantFileMapper.selectList(queryWrapper);
-        if (wptpPlantFiles.isEmpty())return null;
+        if (wptpPlantFiles.isEmpty()) return null;
         return wptpPlantFiles;
     }
 
     @Override
     public WptpSale getSale(String traceCode) {
         QueryWrapper<WptpSale> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("trace_code",traceCode.trim());
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("trace_code", traceCode.trim());
+        queryWrapper.eq("deleted", "0");
         WptpSale wptpSale = wptpSaleMapper.selectOne(queryWrapper);
-        if (oConvertUtils.isEmpty(wptpSale))return null;
+        if (oConvertUtils.isEmpty(wptpSale)) return null;
         return wptpSale;
     }
 
     @Override
     public WptpProcessInfoVO getProcessInfoVO(String medicineBatch) {
         QueryWrapper<WptpProcessInfo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("process_no",medicineBatch.trim());
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("process_no", medicineBatch.trim());
+        queryWrapper.eq("deleted", "0");
         WptpProcessInfo wptpProcessInfo = wptpProcessInfoMapper.selectOne(queryWrapper);
-        if (oConvertUtils.isEmpty(wptpProcessInfo))return null;
+        if (oConvertUtils.isEmpty(wptpProcessInfo)) return null;
         return convertEntityToVOService.handleProcessInfo(wptpProcessInfo);
     }
 
     @Override
     public List<WptpProcessFile> listProcessFiles(String processNo) {
         QueryWrapper<WptpProcessFile> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("main_id",processNo.trim());
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("main_id", processNo.trim());
+        queryWrapper.eq("deleted", "0");
         List<WptpProcessFile> wptpProcessFileList = wptpProcessFileMapper.selectList(queryWrapper);
-        if (wptpProcessFileList.isEmpty())return null;
+        if (wptpProcessFileList.isEmpty()) return null;
         return wptpProcessFileList;
     }
 
     @Override
     public List<WptpProcessMaterial> listProcessMaterials(String processNo) {
         QueryWrapper<WptpProcessMaterial> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("process_no",processNo.trim());
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("process_no", processNo.trim());
+        queryWrapper.eq("deleted", "0");
         List<WptpProcessMaterial> wptpProcessMaterialList = wptpProcessMaterialMapper.selectList(queryWrapper);
-        if (wptpProcessMaterialList.isEmpty())return null;
+        if (wptpProcessMaterialList.isEmpty()) return null;
         return wptpProcessMaterialList;
     }
+
     @Override
     public List<WptpProcessMaterial> listProcessMaterialsByCsNo(String csNo) {
         QueryWrapper<WptpProcessMaterial> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("cs_batch",csNo.trim());
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("cs_batch", csNo.trim());
+        queryWrapper.eq("deleted", "0");
         List<WptpProcessMaterial> wptpProcessMaterialList = wptpProcessMaterialMapper.selectList(queryWrapper);
-        if (wptpProcessMaterialList.isEmpty())return null;
+        if (wptpProcessMaterialList.isEmpty()) return null;
         return wptpProcessMaterialList;
     }
+
     @Override
     public WptpBlockMeidicinalVO getBlockMeidicinalVO(String blockMedicinalId) {
         QueryWrapper<WptpBlockMeidicinal> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("block_medicinal_id",blockMedicinalId.trim());
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("block_medicinal_id", blockMedicinalId.trim());
+        queryWrapper.eq("deleted", "0");
         WptpBlockMeidicinal wptpBlockMeidicinal = wptpBlockMeidicinalMapper.selectOne(queryWrapper);
-        if (oConvertUtils.isEmpty(wptpBlockMeidicinal))return null;
+        if (oConvertUtils.isEmpty(wptpBlockMeidicinal)) return null;
         return convertEntityToVOService.handleBlockMeidicinal(wptpBlockMeidicinal);
     }
 
     @Override
     public WptpBaseVO getWptpBaseVO(String baseCode) {
         QueryWrapper<WptpBase> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("base_code",baseCode.trim());
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("base_code", baseCode.trim());
+        queryWrapper.eq("deleted", "0");
         WptpBase wptpBase = wptpBaseMapper.selectOne(queryWrapper);
-        if (oConvertUtils.isEmpty(wptpBase))return null;
+        if (oConvertUtils.isEmpty(wptpBase)) return null;
         return convertEntityToVOService.handleBase(wptpBase);
     }
+
     @Override
-    public List<WptpBaseFile> getBaseFile(String baseCode,String type) {
+    public List<WptpBaseFile> getBaseFile(String baseCode, String type) {
         QueryWrapper<WptpBaseFile> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("main_id",baseCode.trim());
-        queryWrapper.eq("deleted","0");
-        queryWrapper.eq("type",type);
-        List<WptpBaseFile>  wptpBaseFiles = wptpBaseFileMapper.selectList(queryWrapper);
+        queryWrapper.eq("main_id", baseCode.trim());
+        queryWrapper.eq("deleted", "0");
+        queryWrapper.eq("type", type);
+        List<WptpBaseFile> wptpBaseFiles = wptpBaseFileMapper.selectList(queryWrapper);
         return wptpBaseFiles;
     }
+
     @Override
     public WptpMedicineInstockVO getMedicineInstockVO(String instockNumber) {
         QueryWrapper<WptpMedicineInstock> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("instock_number",instockNumber.trim());
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("instock_number", instockNumber.trim());
+        queryWrapper.eq("deleted", "0");
         WptpMedicineInstock wptpMedicineInstock = wptpMedicineInstockMapper.selectOne(queryWrapper);
-        if (oConvertUtils.isEmpty(wptpMedicineInstock))return null;
+        if (oConvertUtils.isEmpty(wptpMedicineInstock)) return null;
         return convertEntityToVOService.handleMedicineInstock(wptpMedicineInstock);
     }
 
     @Override
     public List<WptpMedicineInstockFile> listWptpMedicineInstockFiles(String instockNumber) {
         QueryWrapper<WptpMedicineInstockFile> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("main_id",instockNumber.trim());
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("main_id", instockNumber.trim());
+        queryWrapper.eq("deleted", "0");
         List<WptpMedicineInstockFile> wptpMedicineInstockFileList = wptpMedicineInstockFileMapper.selectList(queryWrapper);
         return wptpMedicineInstockFileList;
     }
@@ -258,28 +263,28 @@ public class TraceBaseDataServiceImpl implements TraceBaseDataService {
     @Override
     public WptpMedicineSaleVO getMedicineSaleVO(String traceCode) {
         QueryWrapper<WptpMedicineSale> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("trace_code",traceCode.trim());
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("trace_code", traceCode.trim());
+        queryWrapper.eq("deleted", "0");
         WptpMedicineSale wptpMedicineSale = wptpMedicineSaleMapper.selectOne(queryWrapper);
-        if (oConvertUtils.isEmpty(wptpMedicineSale))return null;
+        if (oConvertUtils.isEmpty(wptpMedicineSale)) return null;
         return convertEntityToVOService.handleMedicineSale(wptpMedicineSale);
     }
 
     @Override
     public WptpYpInstockVO getYpInstockVO(String instockNumber) {
         QueryWrapper<WptpYpInstock> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("instock_number",instockNumber.trim());
-        queryWrapper.eq("deleted","0");
-        WptpYpInstock wptpYpInstock= wptpYpInstockMapper.selectOne(queryWrapper);
-        if (oConvertUtils.isEmpty(wptpYpInstock))return null;
+        queryWrapper.eq("instock_number", instockNumber.trim());
+        queryWrapper.eq("deleted", "0");
+        WptpYpInstock wptpYpInstock = wptpYpInstockMapper.selectOne(queryWrapper);
+        if (oConvertUtils.isEmpty(wptpYpInstock)) return null;
         return convertEntityToVOService.handleYpInstock(wptpYpInstock);
     }
 
     @Override
     public List<WptpYpInstockFile> listWptpYpInstockFiles(String instockNumber) {
         QueryWrapper<WptpYpInstockFile> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("main_id",instockNumber.trim());
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("main_id", instockNumber.trim());
+        queryWrapper.eq("deleted", "0");
         List<WptpYpInstockFile> wptpYpInstockFileList = wptpYpInstockFileMapper.selectList(queryWrapper);
         return wptpYpInstockFileList;
     }
@@ -287,18 +292,18 @@ public class TraceBaseDataServiceImpl implements TraceBaseDataService {
     @Override
     public WptpYpProcessVO getYpProcessVO(String processNo) {
         QueryWrapper<WptpYpProcess> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("process_no",processNo.trim());
-        queryWrapper.eq("deleted","0");
-        WptpYpProcess wptpYpProcess= wptpYpProcessMapper.selectOne(queryWrapper);
-        if (oConvertUtils.isEmpty(wptpYpProcess))return null;
+        queryWrapper.eq("process_no", processNo.trim());
+        queryWrapper.eq("deleted", "0");
+        WptpYpProcess wptpYpProcess = wptpYpProcessMapper.selectOne(queryWrapper);
+        if (oConvertUtils.isEmpty(wptpYpProcess)) return null;
         return convertEntityToVOService.handleYpProcess(wptpYpProcess);
     }
 
     @Override
     public List<WptpYpProcessFile> listWptpYpProcessFiles(String processNo) {
         QueryWrapper<WptpYpProcessFile> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("main_id",processNo.trim());
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("main_id", processNo.trim());
+        queryWrapper.eq("deleted", "0");
         List<WptpYpProcessFile> wptpYpProcessFileList = wptpYpProcessFileMapper.selectList(queryWrapper);
         return wptpYpProcessFileList;
     }
@@ -306,10 +311,10 @@ public class TraceBaseDataServiceImpl implements TraceBaseDataService {
     @Override
     public WptpYpPackVO getYpPackVO(String packNo) {
         QueryWrapper<WptpYpPack> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("pack_no",packNo.trim());
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("pack_no", packNo.trim());
+        queryWrapper.eq("deleted", "0");
         WptpYpPack wptpYpPack = wptpYpPackMapper.selectOne(queryWrapper);
-        if (oConvertUtils.isEmpty(wptpYpPack))return null;
+        if (oConvertUtils.isEmpty(wptpYpPack)) return null;
         return convertEntityToVOService.handleYpPack(wptpYpPack);
     }
 
@@ -322,24 +327,24 @@ public class TraceBaseDataServiceImpl implements TraceBaseDataService {
         if (oConvertUtils.isEmpty(wptpYpSale))return null;
         return convertEntityToVOService.handleYpSale(wptpYpSale);*/
 
-        ConcurrentHashMap<String,Object> paramMap =new ConcurrentHashMap();
-        paramMap.put("trace_code",traceCode.trim());
-        paramMap.put("deleted","0");
-        List<WptpYpSale>   wptpYpSales = wptpYpSaleMapper.selectByMap(paramMap);
-        if (!wptpYpSales.isEmpty())return convertEntityToVOService.handleYpSale(wptpYpSales.get(0));
+        ConcurrentHashMap<String, Object> paramMap = new ConcurrentHashMap();
+        paramMap.put("trace_code", traceCode.trim());
+        paramMap.put("deleted", "0");
+        List<WptpYpSale> wptpYpSales = wptpYpSaleMapper.selectByMap(paramMap);
+        if (!wptpYpSales.isEmpty()) return convertEntityToVOService.handleYpSale(wptpYpSales.get(0));
         paramMap.clear();
-        paramMap.put("xh_trace_code",traceCode.trim());
-        paramMap.put("deleted","0");
-        List<WptpYpSale>   wptpYpSalesXH = wptpYpSaleMapper.selectByMap(paramMap);
-        if (!wptpYpSalesXH.isEmpty())return convertEntityToVOService.handleYpSale(wptpYpSalesXH.get(0));
+        paramMap.put("xh_trace_code", traceCode.trim());
+        paramMap.put("deleted", "0");
+        List<WptpYpSale> wptpYpSalesXH = wptpYpSaleMapper.selectByMap(paramMap);
+        if (!wptpYpSalesXH.isEmpty()) return convertEntityToVOService.handleYpSale(wptpYpSalesXH.get(0));
         return null;
     }
 
     @Override
     public List<WptpYpSaleFile> listWptpYpSaleFiles(String saleNumber) {
         QueryWrapper<WptpYpSaleFile> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("main_id",saleNumber.trim());
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("main_id", saleNumber.trim());
+        queryWrapper.eq("deleted", "0");
         List<WptpYpSaleFile> wptpYpSaleFileList = wptpYpSaleFileMapper.selectList(queryWrapper);
         return wptpYpSaleFileList;
     }
@@ -347,48 +352,49 @@ public class TraceBaseDataServiceImpl implements TraceBaseDataService {
     @Override
     public WptpYpbInstockVO getYpbInstockVO(String instockNumber) {
         QueryWrapper<WptpYpbInstock> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("instock_number",instockNumber.trim());
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("instock_number", instockNumber.trim());
+        queryWrapper.eq("deleted", "0");
         List<WptpYpbInstock> wptpYpbInstockList = wptpYpbInstockMapper.selectList(queryWrapper);
-        if (wptpYpbInstockList.isEmpty())return null;
+        if (wptpYpbInstockList.isEmpty()) return null;
         return convertEntityToVOService.handleYpbInstock(wptpYpbInstockList.get(0));
     }
 
     @Override
     public List<WptpYpbInstockFile> listWptpYpbInstockFiles(String instockNo) {
         QueryWrapper<WptpYpbInstockFile> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("main_id",instockNo.trim());
-        queryWrapper.eq("deleted","0");
+        queryWrapper.eq("main_id", instockNo.trim());
+        queryWrapper.eq("deleted", "0");
         List<WptpYpbInstockFile> wptpYpbInstockFileList = wptpYpbInstockFileMapper.selectList(queryWrapper);
         return wptpYpbInstockFileList;
     }
 
     @Override
     public WptpYpbSaleVO getYpbSaleVO(String traceCode) {
-        ConcurrentHashMap<String,Object> paramMap =new ConcurrentHashMap();
-        paramMap.put("trace_code",traceCode.trim());
-        paramMap.put("deleted","0");
-        List<WptpYpbSale>   wptpYpbSales = wptpYpbSaleMapper.selectByMap(paramMap);
-        if (!wptpYpbSales.isEmpty())return convertEntityToVOService.handleYpbSale(wptpYpbSales.get(0));
+        ConcurrentHashMap<String, Object> paramMap = new ConcurrentHashMap();
+        paramMap.put("trace_code", traceCode.trim());
+        paramMap.put("deleted", "0");
+        List<WptpYpbSale> wptpYpbSales = wptpYpbSaleMapper.selectByMap(paramMap);
+        if (!wptpYpbSales.isEmpty()) return convertEntityToVOService.handleYpbSale(wptpYpbSales.get(0));
         paramMap.clear();
-        paramMap.put("xh_trace_code",traceCode.trim());
-        paramMap.put("deleted","0");
-        List<WptpYpbSale>  wptpYpbSalesXH = wptpYpbSaleMapper.selectByMap(paramMap);
-        if (!wptpYpbSalesXH.isEmpty())return convertEntityToVOService.handleYpbSale(wptpYpbSalesXH.get(0));
+        paramMap.put("xh_trace_code", traceCode.trim());
+        paramMap.put("deleted", "0");
+        List<WptpYpbSale> wptpYpbSalesXH = wptpYpbSaleMapper.selectByMap(paramMap);
+        if (!wptpYpbSalesXH.isEmpty()) return convertEntityToVOService.handleYpbSale(wptpYpbSalesXH.get(0));
         return null;
     }
-@Override
-    public String getEntNameByHostCode(String hostCode){
+
+    @Override
+    public String getEntNameByHostCode(String hostCode) {
         QueryWrapper<WptpHostcode> queryWrapper = new QueryWrapper<>();
         String trim = hostCode.trim();
-        queryWrapper.eq("host_code",trim);
+        queryWrapper.eq("host_code", trim);
         WptpHostcode wptpHostcode = hostcodeMapper.selectOne(queryWrapper);
-        if (!oConvertUtils.isEmpty(wptpHostcode)){
+        if (!oConvertUtils.isEmpty(wptpHostcode)) {
             QueryWrapper<WptpEntInfo> entInfoQueryWrapper = new QueryWrapper<>();
-            entInfoQueryWrapper.eq("ent_id",wptpHostcode.getEntId());
-            entInfoQueryWrapper.eq("deleted","0");
+            entInfoQueryWrapper.eq("ent_id", wptpHostcode.getEntId());
+            entInfoQueryWrapper.eq("deleted", "0");
             WptpEntInfo wptpEntInfo = wptpEntInfoMapper.selectOne(entInfoQueryWrapper);
-            if (!oConvertUtils.isEmpty(wptpEntInfo))return wptpEntInfo.getEntName();
+            if (!oConvertUtils.isEmpty(wptpEntInfo)) return wptpEntInfo.getEntName();
         }
         return null;
     }

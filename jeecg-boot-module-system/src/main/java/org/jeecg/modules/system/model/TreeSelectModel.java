@@ -4,90 +4,90 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
-  * 树形下拉框
+ * 树形下拉框
  */
 public class TreeSelectModel implements Serializable {
 
-	private static final long serialVersionUID = 9016390975325574747L;
+    private static final long serialVersionUID = 9016390975325574747L;
 
-	private String key;
-	
-	private String title;
-	
-	private boolean isLeaf;
-	
-	private String icon;
-	
-	private String parentId;
-	
-	private String value;
-	
-	private String code;
-	
-	public String getValue() {
-		return value;
-	}
+    private String key;
 
-	public void setValue(String value) {
-		this.value = value;
-	}
+    private String title;
 
-	public String getParentId() {
-		return parentId;
-	}
+    private boolean isLeaf;
 
-	public void setParentId(String parentId) {
-		this.parentId = parentId;
-	}
+    private String icon;
 
-	public String getKey() {
-		return key;
-	}
+    private String parentId;
 
-	public void setKey(String key) {
-		this.key = key;
-	}
+    private String value;
 
-	public String getTitle() {
-		return title;
-	}
+    private String code;
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public String getValue() {
+        return value;
+    }
 
-	public boolean isLeaf() {
-		return isLeaf;
-	}
+    public void setValue(String value) {
+        this.value = value;
+    }
 
-	public void setLeaf(boolean isLeaf) {
-		this.isLeaf = isLeaf;
-	}
+    public String getParentId() {
+        return parentId;
+    }
 
-	public String getIcon() {
-		return icon;
-	}
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
 
-	public void setIcon(String icon) {
-		this.icon = icon;
-	}
+    public String getKey() {
+        return key;
+    }
 
-	public String getCode() {
-		return code;
-	}
+    public void setKey(String key) {
+        this.key = key;
+    }
 
-	public void setCode(String code) {
-		this.code = code;
-	}
-	
-	private List<TreeSelectModel> children;
+    public String getTitle() {
+        return title;
+    }
 
-	public List<TreeSelectModel> getChildren() {
-		return children;
-	}
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-	public void setChildren(List<TreeSelectModel> children) {
-		this.children = children;
-	}
+    public boolean isLeaf() {
+        return isLeaf;
+    }
+
+    public void setLeaf(boolean isLeaf) {
+        this.isLeaf = isLeaf;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    private List<TreeSelectModel> children;
+
+    public List<TreeSelectModel> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<TreeSelectModel> children) {
+        this.children = children;
+    }
 
 }

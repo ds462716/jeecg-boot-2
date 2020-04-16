@@ -3,10 +3,10 @@
 <mapper namespace="org.jeecg.modules.demo.baseinfo.mapper.WptpBaseMapper">
 
     <select id="getBaseCode" resultType="java.lang.String" parameterType="java.lang.String">
-SELECT  base_code
-FROM wptp_base
-WHERE  base_code
-like CONCAT(#{entId},'%')
-order by base_code desc  limit 0,1;
+        SELECT base_code
+        FROM wptp_base
+        WHERE base_code
+        like CONCAT(#{entId},'%')
+        order by base_code desc limit 0,1;
     </select>
 </mapper>

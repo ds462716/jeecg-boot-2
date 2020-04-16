@@ -11,13 +11,14 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 /**
  * @Description: 上传日志表
  * @Author: jeecg-boot
- * @Date:   2020-02-15
+ * @Date: 2020-02-15
  * @Version: V1.0
  */
 @Service
 public class WptpUploadRecordServiceImpl extends ServiceImpl<WptpUploadRecordMapper, WptpUploadRecord> implements IWptpUploadRecordService {
     @Autowired
     private WptpUploadRecordMapper wptpUploadRecordMappe;
+
     @Override
     public int addWptpUploadRecord(WptpUploadRecord uploadRecord) {
         return wptpUploadRecordMappe.addWptpUploadRecord(uploadRecord);

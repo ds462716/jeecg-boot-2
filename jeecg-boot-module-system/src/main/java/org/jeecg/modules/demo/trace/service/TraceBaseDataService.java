@@ -28,21 +28,22 @@ import java.util.List;
 
 /**
  * 追溯所需要的各个环节的基础数据
+ *
  * @author laowang
  */
 public interface TraceBaseDataService {
     /**
      * 种植环节
      */
-     WptpCsInfoVO getCsInfoVO(String medicineBatch);//采收批次
+    WptpCsInfoVO getCsInfoVO(String medicineBatch);//采收批次
 
-     List<WptpPlantInfoVO> listPlantInfoVO(String blockMedicinalId);//田间作业
+    List<WptpPlantInfoVO> listPlantInfoVO(String blockMedicinalId);//田间作业
 
-     List<WptpPlantFile> listPlantFiles(String plantId);//田间作业文件
+    List<WptpPlantFile> listPlantFiles(String plantId);//田间作业文件
 
-     WptpSale getSale(String traceCode);//出厂销售
+    WptpSale getSale(String traceCode);//出厂销售
 
-     WptpProcessInfoVO getProcessInfoVO(String medicineBatch);//初加工
+    WptpProcessInfoVO getProcessInfoVO(String medicineBatch);//初加工
 
     List<WptpProcessFile> listProcessFiles(String processNo);//加工文件
 
@@ -50,48 +51,52 @@ public interface TraceBaseDataService {
 
     List<WptpProcessMaterial> listProcessMaterialsByCsNo(String csNo);//根据批次号查询加工原料
 
-     WptpBlockMeidicinalVO getBlockMeidicinalVO(String blockMedicinalId);//档案
+    WptpBlockMeidicinalVO getBlockMeidicinalVO(String blockMedicinalId);//档案
 
-     WptpBaseVO  getWptpBaseVO(String baseCode);//基地
+    WptpBaseVO getWptpBaseVO(String baseCode);//基地
 
-     List<WptpBaseFile> getBaseFile(String baseCode,String type);//基地图片或者报告
+    List<WptpBaseFile> getBaseFile(String baseCode, String type);//基地图片或者报告
+
     /**
      * 药材经营
      */
-     WptpMedicineInstockVO getMedicineInstockVO(String instockNumber);//药材入库
+    WptpMedicineInstockVO getMedicineInstockVO(String instockNumber);//药材入库
 
-     List<WptpMedicineInstockFile> listWptpMedicineInstockFiles(String instockNumber);//药材入库文件
+    List<WptpMedicineInstockFile> listWptpMedicineInstockFiles(String instockNumber);//药材入库文件
 
-     WptpMedicineSaleVO getMedicineSaleVO(String traceCode);//药材销售
+    WptpMedicineSaleVO getMedicineSaleVO(String traceCode);//药材销售
+
     /**
      * 饮片加工
      */
-     WptpYpInstockVO getYpInstockVO(String instockNumber);//药材入库
+    WptpYpInstockVO getYpInstockVO(String instockNumber);//药材入库
 
     List<WptpYpInstockFile> listWptpYpInstockFiles(String instockNumber);//药材入库文件
 
-     WptpYpProcessVO getYpProcessVO(String processNo);//饮片加工
+    WptpYpProcessVO getYpProcessVO(String processNo);//饮片加工
 
     List<WptpYpProcessFile> listWptpYpProcessFiles(String processNo);//饮片加工文件
 
-     WptpYpPackVO getYpPackVO(String packNo);//成品包装
+    WptpYpPackVO getYpPackVO(String packNo);//成品包装
 
-     WptpYpSaleVO getYpSaleVO(String traceCode);//饮片销售
+    WptpYpSaleVO getYpSaleVO(String traceCode);//饮片销售
 
     List<WptpYpSaleFile> listWptpYpSaleFiles(String saleNumber);//销售文件
+
     /**
      * 饮片经营
      */
-     WptpYpbInstockVO getYpbInstockVO(String instockNumber);//饮片入库
+    WptpYpbInstockVO getYpbInstockVO(String instockNumber);//饮片入库
 
     List<WptpYpbInstockFile> listWptpYpbInstockFiles(String instockNo);//入库文件
 
-     WptpYpbSaleVO getYpbSaleVO(String traceCode);//饮片销售
+    WptpYpbSaleVO getYpbSaleVO(String traceCode);//饮片销售
 
     /**
      * 把主机代码转化为企业名称
+     *
      * @param hostCode
      * @return
      */
-     String getEntNameByHostCode(String hostCode);
+    String getEntNameByHostCode(String hostCode);
 }

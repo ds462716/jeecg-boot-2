@@ -10,10 +10,9 @@ import org.jeecg.modules.system.entity.SysDepart;
  * <p>
  * 部门表 封装树结构的部门的名称的实体类
  * <p>
- * 
- * @Author Steve
- * @Since 2019-01-22 
  *
+ * @Author Steve
+ * @Since 2019-01-22
  */
 public class DepartIdModel implements Serializable {
 
@@ -27,11 +26,12 @@ public class DepartIdModel implements Serializable {
 
     // 部门名称
     private String title;
-    
+
     List<DepartIdModel> children = new ArrayList<>();
-    
+
     /**
      * 将SysDepartTreeModel的部分数据放在该对象当中
+     *
      * @param treeModel
      * @return
      */
@@ -41,9 +41,10 @@ public class DepartIdModel implements Serializable {
         this.title = treeModel.getDepartName();
         return this;
     }
-    
+
     /**
      * 该方法为用户部门的实现类所使用
+     *
      * @param sysDepart
      * @return
      */
@@ -52,7 +53,7 @@ public class DepartIdModel implements Serializable {
         this.value = sysDepart.getId();
         this.title = sysDepart.getDepartName();
         return this;
-    } 
+    }
 
     public List<DepartIdModel> getChildren() {
         return children;

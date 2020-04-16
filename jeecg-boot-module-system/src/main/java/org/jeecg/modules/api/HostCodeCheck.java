@@ -13,6 +13,7 @@ import java.util.Map;
 
 /**
  * 校验主机代码
+ *
  * @author laowang
  */
 @Component
@@ -21,12 +22,11 @@ public class HostCodeCheck {
     private IWptpHostcodeService iWptpHostcodeService;
 
 
-
-    public Result checkHostCode(String hostCode){
+    public Result checkHostCode(String hostCode) {
         Map<String, Object> map = new HashMap<>();
-        map.put("host_code",hostCode);
+        map.put("host_code", hostCode);
         List<WptpHostcode> wptpHostcodes = iWptpHostcodeService.getBaseMapper().selectByMap(map);
-        if (wptpHostcodes.isEmpty()){
+        if (wptpHostcodes.isEmpty()) {
             return new Result(false, "主机代码不存在", 500, new Date().getTime());
         }
         return new Result(true, "操作成功", 200, new Date().getTime());

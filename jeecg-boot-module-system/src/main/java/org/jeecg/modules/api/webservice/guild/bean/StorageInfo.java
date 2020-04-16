@@ -16,13 +16,13 @@ public class StorageInfo {
     private String endTemperature;//温度结束
     private String file;//附件,多张用竖线(|)隔开，不超10份
     private String image;//合同图片,多张用竖线(|)隔开，不超10张
-    private String  remarks;//备注信息
-    private String  responsibleUser;//负责人
+    private String remarks;//备注信息
+    private String responsibleUser;//负责人
     private List<StorageDetails> storageDetailsList;//出入库详情
 
 
-    private String  storageInfoId;//出入库信息id
-    private long  storageTime;//出入库时间
-    private long  storageType;//出入库类型  1入库2出库
+    private String storageInfoId;//出入库信息id
+    private long storageTime;//出入库时间
+    private long storageType;//出入库类型  1入库2出库
 
 }

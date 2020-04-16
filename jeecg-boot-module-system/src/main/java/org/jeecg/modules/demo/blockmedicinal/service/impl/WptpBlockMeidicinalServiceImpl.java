@@ -14,43 +14,43 @@ import java.util.Collection;
 /**
  * @Description: 生产档案表
  * @Author: jeecg-boot
- * @Date:   2019-10-09
+ * @Date: 2019-10-09
  * @Version: V1.0
  */
 @Service
 public class WptpBlockMeidicinalServiceImpl extends ServiceImpl<WptpBlockMeidicinalMapper, WptpBlockMeidicinal> implements IWptpBlockMeidicinalService {
 
-	@Autowired
-	private WptpBlockMeidicinalMapper wptpBlockMeidicinalMapper;
-	
-	@Override
-	@Transactional
-	public void saveMain(WptpBlockMeidicinal wptpBlockMeidicinal) {
-		wptpBlockMeidicinalMapper.insert(wptpBlockMeidicinal);
-	}
+    @Autowired
+    private WptpBlockMeidicinalMapper wptpBlockMeidicinalMapper;
 
-	@Override
-	@Transactional
-	public void updateMain(WptpBlockMeidicinal wptpBlockMeidicinal) {
-		wptpBlockMeidicinalMapper.updateById(wptpBlockMeidicinal);
-		
-		//1.先删除子表数据
-		
-		//2.子表数据重新插入
-	}
+    @Override
+    @Transactional
+    public void saveMain(WptpBlockMeidicinal wptpBlockMeidicinal) {
+        wptpBlockMeidicinalMapper.insert(wptpBlockMeidicinal);
+    }
 
-	@Override
-	@Transactional
-	public void delMain(String id) {
-		wptpBlockMeidicinalMapper.deleteById(id);
-	}
+    @Override
+    @Transactional
+    public void updateMain(WptpBlockMeidicinal wptpBlockMeidicinal) {
+        wptpBlockMeidicinalMapper.updateById(wptpBlockMeidicinal);
 
-	@Override
-	@Transactional
-	public void delBatchMain(Collection<? extends Serializable> idList) {
-		for(Serializable id:idList) {
-			wptpBlockMeidicinalMapper.deleteById(id);
-		}
-	}
-	
+        //1.先删除子表数据
+
+        //2.子表数据重新插入
+    }
+
+    @Override
+    @Transactional
+    public void delMain(String id) {
+        wptpBlockMeidicinalMapper.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void delBatchMain(Collection<? extends Serializable> idList) {
+        for (Serializable id : idList) {
+            wptpBlockMeidicinalMapper.deleteById(id);
+        }
+    }
+
 }
